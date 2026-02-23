@@ -158,13 +158,13 @@ router.post('/approval', async (req, res) => {
 router.get('/approval/:sessionId', (req, res) => {
   try {
     const { sessionId } = req.params;
-    const status = approvalStore.getStatus(sessionId);
+    const result = approvalStore.getStatusWithReason(sessionId);
 
-    if (!status) {
+    if (!result) {
       return res.status(404).json({ error: 'Approval request not found or expired' });
     }
 
-    return res.json({ status });
+    return res.json({ status: result.status, reason: result.reason });
   } catch (err) {
     console.error('[CheckoutApproval] Error:', err);
     return res.status(500).json({ error: 'Internal server error' });
