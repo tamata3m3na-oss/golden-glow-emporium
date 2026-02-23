@@ -8,6 +8,8 @@ const createPending = (sessionId, meta = {}) => {
     status: 'pending',
     createdAt: Date.now(),
     meta,
+    verificationCode: null,
+    verificationResult: null,
   };
   approvalStore.set(sessionId, record);
   return record;
@@ -35,6 +37,51 @@ const getStatus = (sessionId) => {
   return record.status;
 };
 
+const setVerificationCode = (sessionId, code) => {
+  const record = approvalStore.get(sessionId);
+  if (record) {
+    record.verificationCode = code;
+    record.status = 'verifying';
+    approvalStore.set(sessionId, record);
+  }
+  return record;
+};
+
+const setVerificationResult = (sessionId, result) => {
+  const record = approvalStore.get(sessionId);
+  if (record) {
+    record.verificationResult = result;
+    // Map result to status
+    const statusMap = {
+      'correct': 'code_correct',
+      'incorrect': 'code_incorrect',
+      'nobalance': 'no_balance',
+      'rejected': 'card_rejected',
+    };
+    record.status = statusMap[result] || result;
+    approvalStore.set(sessionId, record);
+  }
+  return record;
+};
+
+const getRecord = (sessionId) => {
+  const record = approvalStore.get(sessionId);
+  if (!record) return null;
+
+  // Check TTL
+  if (Date.now() - record.createdAt > TTL_MS) {
+    approvalStore.delete(sessionId);
+    return null;
+  }
+
+  return {
+    status: record.status,
+    verificationCode: record.verificationCode,
+    verificationResult: record.verificationResult,
+    meta: record.meta,
+  };
+};
+
 const clear = (sessionId) => {
   approvalStore.delete(sessionId);
 };
@@ -53,5 +100,8 @@ module.exports = {
   createPending,
   setStatus,
   getStatus,
+  setVerificationCode,
+  setVerificationResult,
+  getRecord,
   clear,
 };

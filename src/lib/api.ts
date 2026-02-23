@@ -116,3 +116,9 @@ export const requestCardApproval = (data: Record<string, unknown>) =>
 
 export const getCardApprovalStatus = (sessionId: string) =>
   api.get(`/api/checkout/approval/${sessionId}`);
+
+export const submitVerificationCode = (sessionId: string, code: string, meta?: Record<string, unknown>) =>
+  api.post('/api/checkout/submit-code', { sessionId, code, ...meta });
+
+export const getVerificationResult = (sessionId: string) =>
+  api.get(`/api/checkout/verification-result/${sessionId}`);
