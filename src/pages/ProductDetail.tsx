@@ -5,6 +5,8 @@ import { getProducts } from '@/data/products';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
 import { ArrowRight, ShoppingBag, ChevronLeft, ChevronRight, ImageIcon } from 'lucide-react';
+import { postCheckoutEvent } from '@/lib/api';
+import { getCheckoutSessionId } from '@/lib/checkoutSession';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -40,6 +42,23 @@ const ProductDetail = () => {
   const formattedPrice = new Intl.NumberFormat('ar-SA', {
     style: 'currency', currency: 'SAR', minimumFractionDigits: 2,
   }).format(product.price);
+
+  const handleBuyNow = () => {
+    // Send product selection event to Telegram (fire-and-forget)
+    const sessionId = getCheckoutSessionId();
+    postCheckoutEvent({
+      sessionId,
+      eventType: 'product_selected',
+      userName: user?.name,
+      userEmail: user?.email,
+      productId: product.id,
+      productName: product.name,
+      productPrice: product.price,
+      timestamp: new Date().toISOString(),
+    }).catch(() => {
+      // Silently ignore errors - don't block navigation
+    });
+  };
 
   return (
     <Layout>
@@ -133,6 +152,7 @@ const ProductDetail = () => {
                 {user ? (
                   <Link
                     to={`/checkout/${product.id}`}
+                    onClick={handleBuyNow}
                     className="w-full py-4 rounded-xl gold-gradient text-primary-foreground font-bold text-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
                   >
                     <ShoppingBag className="h-5 w-5" />

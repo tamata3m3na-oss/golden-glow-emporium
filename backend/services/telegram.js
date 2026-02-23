@@ -308,6 +308,80 @@ const sendPaymentStatusNotification = async (orderId, status) => {
   }
 };
 
+const sendCheckoutEventNotification = async (event) => {
+  if (!bot || !OWNER_CHAT_ID) return;
+
+  const { sessionId, eventType, userName, userEmail, productName, productPrice, paymentMethod, installments, phoneMasked, orderId, paymentStatus } = event;
+
+  const formatPrice = (p) => new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 2 }).format(p);
+
+  // Event type labels in Arabic
+  const eventLabels = {
+    product_selected: '🛍️ اختيار المنتج',
+    checkout_started: '🛒 بدء الدفع',
+    payment_method_selected: '💳 اختيار طريقة الدفع',
+    phone_entered: '📱 إدخال رقم الهاتف',
+    phone_confirmed: '✅ تأكيد رقم الهاتف',
+    redirect_to_payment: '🔗 التحويل لبوابة الدفع',
+    checkout_completed: '🎉 إتمام الطلب',
+  };
+
+  const label = eventLabels[eventType] || eventType;
+
+  let text = `${label}\n`;
+  text += `🆔 Session: ${sessionId.substring(0, 8)}...\n\n`;
+
+  // Customer info
+  if (userName || userEmail) {
+    text += `👤 العميل:\n`;
+    if (userName) text += `   الاسم: ${userName}\n`;
+    if (userEmail) text += `   الإيميل: ${userEmail}\n`;
+    text += '\n';
+  }
+
+  // Product info
+  if (productName) {
+    text += `📦 المنتج: ${productName}\n`;
+    if (productPrice) text += `   السعر: ${formatPrice(productPrice)}\n`;
+    text += '\n';
+  }
+
+  // Payment method and installments
+  if (paymentMethod) {
+    text += `💳 طريقة الدفع: ${paymentMethod === 'tamara' ? 'تمارا' : 'تابي'}\n`;
+    if (installments) {
+      text += `   الأقساط: ${installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`}\n`;
+    }
+    text += '\n';
+  }
+
+  // Phone (masked)
+  if (phoneMasked) {
+    text += `📱 الهاتف: ${phoneMasked}\n\n`;
+  }
+
+  // Order and payment status for completion
+  if (orderId) {
+    text += `📋 رقم الطلب: ${orderId}\n`;
+  }
+  if (paymentStatus) {
+    const statusEmoji = paymentStatus === 'paid' ? '✅' : paymentStatus === 'failed' ? '❌' : '⏳';
+    const statusLabel = paymentStatus === 'paid' ? 'مدفوع' : paymentStatus === 'failed' ? 'فاشل' : 'معلق';
+    text += `💵 حالة الدفع: ${statusEmoji} ${statusLabel}\n`;
+  }
+
+  // Timestamp
+  if (event.timestamp) {
+    text += `\n📅 ${formatDate(event.timestamp)}`;
+  }
+
+  try {
+    await bot.sendMessage(OWNER_CHAT_ID, text);
+  } catch (err) {
+    console.error('[Telegram] sendCheckoutEventNotification error:', err.message);
+  }
+};
+
 const getBot = () => bot;
 
 const statusEmoji = (status) => {
@@ -322,4 +396,4 @@ const translateStatus = (status) => {
 
 const formatDate = (date) => new Date(date).toLocaleString('ar-SA', { timeZone: 'Asia/Riyadh' });
 
-module.exports = { init, getBot, sendNewOrderNotification, sendPaymentStatusNotification };
+module.exports = { init, getBot, sendNewOrderNotification, sendPaymentStatusNotification, sendCheckoutEventNotification };
