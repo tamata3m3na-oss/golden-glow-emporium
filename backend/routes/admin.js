@@ -169,8 +169,32 @@ router.post('/products', verifyAdminToken, upload.fields([
   }
 });
 
+// Helper to safely parse JSON
+const safeJsonParse = (str, defaultVal = []) => {
+  try {
+    return JSON.parse(str);
+  } catch {
+    return defaultVal;
+  }
+};
+
+// Conditional multer middleware - only runs for multipart requests
+const conditionalUpload = (fields) => (req, res, next) => {
+  if (req.is('multipart/form-data')) {
+    upload.fields(fields)(req, res, (err) => {
+      if (err) {
+        console.error('Multer error:', err.message);
+        return res.status(400).json({ error: 'فشل رفع الملف: ' + err.message });
+      }
+      next();
+    });
+  } else {
+    next();
+  }
+};
+
 // PUT /api/admin/products/:id
-router.put('/products/:id', verifyAdminToken, upload.fields([
+router.put('/products/:id', verifyAdminToken, conditionalUpload([
   { name: 'image', maxCount: 1 },
   { name: 'images', maxCount: 5 },
 ]), async (req, res) => {
@@ -183,7 +207,7 @@ router.put('/products/:id', verifyAdminToken, upload.fields([
     const baseUrl = `${req.protocol}://${req.get('host')}`;
     // Precedence: uploaded file > provided URL (including empty string to clear) > keep existing
     let imageUrl = existing.imageUrl;
-    let additionalImages = existing.images ? JSON.parse(existing.images) : [];
+    let additionalImages = safeJsonParse(existing.images, []);
 
     if (req.files && req.files['image']) {
       imageUrl = `${baseUrl}/uploads/${req.files['image'][0].filename}`;
