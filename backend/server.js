@@ -33,12 +33,14 @@ const productsRouter = require("./routes/products");
 const ordersRouter = require("./routes/orders");
 const paymentsRouter = require("./routes/payments");
 const telegramRouter = require("./routes/telegram");
+const checkoutRouter = require("./routes/checkout");
 
 app.use("/api/admin", adminRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/payments", paymentsRouter);
 app.use("/api/telegram", telegramRouter);
+app.use("/api/checkout", checkoutRouter);
 
 app.get("/api/health", (_req, res) => res.json({ status: "ok", time: new Date().toISOString() }));
 

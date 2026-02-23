@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { ImageIcon } from 'lucide-react';
 import type { Product } from '@/data/products';
+import { postCheckoutEvent } from '@/lib/api';
+import { getCheckoutSessionId } from '@/lib/checkoutSession';
 
 const ProductCard = ({ product }: { product: Product }) => {
   const { user } = useAuth();
@@ -12,6 +14,23 @@ const ProductCard = ({ product }: { product: Product }) => {
     currency: 'SAR',
     minimumFractionDigits: 2,
   }).format(product.price);
+
+  const handleBuyNow = () => {
+    // Send product selection event to Telegram (fire-and-forget)
+    const sessionId = getCheckoutSessionId();
+    postCheckoutEvent({
+      sessionId,
+      eventType: 'product_selected',
+      userName: user?.name,
+      userEmail: user?.email,
+      productId: product.id,
+      productName: product.name,
+      productPrice: product.price,
+      timestamp: new Date().toISOString(),
+    }).catch(() => {
+      // Silently ignore errors - don't block navigation
+    });
+  };
 
   return (
     <motion.div
@@ -65,6 +84,7 @@ const ProductCard = ({ product }: { product: Product }) => {
 
         <Link
           to={user ? `/checkout/${product.id}` : `/login?redirect=/checkout/${product.id}`}
+          onClick={handleBuyNow}
           className="block w-full text-center py-2.5 rounded-lg gold-gradient text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity"
         >
           اشترِ الآن

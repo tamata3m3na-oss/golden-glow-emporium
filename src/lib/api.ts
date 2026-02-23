@@ -107,3 +107,6 @@ export const removeProduct = (id: number) =>
 
 export const reorderProductApi = (id: number, order: number) =>
   api.adminPatch(`/api/admin/products/${id}/reorder`, { order });
+
+export const postCheckoutEvent = (data: Record<string, unknown>) =>
+  api.post('/api/checkout/events', data);
