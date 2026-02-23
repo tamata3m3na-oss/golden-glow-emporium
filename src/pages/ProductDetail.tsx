@@ -58,16 +58,16 @@ const ProductDetail = () => {
             </div>
 
             {user ? (
-              <button
-                onClick={handleBuy}
+              <Link
+                to={`/checkout/${product.id}`}
                 className="w-full py-4 rounded-xl gold-gradient text-primary-foreground font-bold text-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
               >
                 <ShoppingBag className="h-5 w-5" />
                 اشترِ الآن
-              </button>
+              </Link>
             ) : (
               <Link
-                to={`/login?redirect=/product/${product.id}`}
+                to={`/login?redirect=/checkout/${product.id}`}
                 className="block w-full py-4 rounded-xl gold-gradient text-primary-foreground font-bold text-lg hover:opacity-90 transition-opacity text-center"
               >
                 سجل دخول للشراء
