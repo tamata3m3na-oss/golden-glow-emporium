@@ -46,7 +46,7 @@ const ProductCard = ({ product }: { product: Product }) => {
 
         {/* Buy Button */}
         <Link
-          to={user ? `/product/${product.id}` : `/login?redirect=/product/${product.id}`}
+          to={user ? `/checkout/${product.id}` : `/login?redirect=/checkout/${product.id}`}
           className="block w-full text-center py-3 rounded-lg gold-gradient text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity"
         >
           اشترِ الآن
