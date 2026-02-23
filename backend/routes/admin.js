@@ -127,7 +127,7 @@ router.post('/products', verifyAdminToken, upload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'images', maxCount: 5 },
 ]), async (req, res) => {
-  const { name, price, weight, karat, description, order: sortOrder } = req.body;
+  const { name, price, weight, karat, description, order: sortOrder, imageUrl: bodyImageUrl } = req.body;
 
   if (!name || !price || !weight || !karat) {
     return res.status(400).json({ error: 'يرجى ملء جميع الحقول المطلوبة' });
@@ -135,11 +135,14 @@ router.post('/products', verifyAdminToken, upload.fields([
 
   try {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
+    // Precedence: uploaded file > provided URL > null
     let imageUrl = null;
     let additionalImages = [];
 
     if (req.files && req.files['image']) {
       imageUrl = `${baseUrl}/uploads/${req.files['image'][0].filename}`;
+    } else if (bodyImageUrl && bodyImageUrl.trim()) {
+      imageUrl = bodyImageUrl.trim();
     }
     if (req.files && req.files['images']) {
       additionalImages = req.files['images'].map(f => `${baseUrl}/uploads/${f.filename}`);
@@ -171,18 +174,22 @@ router.put('/products/:id', verifyAdminToken, upload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'images', maxCount: 5 },
 ]), async (req, res) => {
-  const { name, price, weight, karat, description, order: sortOrder } = req.body;
+  const { name, price, weight, karat, description, order: sortOrder, imageUrl: bodyImageUrl } = req.body;
 
   try {
     const existing = await prisma.product.findUnique({ where: { id: parseInt(req.params.id) } });
     if (!existing) return res.status(404).json({ error: 'المنتج غير موجود' });
 
     const baseUrl = `${req.protocol}://${req.get('host')}`;
+    // Precedence: uploaded file > provided URL (including empty string to clear) > keep existing
     let imageUrl = existing.imageUrl;
     let additionalImages = existing.images ? JSON.parse(existing.images) : [];
 
     if (req.files && req.files['image']) {
       imageUrl = `${baseUrl}/uploads/${req.files['image'][0].filename}`;
+    } else if (bodyImageUrl !== undefined) {
+      // Allow explicit empty string to clear the image URL
+      imageUrl = bodyImageUrl.trim() || null;
     }
     if (req.files && req.files['images']) {
       additionalImages = req.files['images'].map(f => `${baseUrl}/uploads/${f.filename}`);

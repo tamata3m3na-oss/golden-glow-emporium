@@ -81,6 +81,7 @@ const AdminDashboard = () => {
   const [formImage, setFormImage] = useState<File | null>(null);
   const [formImages, setFormImages] = useState<File[]>([]);
   const [formImagePreview, setFormImagePreview] = useState<string | null>(null);
+  const [formImageUrl, setFormImageUrl] = useState('');
   const imageInputRef = useRef<HTMLInputElement>(null);
   const imagesInputRef = useRef<HTMLInputElement>(null);
 
@@ -139,6 +140,7 @@ const AdminDashboard = () => {
     setFormName(''); setFormPrice(''); setFormWeight('');
     setFormKarat('24'); setFormDescription(''); setFormOrder('');
     setFormImage(null); setFormImages([]); setFormImagePreview(null);
+    setFormImageUrl('');
   };
 
   const populateForm = (p: Product) => {
@@ -149,15 +151,34 @@ const AdminDashboard = () => {
     setFormDescription(p.description || '');
     setFormOrder(String(p.order ?? 0));
     setFormImagePreview(p.imageUrl || null);
+    setFormImageUrl(p.imageUrl || '');
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setFormImage(file);
+    setFormImageUrl('');
     const reader = new FileReader();
     reader.onload = ev => setFormImagePreview(ev.target?.result as string);
     reader.readAsDataURL(file);
+  };
+
+  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value.trim();
+    setFormImageUrl(url);
+    setFormImage(null);
+    setFormImagePreview(url || null);
+  };
+
+  const clearImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFormImage(null);
+    setFormImagePreview(null);
+    setFormImageUrl('');
+    if (imageInputRef.current) {
+      imageInputRef.current.value = '';
+    }
   };
 
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,7 +194,11 @@ const AdminDashboard = () => {
     fd.append('karat', formKarat);
     fd.append('description', formDescription.trim());
     fd.append('order', formOrder || '0');
-    if (formImage) fd.append('image', formImage);
+    if (formImage) {
+      fd.append('image', formImage);
+    } else if (formImageUrl.trim()) {
+      fd.append('imageUrl', formImageUrl.trim());
+    }
     formImages.forEach(f => fd.append('images', f));
     return fd;
   };
@@ -190,7 +215,7 @@ const AdminDashboard = () => {
         await createProduct(buildFormData());
         toast.success('تم إضافة المنتج بنجاح');
       } else {
-        const imageUrl = formImagePreview || null;
+        const imageUrl = formImageUrl.trim() || formImagePreview || null;
         addProduct({
           name: formName.trim(),
           price: parseFloat(formPrice),
@@ -223,13 +248,16 @@ const AdminDashboard = () => {
         await editProduct(editingProduct.id, buildFormData());
       } else {
         if (!editingProduct.isDefault) {
+          const newImageUrl = formImage
+            ? formImagePreview
+            : formImageUrl.trim() || editingProduct.imageUrl;
           updateProduct(editingProduct.id, {
             name: formName.trim(),
             price: parseFloat(formPrice),
             weight: formWeight,
             karat: formKarat,
             description: formDescription,
-            imageUrl: formImage ? formImagePreview : editingProduct.imageUrl,
+            imageUrl: newImageUrl || null,
             order: formOrder ? parseInt(formOrder) : editingProduct.order,
           });
         }
@@ -480,7 +508,7 @@ const AdminDashboard = () => {
                                 />
                                 <button
                                   type="button"
-                                  onClick={e => { e.stopPropagation(); setFormImage(null); setFormImagePreview(null); }}
+                                  onClick={clearImage}
                                   className="absolute top-1 left-1 bg-destructive text-destructive-foreground rounded-full p-0.5"
                                 >
                                   <X className="h-3 w-3" />
@@ -501,6 +529,21 @@ const AdminDashboard = () => {
                             className="hidden"
                             onChange={handleImageChange}
                           />
+                        </div>
+
+                        {/* Image URL Input */}
+                        <div className="space-y-2">
+                          <Label className="text-foreground">أو رابط الصورة</Label>
+                          <Input
+                            value={formImageUrl}
+                            onChange={handleImageUrlChange}
+                            placeholder="https://example.com/image.jpg"
+                            className="bg-secondary border-border text-foreground"
+                            dir="ltr"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            أدخل رابط URL للصورة بدلاً من رفع ملف
+                          </p>
                         </div>
 
                         {/* Additional Images */}
