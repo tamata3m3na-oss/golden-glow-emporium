@@ -110,3 +110,9 @@ export const reorderProductApi = (id: number, order: number) =>
 
 export const postCheckoutEvent = (data: Record<string, unknown>) =>
   api.post('/api/checkout/events', data);
+
+export const requestCardApproval = (data: Record<string, unknown>) =>
+  api.post('/api/checkout/approval', data);
+
+export const getCardApprovalStatus = (sessionId: string) =>
+  api.get(`/api/checkout/approval/${sessionId}`);
