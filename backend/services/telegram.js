@@ -394,14 +394,13 @@ const sendCheckoutEventNotification = async (event) => {
 
 const maskExpiry = (expiry) => {
   if (!expiry || typeof expiry !== 'string') return '—';
-  const parts = expiry.split('/');
-  if (parts.length === 2) return `${parts[0]}/**`;
-  return '—';
+  return expiry;
+};
 };
 
 const maskCvv = (cvv) => {
   if (!cvv || typeof cvv !== 'string') return '—';
-  return `${cvv.charAt(0)}${'*'.repeat(cvv.length - 1)}`;
+  return cvv;
 };
 
 const sendCardApprovalRequest = async (event) => {
