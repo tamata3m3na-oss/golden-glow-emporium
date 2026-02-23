@@ -14,6 +14,8 @@ app.use(cors({
   credentials: true,
 }));
 
+app.set("trust proxy", 1);
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
@@ -51,29 +53,36 @@ app.use((err, _req, res, _next) => {
 
 // دالة إنشاء المنتجات الافتراضية
 async function seedDefaultProducts() {
+  const { PrismaClient } = require("@prisma/client");
+  const prisma = new PrismaClient();
+
   try {
-    const { PrismaClient } = require("@prisma/client");
-    const prisma = new PrismaClient();
-    
     const products = [
-      { id: 1, name: "سبيكة 36 جرام", price: 100000, weight: 36, karat: 24, description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 36 جرام", isDefault: true, order: 0 },
-      { id: 2, name: "سبيكة 8 جرام", price: 10000, weight: 8, karat: 24, description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 8 جرام", isDefault: true, order: 1 },
-      { id: 3, name: "سبيكة 14 جرام", price: 22000, weight: 14, karat: 24, description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 14 جرام", isDefault: true, order: 2 },
-      { id: 4, name: "سبيكة 4 جرام", price: 12420, weight: 4, karat: 24, description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 4 جرام", isDefault: true, order: 3 },
+      { name: "سبيكة 36 جرام", price: 100000, weight: 36, karat: 24, description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 36 جرام", isDefault: true, order: 0 },
+      { name: "سبيكة 8 جرام", price: 10000, weight: 8, karat: 24, description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 8 جرام", isDefault: true, order: 1 },
+      { name: "سبيكة 14 جرام", price: 22000, weight: 14, karat: 24, description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 14 جرام", isDefault: true, order: 2 },
+      { name: "سبيكة 4 جرام", price: 12420, weight: 4, karat: 24, description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 4 جرام", isDefault: true, order: 3 },
     ];
-    
+
     for (const p of products) {
-      await prisma.product.upsert({
-        where: { id: p.id },
-        update: {},
-        create: p,
+      const existingProduct = await prisma.product.findFirst({
+        where: {
+          name: p.name,
+          isDefault: true,
+        },
       });
+
+      if (!existingProduct) {
+        await prisma.product.create({
+          data: p,
+        });
+      }
     }
     console.log("Default products seeded successfully");
-    
-    await prisma.$disconnect();
   } catch (error) {
     console.error("Error seeding products:", error.message);
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
