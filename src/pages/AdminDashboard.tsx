@@ -196,9 +196,8 @@ const AdminDashboard = () => {
     fd.append('order', formOrder || '0');
     if (formImage) {
       fd.append('image', formImage);
-    } else if (formImageUrl.trim()) {
-      fd.append('imageUrl', formImageUrl.trim());
     }
+    fd.append('imageUrl', formImageUrl.trim());
     formImages.forEach(f => fd.append('images', f));
     return fd;
   };
