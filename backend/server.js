@@ -69,7 +69,7 @@ async function seedDefaultProducts() {
     }
     console.log("Default products seeded successfully");
     
-    await prisma.\$disconnect();
+    await prisma.$disconnect();
   } catch (error) {
     console.error("Error seeding products:", error.message);
   }
@@ -102,7 +102,7 @@ async function ensureAdminExists() {
       console.log("Admin already exists");
     }
     
-    await prisma.\$disconnect();
+    await prisma.$disconnect();
   } catch (error) {
     console.error("Error creating admin:", error.message);
   }
