@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const prisma = require('../lib/prisma');
 const { verifyAdminToken, JWT_SECRET } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const { ensureUploadDir } = require('../middleware/upload');
 const path = require('path');
 const fs = require('fs');
 
@@ -123,10 +124,24 @@ router.patch('/orders/:id/status', verifyAdminToken, async (req, res) => {
 });
 
 // POST /api/admin/products
-router.post('/products', verifyAdminToken, upload.fields([
-  { name: 'image', maxCount: 1 },
-  { name: 'images', maxCount: 5 },
-]), async (req, res) => {
+router.post('/products', verifyAdminToken, (req, res, next) => {
+  try {
+    ensureUploadDir();
+  } catch (err) {
+    console.error('Upload directory error:', err);
+    return res.status(500).json({ error: 'فشل إعداد مجلد التخزين' });
+  }
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'images', maxCount: 5 },
+  ])(req, res, (err) => {
+    if (err) {
+      console.error('Multer error:', err.message);
+      return res.status(400).json({ error: 'فشل رفع الملف: ' + err.message });
+    }
+    next();
+  });
+}, async (req, res) => {
   const { name, price, weight, karat, description, order: sortOrder, imageUrl: bodyImageUrl } = req.body;
 
   if (!name || !price || !weight || !karat) {
@@ -135,14 +150,13 @@ router.post('/products', verifyAdminToken, upload.fields([
 
   try {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
-    // Precedence: uploaded file > provided URL > null
     let imageUrl = null;
     let additionalImages = [];
 
     if (req.files && req.files['image']) {
       imageUrl = `${baseUrl}/uploads/${req.files['image'][0].filename}`;
-    } else if (bodyImageUrl && bodyImageUrl.trim()) {
-      imageUrl = bodyImageUrl.trim();
+    } else if (bodyImageUrl !== undefined) {
+      imageUrl = bodyImageUrl.trim() || null;
     }
     if (req.files && req.files['images']) {
       additionalImages = req.files['images'].map(f => `${baseUrl}/uploads/${f.filename}`);
@@ -181,6 +195,12 @@ const safeJsonParse = (str, defaultVal = []) => {
 // Conditional multer middleware - only runs for multipart requests
 const conditionalUpload = (fields) => (req, res, next) => {
   if (req.is('multipart/form-data')) {
+    try {
+      ensureUploadDir();
+    } catch (err) {
+      console.error('Upload directory error:', err);
+      return res.status(500).json({ error: 'فشل إعداد مجلد التخزين' });
+    }
     upload.fields(fields)(req, res, (err) => {
       if (err) {
         console.error('Multer error:', err.message);

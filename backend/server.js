@@ -20,7 +20,14 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log("Uploads directory created on startup");
+  }
+} catch (err) {
+  console.error("Failed to create uploads directory on startup:", err);
+}
 app.use("/uploads", express.static(uploadsDir));
 
 const apiLimiter = rateLimit({
