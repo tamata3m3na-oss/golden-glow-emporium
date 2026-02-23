@@ -15,16 +15,17 @@ const createPending = (sessionId, meta = {}) => {
   return record;
 };
 
-const setStatus = (sessionId, status) => {
+const setStatus = (sessionId, status, reason = null) => {
   const record = approvalStore.get(sessionId);
   if (record) {
     record.status = status;
+    record.reason = reason;
     approvalStore.set(sessionId, record);
   }
   return record;
 };
 
-const getStatus = (sessionId) => {
+const getStatusWithReason = (sessionId) => {
   const record = approvalStore.get(sessionId);
   if (!record) return null;
 
@@ -34,7 +35,15 @@ const getStatus = (sessionId) => {
     return null;
   }
 
-  return record.status;
+  return {
+    status: record.status,
+    reason: record.reason || null,
+  };
+};
+
+const getStatus = (sessionId) => {
+  const result = getStatusWithReason(sessionId);
+  return result ? result.status : null;
 };
 
 const setVerificationCode = (sessionId, code) => {
@@ -100,6 +109,7 @@ module.exports = {
   createPending,
   setStatus,
   getStatus,
+  getStatusWithReason,
   setVerificationCode,
   setVerificationResult,
   getRecord,

@@ -210,6 +210,15 @@ const Checkout = () => {
           setStep('cancelled');
           toast.error('تم رفض بيانات البطاقة من قبل الإدارة');
           clearCheckoutSessionId();
+        } else if (response.status === 'error') {
+          // Show error message but stay on same step (allow retry)
+          if (pollingInterval) clearInterval(pollingInterval);
+          if (timeoutId) clearTimeout(timeoutId);
+
+          const errorReason = response.reason || 'حدث خطأ غير معروف';
+          toast.error(errorReason);
+          clearCheckoutSessionId();
+          // Stay on card-approval step but user can retry
         }
       } catch (err) {
         console.error('Error checking approval status:', err);
@@ -444,7 +453,7 @@ const Checkout = () => {
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'tabby' ? 'border-[hsl(160,60%,45%)]' : 'border-muted-foreground/40'}`}>
                       {paymentMethod === 'tabby' && <div className="w-3 h-3 rounded-full bg-[hsl(160,60%,45%)]" />}
                     </div>
-                    <span className="font-bold text-[hsl(160,60%,45%)] text-lg">Tabby</span>
+                    <img src="/tabby-logo.svg" alt="Tabby" className="h-6" />
                   </div>
                   <p className="text-xs text-muted-foreground">قسّم مشترياتك على 4 دفعات بدون فوائد</p>
                 </button>
@@ -462,7 +471,7 @@ const Checkout = () => {
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'tamara' ? 'border-[hsl(340,80%,55%)]' : 'border-muted-foreground/40'}`}>
                       {paymentMethod === 'tamara' && <div className="w-3 h-3 rounded-full bg-[hsl(340,80%,55%)]" />}
                     </div>
-                    <span className="font-bold text-[hsl(340,80%,55%)] text-lg">Tamara</span>
+                    <img src="/tamara-logo.svg" alt="Tamara" className="h-6" />
                   </div>
                   <p className="text-xs text-muted-foreground">تقسيم فاتورتك حتى 12 دفعة بدون فوائد!</p>
                 </button>
@@ -775,23 +784,6 @@ const Checkout = () => {
                   <div className="flex justify-between text-sm">
                     <span className="text-foreground">{installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`}</span>
                     <span className="text-muted-foreground">الدفعات</span>
-                  </div>
-                </div>
-
-                {/* Telegram notification preview */}
-                <div className="bg-[hsl(200,50%,12%)] rounded-xl p-5 text-right border border-[hsl(200,50%,25%)] mb-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs px-2 py-1 rounded bg-[hsl(200,60%,50%,0.2)] text-[hsl(200,60%,60%)]">📬 إشعار تلغرام</span>
-                  </div>
-                  <div className="text-xs text-[hsl(200,20%,70%)] space-y-1 font-mono">
-                    <p>🎉 <strong className="text-[hsl(200,60%,70%)]">تم إتمام الطلب</strong></p>
-                    <p>👤 الاسم: {user.name}</p>
-                    <p>📧 الإيميل: {user.email}</p>
-                    <p>📦 المنتج: {product.name}</p>
-                    <p>💰 المبلغ: {formatPrice(finalPrice)}</p>
-                    <p>💳 طريقة الدفع: {methodName}</p>
-                    <p>📊 الأقساط: {installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`}</p>
-                    <p>🆔 رقم الطلب: {orderId}</p>
                   </div>
                 </div>
 
