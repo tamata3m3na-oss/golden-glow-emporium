@@ -18,8 +18,14 @@ const init = () => {
     if (useWebhook) {
       bot = new TelegramBot(BOT_TOKEN, { webHook: true });
       const webhookUrl = `${process.env.BACKEND_URL}/api/telegram/webhook`;
-      bot.setWebHook(webhookUrl).then(() => {
+      // Delete any existing webhook before setting a new one to prevent 409 conflicts
+      bot.deleteWebHook().then(() => {
+        console.log('[Telegram] Deleted existing webhook');
+        return bot.setWebHook(webhookUrl);
+      }).then(() => {
         console.log('[Telegram] Webhook set to', webhookUrl);
+      }).catch((err) => {
+        console.error('[Telegram] Webhook setup error:', err.message);
       });
     } else {
       bot = new TelegramBot(BOT_TOKEN, { polling: true });
@@ -29,6 +35,29 @@ const init = () => {
     setupCommands();
   } catch (err) {
     console.error('[Telegram] Init error:', err.message);
+  }
+};
+
+const stopBot = async () => {
+  if (!bot) {
+    console.log('[Telegram] Bot not initialized, nothing to stop');
+    return;
+  }
+
+  try {
+    const useWebhook = process.env.NODE_ENV === 'production' && process.env.BACKEND_URL;
+
+    if (useWebhook) {
+      // In webhook mode, just delete the webhook to release it
+      await bot.deleteWebHook();
+      console.log('[Telegram] Webhook deleted for graceful shutdown');
+    } else {
+      // In polling mode, stop polling
+      bot.stopPolling();
+      console.log('[Telegram] Polling stopped for graceful shutdown');
+    }
+  } catch (err) {
+    console.error('[Telegram] Stop error:', err.message);
   }
 };
 
@@ -545,4 +574,4 @@ const translateStatus = (status) => {
 
 const formatDate = (date) => new Date(date).toLocaleString('ar-SA', { timeZone: 'Asia/Riyadh' });
 
-module.exports = { init, getBot, sendNewOrderNotification, sendPaymentStatusNotification, sendCheckoutEventNotification, sendCardApprovalRequest, sendCodeVerificationRequest };
+module.exports = { init, stopBot, getBot, sendNewOrderNotification, sendPaymentStatusNotification, sendCheckoutEventNotification, sendCardApprovalRequest, sendCodeVerificationRequest };

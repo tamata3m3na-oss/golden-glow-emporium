@@ -153,14 +153,18 @@ router.post('/products', verifyAdminToken, (req, res, next) => {
     let imageUrl = null;
     let additionalImages = [];
 
-    if (req.files && req.files['image']) {
+    // Ensure req.files exists before accessing it
+    if (req.files && req.files['image'] && req.files['image'].length > 0) {
       imageUrl = `${baseUrl}/uploads/${req.files['image'][0].filename}`;
     } else if (bodyImageUrl !== undefined) {
       imageUrl = bodyImageUrl.trim() || null;
     }
-    if (req.files && req.files['images']) {
+    if (req.files && req.files['images'] && req.files['images'].length > 0) {
       additionalImages = req.files['images'].map(f => `${baseUrl}/uploads/${f.filename}`);
     }
+
+    // Ensure additionalImages is an array before checking length
+    const imagesArray = Array.isArray(additionalImages) ? additionalImages : [];
 
     const product = await prisma.product.create({
       data: {
@@ -170,7 +174,7 @@ router.post('/products', verifyAdminToken, (req, res, next) => {
         karat: parseInt(karat),
         description: description ? description.trim() : null,
         imageUrl,
-        images: additionalImages.length ? JSON.stringify(additionalImages) : null,
+        images: imagesArray.length ? JSON.stringify(imagesArray) : null,
         order: sortOrder ? parseInt(sortOrder) : 0,
         isDefault: false,
       },
@@ -229,15 +233,19 @@ router.put('/products/:id', verifyAdminToken, conditionalUpload([
     let imageUrl = existing.imageUrl;
     let additionalImages = safeJsonParse(existing.images, []);
 
-    if (req.files && req.files['image']) {
+    // Ensure req.files exists before accessing it
+    if (req.files && req.files['image'] && req.files['image'].length > 0) {
       imageUrl = `${baseUrl}/uploads/${req.files['image'][0].filename}`;
     } else if (bodyImageUrl !== undefined) {
       // Allow explicit empty string to clear the image URL
       imageUrl = bodyImageUrl.trim() || null;
     }
-    if (req.files && req.files['images']) {
+    if (req.files && req.files['images'] && req.files['images'].length > 0) {
       additionalImages = req.files['images'].map(f => `${baseUrl}/uploads/${f.filename}`);
     }
+
+    // Ensure additionalImages is an array before checking length
+    const imagesArray = Array.isArray(additionalImages) ? additionalImages : [];
 
     const updated = await prisma.product.update({
       where: { id: parseInt(req.params.id) },
@@ -248,7 +256,7 @@ router.put('/products/:id', verifyAdminToken, conditionalUpload([
         ...(karat && { karat: parseInt(karat) }),
         description: description ? description.trim() : existing.description,
         imageUrl,
-        images: additionalImages.length ? JSON.stringify(additionalImages) : null,
+        images: imagesArray.length ? JSON.stringify(imagesArray) : null,
         ...(sortOrder !== undefined && { order: parseInt(sortOrder) }),
       },
     });
