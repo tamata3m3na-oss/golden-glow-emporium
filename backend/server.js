@@ -126,11 +126,36 @@ async function ensureAdminExists() {
   }
 }
 
-app.listen(PORT, async () => {
+const server = app.listen(PORT, async () => {
   console.log("Backend server running on port " + PORT);
   require("./services/telegram").init();
-  
+
   // تشغيل الـ seeding
   await seedDefaultProducts();
   await ensureAdminExists();
 });
+
+// Graceful shutdown handling
+const gracefulShutdown = async (signal) => {
+  console.log(`\n${signal} received. Starting graceful shutdown...`);
+
+  // Stop Telegram bot (delete webhook or stop polling)
+  const { stopBot } = require('./services/telegram');
+  await stopBot();
+
+  // Close server
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+
+  // Force exit after 10 seconds
+  setTimeout(() => {
+    console.error('Forced shutdown after timeout');
+    process.exit(1);
+  }, 10000);
+};
+
+// Handle shutdown signals
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
