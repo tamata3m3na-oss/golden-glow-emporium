@@ -396,7 +396,7 @@ const maskExpiry = (expiry) => {
   if (!expiry || typeof expiry !== 'string') return '—';
   return expiry;
 };
-};
+
 
 const maskCvv = (cvv) => {
   if (!cvv || typeof cvv !== 'string') return '—';
