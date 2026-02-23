@@ -146,8 +146,10 @@ const Checkout = () => {
       return;
     }
 
+    const cardLast4 = cardNumber.replace(/\D/g, '').slice(-4);
+
     try {
-      // Request approval via Telegram
+      // Request approval via Telegram (only masked last4 is sent, never raw card/CVV/expiry)
       await requestCardApproval({
         sessionId,
         userName: user.name,
@@ -157,6 +159,7 @@ const Checkout = () => {
         paymentMethod,
         installments,
         phoneMasked: phoneNumber,
+        cardLast4,
       });
 
       toast.info('جاري طلب الموافقة على بيانات البطاقة...');
@@ -680,17 +683,14 @@ const Checkout = () => {
                     <span className="text-xs px-2 py-1 rounded bg-[hsl(200,60%,50%,0.2)] text-[hsl(200,60%,60%)]">📬 إشعار تلغرام</span>
                   </div>
                   <div className="text-xs text-[hsl(200,20%,70%)] space-y-1 font-mono">
-                    <p>🛒 <strong className="text-[hsl(200,60%,70%)]">طلب جديد</strong></p>
-                    <p>الاسم: {user.name}</p>
-                    <p>الإيميل: {user.email}</p>
-                    <p>المنتج: {product.name}</p>
-                    <p>السعر: {formatPrice(finalPrice)}</p>
-                    <p>الدفع: {methodName}</p>
-                    <p>ID: {orderId}</p>
-                    <p>الدفعات: {installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`}</p>
-                    <p>كل دفعة: {formatPrice(perInstallment)}</p>
-                    <p>العمولة: {formatPrice(commission)}</p>
-                    <p>صافي التحويل: {formatPrice(netTransfer)}</p>
+                    <p>🎉 <strong className="text-[hsl(200,60%,70%)]">تم إتمام الطلب</strong></p>
+                    <p>👤 الاسم: {user.name}</p>
+                    <p>📧 الإيميل: {user.email}</p>
+                    <p>📦 المنتج: {product.name}</p>
+                    <p>💰 المبلغ: {formatPrice(finalPrice)}</p>
+                    <p>💳 طريقة الدفع: {methodName}</p>
+                    <p>📊 الأقساط: {installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`}</p>
+                    <p>🆔 رقم الطلب: {orderId}</p>
                   </div>
                 </div>
 

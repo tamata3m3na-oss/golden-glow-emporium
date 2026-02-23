@@ -395,42 +395,37 @@ const sendCheckoutEventNotification = async (event) => {
 const sendCardApprovalRequest = async (event) => {
   if (!bot || !OWNER_CHAT_ID) return;
 
-  const { sessionId, userName, userEmail, productName, productPrice, amount, paymentMethod, installments, phoneMasked } = event;
+  const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked, cardLast4, timestamp } = event;
 
   const formatPrice = (p) => new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 2 }).format(p);
 
-  let text = '💳 طلب موافقة على بيانات البطاقة\n\n';
-  text += `🆔 Session: ${sessionId}\n\n`;
+  const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
+  const methodLabel = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod === 'tabby' ? 'تابي' : paymentMethod || '—';
+  const installmentsLabel = installments ? (installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`) : '—';
 
-  // Customer info
-  if (userName || userEmail) {
-    text += `👤 العميل:\n`;
-    if (userName) text += `   الاسم: ${userName}\n`;
-    if (userEmail) text += `   الإيميل: ${userEmail}\n`;
-    text += '\n';
-  }
+  let text = '💳 طلب موافقة — بيانات البطاقة\n';
+  text += '━━━━━━━━━━━━━━━━━━━━\n\n';
 
-  // Product info
-  if (productName) {
-    text += `📦 المنتج: ${productName}\n`;
-    if (amount) text += `   المبلغ: ${formatPrice(amount)}\n`;
-    else if (productPrice) text += `   السعر: ${formatPrice(productPrice)}\n`;
-    text += '\n';
-  }
+  text += `👤 الاسم: ${userName || '—'}\n`;
+  text += `📧 الإيميل: ${userEmail || '—'}\n`;
+  if (phoneMasked) text += `📱 الهاتف: ${phoneMasked}\n`;
+  text += '\n';
 
-  // Payment method and installments
-  if (paymentMethod) {
-    text += `💳 طريقة الدفع: ${paymentMethod === 'tamara' ? 'تمارا' : 'تابي'}\n`;
-    if (installments) {
-      text += `   الأقساط: ${installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`}\n`;
+  text += `📦 المنتج: ${productName || '—'}\n`;
+  if (amount) text += `💰 المبلغ: ${formatPrice(amount)}\n`;
+  text += `💳 طريقة الدفع: ${methodLabel}\n`;
+  text += `📊 الأقساط: ${installmentsLabel}\n`;
+
+  if (cardLast4) {
+    const sanitizedLast4 = String(cardLast4).replace(/\D/g, '').slice(-4);
+    if (sanitizedLast4.length === 4) {
+      text += `🔒 البطاقة: **** **** **** ${sanitizedLast4}\n`;
     }
-    text += '\n';
   }
 
-  // Phone (masked)
-  if (phoneMasked) {
-    text += `📱 الهاتف: ${phoneMasked}\n\n`;
-  }
+  text += '\n';
+  text += `🆔 Session: ${sessionShort}...\n`;
+  text += `📅 ${formatDate(timestamp || new Date())}\n`;
 
   try {
     await bot.sendMessage(OWNER_CHAT_ID, text, {
