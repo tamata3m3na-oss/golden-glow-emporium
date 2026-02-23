@@ -1,0 +1,325 @@
+'use strict';
+
+let bot = null;
+
+const OWNER_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+
+const init = () => {
+  if (!BOT_TOKEN) {
+    console.warn('[Telegram] TELEGRAM_BOT_TOKEN not set – bot disabled');
+    return;
+  }
+
+  try {
+    const TelegramBot = require('node-telegram-bot-api');
+    const useWebhook = process.env.NODE_ENV === 'production' && process.env.BACKEND_URL;
+
+    if (useWebhook) {
+      bot = new TelegramBot(BOT_TOKEN, { webHook: true });
+      const webhookUrl = `${process.env.BACKEND_URL}/api/telegram/webhook`;
+      bot.setWebHook(webhookUrl).then(() => {
+        console.log('[Telegram] Webhook set to', webhookUrl);
+      });
+    } else {
+      bot = new TelegramBot(BOT_TOKEN, { polling: true });
+      console.log('[Telegram] Polling mode enabled');
+    }
+
+    setupCommands();
+  } catch (err) {
+    console.error('[Telegram] Init error:', err.message);
+  }
+};
+
+const setupCommands = () => {
+  if (!bot) return;
+
+  const prisma = require('../lib/prisma');
+
+  const mainKeyboard = {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: '📦 الطلبات الجديدة', callback_data: 'orders_pending' }, { text: '📋 جميع الطلبات', callback_data: 'orders_all' }],
+        [{ text: '📊 الإحصائيات', callback_data: 'stats' }, { text: '🔄 تحديث', callback_data: 'refresh' }],
+      ],
+    },
+  };
+
+  bot.onText(/\/start/, (msg) => {
+    if (!isOwner(msg.chat.id)) return;
+    bot.sendMessage(msg.chat.id,
+      `🌟 أهلاً بك في بوت إدارة مؤسسة حسين إبراهيم للمجوهرات\n\n` +
+      `الأوامر المتاحة:\n` +
+      `/orders - قائمة آخر 10 طلبات\n` +
+      `/orders pending - طلبات معلقة\n` +
+      `/orders approved - طلبات موافق عليها\n` +
+      `/orders rejected - طلبات مرفوضة\n` +
+      `/order <id> - تفاصيل طلب\n` +
+      `/approve <id> - الموافقة على طلب\n` +
+      `/reject <id> - رفض طلب\n` +
+      `/stats - الإحصائيات العامة\n` +
+      `/stats today - إحصائيات اليوم\n` +
+      `/stats month - إحصائيات الشهر\n` +
+      `/help - المساعدة`,
+      mainKeyboard
+    );
+  });
+
+  bot.onText(/\/help/, (msg) => {
+    if (!isOwner(msg.chat.id)) return;
+    bot.sendMessage(msg.chat.id,
+      `📖 قائمة الأوامر:\n\n` +
+      `• /start - الرئيسية\n` +
+      `• /orders [status] - عرض الطلبات\n` +
+      `• /order <id> - تفاصيل طلب محدد\n` +
+      `• /approve <id> - الموافقة على طلب\n` +
+      `• /reject <id> - رفض طلب\n` +
+      `• /stats [today|month] - الإحصائيات`,
+      mainKeyboard
+    );
+  });
+
+  bot.onText(/\/orders ?(.*)/, async (msg, match) => {
+    if (!isOwner(msg.chat.id)) return;
+    const status = match[1].trim();
+    try {
+      const where = status ? { status } : {};
+      const orders = await prisma.order.findMany({
+        where,
+        take: 10,
+        orderBy: { createdAt: 'desc' },
+        include: { user: true, product: true },
+      });
+
+      if (!orders.length) {
+        return bot.sendMessage(msg.chat.id, '📭 لا توجد طلبات');
+      }
+
+      const text = orders.map((o, i) =>
+        `${i + 1}. #${o.id} | ${o.user.name} | ${o.product.name}\n` +
+        `   💰 ${o.amount.toLocaleString('ar-SA')} ر.س | ${statusEmoji(o.status)} ${translateStatus(o.status)}\n` +
+        `   📅 ${formatDate(o.createdAt)}`
+      ).join('\n\n');
+
+      bot.sendMessage(msg.chat.id, `📋 الطلبات${status ? ` (${status})` : ''}:\n\n${text}`, mainKeyboard);
+    } catch (err) {
+      bot.sendMessage(msg.chat.id, `❌ خطأ: ${err.message}`);
+    }
+  });
+
+  bot.onText(/\/order (\d+)/, async (msg, match) => {
+    if (!isOwner(msg.chat.id)) return;
+    const id = parseInt(match[1]);
+    await sendOrderDetails(msg.chat.id, id);
+  });
+
+  bot.onText(/\/approve (\d+)/, async (msg, match) => {
+    if (!isOwner(msg.chat.id)) return;
+    const id = parseInt(match[1]);
+    await updateOrderStatus(msg.chat.id, id, 'approved');
+  });
+
+  bot.onText(/\/reject (\d+)/, async (msg, match) => {
+    if (!isOwner(msg.chat.id)) return;
+    const id = parseInt(match[1]);
+    await updateOrderStatus(msg.chat.id, id, 'rejected');
+  });
+
+  bot.onText(/\/stats ?(.*)/, async (msg, match) => {
+    if (!isOwner(msg.chat.id)) return;
+    const period = match[1].trim();
+    await sendStats(msg.chat.id, period);
+  });
+
+  bot.on('callback_query', async (query) => {
+    if (!isOwner(query.message.chat.id)) return;
+    const data = query.data;
+    const chatId = query.message.chat.id;
+
+    bot.answerCallbackQuery(query.id);
+
+    if (data === 'orders_pending') {
+      bot.emit('text', { chat: { id: chatId }, text: '/orders pending' }, ['/orders pending', 'pending']);
+    } else if (data === 'orders_all') {
+      bot.emit('text', { chat: { id: chatId }, text: '/orders' }, ['/orders', '']);
+    } else if (data === 'stats') {
+      await sendStats(chatId, '');
+    } else if (data === 'refresh') {
+      bot.sendMessage(chatId, '✅ تم التحديث', mainKeyboard);
+    } else if (data.startsWith('approve_')) {
+      const id = parseInt(data.split('_')[1]);
+      await updateOrderStatus(chatId, id, 'approved');
+    } else if (data.startsWith('reject_')) {
+      const id = parseInt(data.split('_')[1]);
+      await updateOrderStatus(chatId, id, 'rejected');
+    } else if (data.startsWith('details_')) {
+      const id = parseInt(data.split('_')[1]);
+      await sendOrderDetails(chatId, id);
+    }
+  });
+
+  const sendOrderDetails = async (chatId, id) => {
+    try {
+      const order = await prisma.order.findUnique({
+        where: { id },
+        include: { user: true, product: true },
+      });
+      if (!order) return bot.sendMessage(chatId, '❌ الطلب غير موجود');
+
+      const text =
+        `📦 تفاصيل الطلب #${order.id}\n\n` +
+        `👤 العميل: ${order.user.name}\n` +
+        `📧 الإيميل: ${order.user.email}\n` +
+        `📱 الهاتف: ${order.user.phone || 'غير محدد'}\n\n` +
+        `🛍️ المنتج: ${order.product.name}\n` +
+        `💰 المبلغ: ${order.amount.toLocaleString('ar-SA')} ر.س\n` +
+        `💳 طريقة الدفع: ${order.paymentMethod === 'tamara' ? 'تمارا' : 'تابي'}\n` +
+        `📊 الأقساط: ${order.installments === 1 ? 'دفعة كاملة' : `${order.installments} أقساط`}\n` +
+        `💵 كل دفعة: ${order.perInstallment.toLocaleString('ar-SA')} ر.س\n` +
+        `🏦 العمولة: ${order.commission.toLocaleString('ar-SA')} ر.س\n` +
+        `💼 صافي التحويل: ${order.netTransfer.toLocaleString('ar-SA')} ر.س\n\n` +
+        `${statusEmoji(order.status)} الحالة: ${translateStatus(order.status)}\n` +
+        `💳 حالة الدفع: ${order.paymentStatus === 'paid' ? '✅ مدفوع' : order.paymentStatus === 'failed' ? '❌ فاشل' : '⏳ معلق'}\n` +
+        `📅 التاريخ: ${formatDate(order.createdAt)}`;
+
+      const keyboard = order.status === 'pending' ? {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '✅ موافقة', callback_data: `approve_${order.id}` },
+              { text: '❌ رفض', callback_data: `reject_${order.id}` },
+            ],
+          ],
+        },
+      } : {};
+
+      bot.sendMessage(chatId, text, keyboard);
+    } catch (err) {
+      bot.sendMessage(chatId, `❌ خطأ: ${err.message}`);
+    }
+  };
+
+  const updateOrderStatus = async (chatId, id, status) => {
+    try {
+      const order = await prisma.order.update({
+        where: { id },
+        data: { status },
+        include: { user: true, product: true },
+      });
+      const emoji = status === 'approved' ? '✅' : '❌';
+      const label = status === 'approved' ? 'تمت الموافقة' : 'تم الرفض';
+      bot.sendMessage(chatId, `${emoji} ${label} على الطلب #${id}\nالعميل: ${order.user.name}\nالمنتج: ${order.product.name}`);
+    } catch (err) {
+      bot.sendMessage(chatId, `❌ خطأ: ${err.message}`);
+    }
+  };
+
+  const sendStats = async (chatId, period) => {
+    try {
+      let where = {};
+      const now = new Date();
+      if (period === 'today') {
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        where = { createdAt: { gte: start } };
+      } else if (period === 'month') {
+        const start = new Date(now.getFullYear(), now.getMonth(), 1);
+        where = { createdAt: { gte: start } };
+      }
+
+      const [total, pending, approved, rejected, completed, revenue] = await Promise.all([
+        prisma.order.count({ where }),
+        prisma.order.count({ where: { ...where, status: 'pending' } }),
+        prisma.order.count({ where: { ...where, status: 'approved' } }),
+        prisma.order.count({ where: { ...where, status: 'rejected' } }),
+        prisma.order.count({ where: { ...where, status: 'completed' } }),
+        prisma.order.aggregate({ where: { ...where, status: { in: ['approved', 'completed'] } }, _sum: { netTransfer: true } }),
+      ]);
+
+      const label = period === 'today' ? 'اليوم' : period === 'month' ? 'الشهر' : 'الكل';
+      const text =
+        `📊 إحصائيات ${label}:\n\n` +
+        `📦 إجمالي الطلبات: ${total}\n` +
+        `⏳ معلقة: ${pending}\n` +
+        `✅ موافق عليها: ${approved}\n` +
+        `❌ مرفوضة: ${rejected}\n` +
+        `🏆 مكتملة: ${completed}\n\n` +
+        `💰 إجمالي الإيرادات: ${(revenue._sum.netTransfer || 0).toLocaleString('ar-SA')} ر.س`;
+
+      bot.sendMessage(chatId, text, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '📅 اليوم', callback_data: 'stats_today' }, { text: '📆 الشهر', callback_data: 'stats_month' }],
+          ],
+        },
+      });
+    } catch (err) {
+      bot.sendMessage(chatId, `❌ خطأ: ${err.message}`);
+    }
+  };
+};
+
+const isOwner = (chatId) => {
+  if (!OWNER_CHAT_ID) return true;
+  return String(chatId) === String(OWNER_CHAT_ID);
+};
+
+const sendNewOrderNotification = async (order) => {
+  if (!bot || !OWNER_CHAT_ID) return;
+
+  const text =
+    `🛒 طلب جديد!\n\n` +
+    `الاسم: ${order.userName}\n` +
+    `الإيميل: ${order.userEmail}\n` +
+    `المنتج: ${order.productName}\n` +
+    `السعر: ${order.amount.toLocaleString('ar-SA')} ر.س\n` +
+    `الدفع: ${order.paymentMethod === 'tamara' ? 'تمارا' : 'تابي'}\n` +
+    `الأقساط: ${order.installments === 1 ? 'دفعة كاملة' : order.installments}\n` +
+    `كل دفعة: ${order.perInstallment.toLocaleString('ar-SA')} ر.س\n` +
+    `العمولة: ${order.commission.toLocaleString('ar-SA')} ر.س\n` +
+    `صافي: ${order.netTransfer.toLocaleString('ar-SA')} ر.س\n\n` +
+    `ID: ORDER-${order.id}`;
+
+  try {
+    await bot.sendMessage(OWNER_CHAT_ID, text, {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: '✅ موافقة', callback_data: `approve_${order.id}` },
+            { text: '❌ رفض', callback_data: `reject_${order.id}` },
+          ],
+          [{ text: '📋 تفاصيل', callback_data: `details_${order.id}` }],
+        ],
+      },
+    });
+  } catch (err) {
+    console.error('[Telegram] sendNewOrderNotification error:', err.message);
+  }
+};
+
+const sendPaymentStatusNotification = async (orderId, status) => {
+  if (!bot || !OWNER_CHAT_ID) return;
+  const emoji = status === 'paid' ? '✅' : '❌';
+  const label = status === 'paid' ? 'تم الدفع بنجاح' : 'فشل الدفع';
+  try {
+    await bot.sendMessage(OWNER_CHAT_ID, `${emoji} حالة الدفع للطلب #${orderId}: ${label}`);
+  } catch (err) {
+    console.error('[Telegram] sendPaymentStatusNotification error:', err.message);
+  }
+};
+
+const getBot = () => bot;
+
+const statusEmoji = (status) => {
+  const map = { pending: '⏳', approved: '✅', rejected: '❌', completed: '🏆', cancelled: '🚫' };
+  return map[status] || '❓';
+};
+
+const translateStatus = (status) => {
+  const map = { pending: 'معلق', approved: 'موافق عليه', rejected: 'مرفوض', completed: 'مكتمل', cancelled: 'ملغي' };
+  return map[status] || status;
+};
+
+const formatDate = (date) => new Date(date).toLocaleString('ar-SA', { timeZone: 'Asia/Riyadh' });
+
+module.exports = { init, getBot, sendNewOrderNotification, sendPaymentStatusNotification };
