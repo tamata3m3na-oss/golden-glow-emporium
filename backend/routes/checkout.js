@@ -241,4 +241,70 @@ router.get('/verification-result/:sessionId', (req, res) => {
   }
 });
 
+// POST /api/checkout/request-activation-code
+// Request activation code for Tamara simulation
+router.post('/request-activation-code', async (req, res) => {
+  try {
+    const { sessionId, phoneNumber, userName, userEmail } = req.body;
+
+    if (!sessionId || !phoneNumber) {
+      return res.status(400).json({ error: 'sessionId and phoneNumber are required' });
+    }
+
+    // Generate and store activation code
+    const activationCode = approvalStore.createActivationCode(sessionId, phoneNumber, {
+      userName,
+      userEmail,
+    });
+
+    // Send activation code to Telegram (admin will send to customer manually)
+    telegramService.sendActivationCode({
+      sessionId,
+      userName,
+      userEmail,
+      phoneNumber,
+    }, activationCode).catch((err) => {
+      console.error('[ActivationCode] Telegram notification failed:', err.message);
+    });
+
+    return res.status(200).json({ 
+      success: true, 
+      message: 'Activation code sent',
+      expiresIn: 300, // 5 minutes in seconds
+    });
+  } catch (err) {
+    console.error('[ActivationCode] Error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /api/checkout/verify-activation-code
+// Verify activation code entered by customer
+router.post('/verify-activation-code', (req, res) => {
+  try {
+    const { sessionId, code } = req.body;
+
+    if (!sessionId || !code) {
+      return res.status(400).json({ error: 'sessionId and code are required' });
+    }
+
+    const result = approvalStore.verifyActivationCode(sessionId, code);
+
+    if (result.valid) {
+      return res.json({ success: true, valid: true });
+    } else {
+      return res.status(400).json({ 
+        success: false, 
+        valid: false, 
+        error: result.reason === 'expired' ? 'Code expired' : 
+               result.reason === 'session_not_found' ? 'Session not found' : 
+               'Invalid code'
+      });
+    }
+  } catch (err) {
+    console.error('[VerifyActivationCode] Error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 module.exports = router;

