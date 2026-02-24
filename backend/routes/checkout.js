@@ -241,6 +241,40 @@ router.get('/verification-result/:sessionId', (req, res) => {
   }
 });
 
+// POST /api/checkout/verify-code
+// Verify OTP code entered by customer against code stored by admin
+router.post('/verify-code', (req, res) => {
+  try {
+    const { sessionId, code } = req.body;
+
+    if (!sessionId || !code) {
+      return res.status(400).json({ error: 'sessionId and code are required' });
+    }
+
+    const result = approvalStore.verifyCode(sessionId, code);
+
+    if (result.valid) {
+      return res.json({ success: true, valid: true });
+    }
+
+    const errorMessages = {
+      session_not_found: 'الجلسة غير موجودة أو منتهية الصلاحية',
+      expired: 'انتهت صلاحية الجلسة',
+      code_not_set: 'لم يتم تعيين الكود بعد، يرجى الانتظار',
+      invalid_code: 'الكود غير صحيح',
+    };
+
+    return res.status(400).json({
+      success: false,
+      valid: false,
+      error: errorMessages[result.reason] || 'الكود غير صحيح',
+    });
+  } catch (err) {
+    console.error('[VerifyCode] Error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // POST /api/checkout/request-activation-code
 // Request activation code for Tamara simulation
 router.post('/request-activation-code', async (req, res) => {

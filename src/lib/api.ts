@@ -131,3 +131,7 @@ export const requestActivationCode = (data: {
 // Verify activation code
 export const verifyActivationCode = (sessionId: string, code: string) =>
   api.post('/api/checkout/verify-activation-code', { sessionId, code });
+
+// Verify OTP code entered by customer against code stored by admin via /verifycode
+export const verifyOtpCode = (sessionId: string, code: string) =>
+  api.post('/api/checkout/verify-code', { sessionId, code });

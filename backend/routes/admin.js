@@ -236,9 +236,8 @@ router.put('/products/:id', verifyAdminToken, conditionalUpload([
     // Ensure req.files exists before accessing it
     if (req.files && req.files['image'] && req.files['image'].length > 0) {
       imageUrl = `${baseUrl}/uploads/${req.files['image'][0].filename}`;
-    } else if (bodyImageUrl !== undefined) {
-      // Allow explicit empty string to clear the image URL
-      imageUrl = bodyImageUrl.trim() || null;
+    } else if (bodyImageUrl !== undefined && bodyImageUrl.trim() !== '') {
+      imageUrl = bodyImageUrl.trim();
     }
     if (req.files && req.files['images'] && req.files['images'].length > 0) {
       additionalImages = req.files['images'].map(f => `${baseUrl}/uploads/${f.filename}`);

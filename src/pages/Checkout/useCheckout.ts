@@ -6,8 +6,8 @@ import {
   postCheckoutEvent,
   requestActivationCode,
   requestCardApproval,
-  submitVerificationCode,
   verifyActivationCode,
+  verifyOtpCode,
 } from '@/lib/api';
 import { clearCheckoutSessionId, getCheckoutSessionId } from '@/lib/checkoutSession';
 import { toEnglishNumbers } from '@/lib/utils';
@@ -51,6 +51,8 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
   const [codeError, setCodeError] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(0);
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+  const [confirmCodeError, setConfirmCodeError] = useState<string | null>(null);
+  const [isConfirmingCode, setIsConfirmingCode] = useState(false);
 
   const sessionId = getCheckoutSessionId();
   const orderIdRef = useRef(`ORD-${Date.now().toString(36).toUpperCase()}`);
@@ -348,27 +350,56 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
 
   const handleFinalConfirm = async () => {
     if (!confirmCode || confirmCode.length < 4) {
-      toast.error('يرجى إدخال رمز التأكيد');
+      setConfirmCodeError('يرجى إدخال رمز التأكيد');
       return;
     }
 
-    try {
-      await submitVerificationCode(sessionId, confirmCode, {
-        userName: user.name,
-        userEmail: user.email,
-        productName: product.name,
-        amount: activeTotalAmount,
-        paymentMethod,
-        installments: activeInstallments,
-        phoneMasked: phoneNumber,
-      });
+    setIsConfirmingCode(true);
+    setConfirmCodeError(null);
 
-      toast.info('جاري التحقق من الكود...');
-      setVerificationError(null);
-      setStep('verifying-code');
-    } catch (err) {
-      console.error('Failed to submit verification code:', err);
-      toast.error('فشل في إرسال الكود. يرجى المحاولة مرة أخرى.');
+    try {
+      const result = await verifyOtpCode(sessionId, confirmCode);
+
+      if (result.valid) {
+        postCheckoutEvent({
+          sessionId,
+          eventType: 'redirect_to_payment',
+          userName: user.name,
+          userEmail: user.email,
+          productName: product.name,
+          amount: activeTotalAmount,
+          paymentMethod,
+          installments: activeInstallments,
+          phoneMasked: phoneNumber,
+          orderId,
+          timestamp: new Date().toISOString(),
+        }).catch(() => {});
+
+        postCheckoutEvent({
+          sessionId,
+          eventType: 'checkout_completed',
+          userName: user.name,
+          userEmail: user.email,
+          productName: product.name,
+          amount: activeTotalAmount,
+          paymentMethod,
+          installments: activeInstallments,
+          phoneMasked: phoneNumber,
+          orderId,
+          paymentStatus: 'paid',
+          timestamp: new Date().toISOString(),
+        }).catch(() => {});
+
+        setVerificationError(null);
+        setStep('success');
+        toast.success('تم إتمام عملية الشراء بنجاح! 🎉');
+        clearCheckoutSessionId();
+      }
+    } catch (err: any) {
+      console.error('Failed to verify OTP code:', err);
+      setConfirmCodeError(err.message || 'الكود غير صحيح');
+    } finally {
+      setIsConfirmingCode(false);
     }
   };
 
@@ -402,6 +433,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     cardNumber,
     codeError,
     confirmCode,
+    confirmCodeError,
     coupon,
     couponApplied,
     discount,
@@ -413,6 +445,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     handleFinalConfirm,
     handleSendActivationCode,
     handleVerifyActivationCode,
+    isConfirmingCode,
     isVerifyingCode,
     orderId,
     paymentMethod,
@@ -427,6 +460,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     setCardNumber,
     setCodeError,
     setConfirmCode,
+    setConfirmCodeError,
     setCoupon,
     setPaymentMethod,
     setPhoneNumber,
