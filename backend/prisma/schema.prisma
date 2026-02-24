@@ -53,7 +53,6 @@ model Order {
   status         String   @default("pending")
   paymentStatus  String   @default("pending")
   tamaraOrderId  String?  @unique
-  tabbyOrderId   String?  @unique
   couponApplied  Boolean  @default(false)
   discount       Float    @default(0)
   createdAt      DateTime @default(now())

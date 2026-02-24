@@ -81,9 +81,6 @@ export const getOrderById = (id: number) =>
 export const tamaraCheckout = (orderId: number) =>
   api.post('/api/payments/tamara/checkout', { orderId });
 
-export const tabbyCheckout = (orderId: number) =>
-  api.post('/api/payments/tabby/checkout', { orderId });
-
 export const fetchProducts = () =>
   api.get('/api/products');
 
