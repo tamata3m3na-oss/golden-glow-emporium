@@ -8,24 +8,11 @@ const telegramService = require('../services/telegram');
 
 const TAMARA_API_URL = process.env.TAMARA_API_URL || 'https://api-sandbox.tamara.co';
 const TAMARA_API_KEY = process.env.TAMARA_API_KEY || '';
-const TAMARA_NOTIFICATION_KEY = process.env.TAMARA_NOTIFICATION_KEY || '';
-
-const TABBY_API_URL = process.env.TABBY_API_URL || 'https://api.tabby.ai';
-const TABBY_API_KEY = process.env.TABBY_API_KEY || '';
 
 const tamaraClient = axios.create({
   baseURL: TAMARA_API_URL,
   headers: {
     Authorization: `Bearer ${TAMARA_API_KEY}`,
-    'Content-Type': 'application/json',
-  },
-  timeout: 15000,
-});
-
-const tabbyClient = axios.create({
-  baseURL: TABBY_API_URL,
-  headers: {
-    Authorization: `Bearer ${TABBY_API_KEY}`,
     'Content-Type': 'application/json',
   },
   timeout: 15000,
@@ -169,123 +156,6 @@ router.post('/tamara/capture', async (req, res) => {
   }
 });
 
-// ───────── TABBY ─────────
 
-// POST /api/payments/tabby/checkout
-router.post('/tabby/checkout', async (req, res) => {
-  const { orderId } = req.body;
-  if (!orderId) return res.status(400).json({ error: 'orderId مطلوب' });
-
-  try {
-    const order = await prisma.order.findUnique({
-      where: { id: parseInt(orderId) },
-      include: { user: true, product: true },
-    });
-    if (!order) return res.status(404).json({ error: 'الطلب غير موجود' });
-
-    const payload = {
-      payment: {
-        amount: String(order.amount),
-        currency: 'SAR',
-        description: order.product.name,
-        buyer: {
-          phone: order.user.phone || '',
-          email: order.user.email,
-          name: order.user.name,
-        },
-        buyer_history: { registered_since: order.user.createdAt, loyalty_level: 0 },
-        order: {
-          tax_amount: '0',
-          shipping_amount: '0',
-          discount_amount: '0',
-          updated_at: new Date().toISOString(),
-          reference_id: `ORDER-${order.id}`,
-          items: [
-            {
-              title: order.product.name,
-              description: order.product.description || order.product.name,
-              quantity: 1,
-              unit_price: String(order.amount),
-              discount_amount: '0',
-              reference_id: String(order.product.id),
-              image_url: order.product.imageUrl || '',
-              product_url: `${process.env.FRONTEND_URL}/product/${order.product.id}`,
-              category: 'Jewelry',
-            },
-          ],
-        },
-        shipping_address: {
-          city: 'Riyadh',
-          address: 'Saudi Arabia',
-          zip: '12345',
-        },
-        order_history: [],
-      },
-      lang: 'ar',
-      merchant_code: process.env.TABBY_MERCHANT_CODE || 'test',
-      merchant_urls: {
-        success: `${process.env.FRONTEND_URL}/checkout/success?order=${order.id}`,
-        cancel: `${process.env.FRONTEND_URL}/checkout/${order.productId}`,
-        failure: `${process.env.FRONTEND_URL}/checkout/failure?order=${order.id}`,
-      },
-    };
-
-    const response = await tabbyClient.post('/api/v2/checkout', payload);
-    const tabbyId = response.data.id;
-
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { tabbyOrderId: tabbyId },
-    });
-
-    const checkoutUrl = response.data.configuration?.available_products?.installments?.[0]?.web_url
-      || response.data.configuration?.available_products?.pay_later?.[0]?.web_url;
-
-    res.json({ checkoutUrl, tabbyId });
-  } catch (err) {
-    console.error('[Tabby checkout]', err.response?.data || err.message);
-    res.status(500).json({ error: 'خطأ في إنشاء جلسة تابي', details: err.response?.data });
-  }
-});
-
-// POST /api/payments/tabby/webhook
-router.post('/tabby/webhook', async (req, res) => {
-  res.status(200).send('OK');
-  const { id: tabbyId, status } = req.body;
-
-  try {
-    const order = await prisma.order.findUnique({ where: { tabbyOrderId: tabbyId } });
-    if (!order) return;
-
-    const paymentStatus = status === 'AUTHORIZED' ? 'paid' : status === 'REJECTED' ? 'failed' : 'pending';
-
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { paymentStatus, ...(paymentStatus === 'paid' ? { status: 'approved' } : {}) },
-    });
-
-    telegramService.sendPaymentStatusNotification(order.id, paymentStatus).catch(console.error);
-  } catch (err) {
-    console.error('[Tabby webhook]', err.message);
-  }
-});
-
-// POST /api/payments/tabby/authorize
-router.post('/tabby/authorize', async (req, res) => {
-  const { tabbyId } = req.body;
-  try {
-    const response = await tabbyClient.post(`/api/v2/payments/${tabbyId}/captures`, {
-      amount: req.body.amount,
-      tax_amount: '0',
-      shipping_amount: '0',
-      discount_amount: '0',
-      items: [],
-    });
-    res.json(response.data);
-  } catch (err) {
-    console.error('[Tabby authorize]', err.response?.data || err.message);
-    res.status(500).json({ error: 'خطأ في تأكيد تابي', details: err.response?.data });
-  }
-});
 
 module.exports = router;
