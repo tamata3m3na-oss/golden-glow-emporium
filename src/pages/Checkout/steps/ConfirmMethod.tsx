@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ChevronLeft } from 'lucide-react';
+import { Phone, ShieldCheck } from 'lucide-react';
 import { toEnglishNumbers } from '@/lib/utils';
 
 interface ConfirmMethodProps {
@@ -13,8 +13,8 @@ interface ConfirmMethodProps {
 const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: ConfirmMethodProps) => {
   return (
     <div>
-      <button onClick={onBack} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6">
-        <ChevronLeft className="h-4 w-4" /> رجوع
+      <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-500 hover:text-[hsl(340,80%,55%)] mb-6">
+        ← رجوع
       </button>
 
       <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center shadow-sm">
@@ -26,7 +26,12 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
           />
         </div>
 
-        <h2 className="text-xl font-bold text-gray-900 mb-6">أدخل رقم الجوال</h2>
+        <div className="w-16 h-16 rounded-full bg-[hsl(340,80%,55%,0.1)] mx-auto mb-4 flex items-center justify-center">
+          <Phone className="h-8 w-8 text-[hsl(340,80%,55%)]" />
+        </div>
+
+        <h2 className="text-xl font-bold text-gray-900 mb-2">أدخل رقم الجوال</h2>
+        <p className="text-gray-500 text-sm mb-6">سنرسل لك رمز تحقق لتأكيد رقمك</p>
 
         <div className="space-y-4">
           <div className="flex gap-2 justify-center">
@@ -38,12 +43,16 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
               value={phoneNumber}
               onChange={e => setPhoneNumber(toEnglishNumbers(e.target.value))}
               placeholder="05XXXXXXXX"
-              className="bg-gray-50 border-gray-300 text-gray-900 text-center text-lg tracking-wider w-48"
+              className="bg-gray-50 border-gray-300 text-gray-900 text-center text-lg tracking-wider w-48 focus:border-[hsl(340,80%,55%)] focus:ring-[hsl(340,80%,55%)]"
               maxLength={10}
               dir="ltr"
               type="tel"
             />
           </div>
+
+          <p className="text-xs text-gray-400">
+            يجب أن يكون الرقم مسجل باسمك في البنك
+          </p>
 
           <Button
             onClick={onSubmit}
@@ -52,6 +61,13 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
           >
             إرسال الرمز
           </Button>
+        </div>
+
+        <div className="mt-6 pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+            <ShieldCheck className="h-3 w-3" />
+            <span>معتمد من هيئة السعودية للبيانات والذكاء الاصطناعي</span>
+          </div>
         </div>
       </div>
     </div>

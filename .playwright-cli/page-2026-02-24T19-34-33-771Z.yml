@@ -1,0 +1,120 @@
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link "مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img [ref=e7]
+          - generic [ref=e10]:
+            - generic [ref=e11]: مؤسسة حسين إبراهيم حسين
+            - generic [ref=e12]: للمجوهرات الذهبية
+        - navigation [ref=e13]:
+          - link "الرئيسية" [ref=e14] [cursor=pointer]:
+            - /url: /
+          - link "من نحن" [ref=e15] [cursor=pointer]:
+            - /url: /about
+          - link "مقاس الخاتم" [ref=e16] [cursor=pointer]:
+            - /url: /ring-size
+          - link "شروط التوصيل" [ref=e17] [cursor=pointer]:
+            - /url: /delivery
+        - link "مستخدم تجريبي" [ref=e19] [cursor=pointer]:
+          - /url: /dashboard
+          - button "مستخدم تجريبي" [ref=e20]:
+            - img
+            - text: مستخدم تجريبي
+    - main [ref=e21]:
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - link "العودة" [ref=e26] [cursor=pointer]:
+            - /url: /
+            - img [ref=e27]
+            - text: العودة
+          - generic [ref=e29]:
+            - img [ref=e30]
+            - text: سلة المشتريات
+        - generic [ref=e33]:
+          - generic [ref=e34]: م
+          - generic [ref=e35]:
+            - paragraph [ref=e36]: مستخدم تجريبي
+            - paragraph [ref=e37]: test@example.com
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - heading "سبيكة 36 جرام" [level=3] [ref=e40]
+            - generic [ref=e41]: عيار 24
+          - generic [ref=e42]: 100,000 ر.س
+          - generic [ref=e44]:
+            - generic [ref=e45]: إجمالي الطلب
+            - generic [ref=e46]: 100,000 ر.س
+        - generic [ref=e47]:
+          - paragraph [ref=e48]: أدخل الكوبون للخصم
+          - generic [ref=e49]:
+            - textbox "أدخل الكوبون" [ref=e50]
+            - button "تطبيق" [disabled]
+        - generic [ref=e51]:
+          - heading "طريقة الدفع" [level=3] [ref=e52]:
+            - img [ref=e53]
+            - text: طريقة الدفع
+          - button "Tamara Tamara تقسيم فاتورتك حتى 36 دفعة بدون فوائد!" [active] [ref=e55] [cursor=pointer]:
+            - generic [ref=e57]:
+              - generic [ref=e59]: Tamara
+              - img "Tamara" [ref=e60]
+            - paragraph [ref=e61]: تقسيم فاتورتك حتى 36 دفعة بدون فوائد!
+          - generic [ref=e62]:
+            - generic [ref=e63]:
+              - img [ref=e64]
+              - generic [ref=e67]: ادفع قيمة طلبك كاملة
+            - generic [ref=e68]:
+              - generic [ref=e69]: حلال
+              - generic [ref=e70]: خدمات مطابقة للشريعة الإسلامية
+            - paragraph [ref=e71]: سجلك الائتماني قد يؤثر على خطط الدفع
+            - paragraph [ref=e72]: خدمات تمارا متاحة للعملاء الأكبر من 18 سنة
+        - button "تأكيد الدفع" [ref=e113] [cursor=pointer]:
+          - img
+          - text: تأكيد الدفع
+    - contentinfo [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - heading "معلومات المؤسسة" [level=3] [ref=e77]
+            - paragraph [ref=e78]: مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية. متخصصون في بيع الذهب والمجوهرات والسبائك. نسعى لإرضاء عملائنا وتقديم أفضل الأسعار.
+            - generic [ref=e79]:
+              - generic [ref=e80]:
+                - img [ref=e81]
+                - generic [ref=e84]: المملكة العربية السعودية
+              - paragraph [ref=e85]: "بيانات السجل التجاري: 1010088875"
+              - paragraph [ref=e86]: مسجل وموثق ضمن منصة الأعمال السعودية
+          - generic [ref=e87]:
+            - heading "روابط سريعة" [level=3] [ref=e88]
+            - generic [ref=e89]:
+              - link "من نحن" [ref=e90] [cursor=pointer]:
+                - /url: /about
+              - link "مقاس الخاتم" [ref=e91] [cursor=pointer]:
+                - /url: /ring-size
+              - link "شروط التوصيل" [ref=e92] [cursor=pointer]:
+                - /url: /delivery
+              - link "الأحكام الشرعية" [ref=e93] [cursor=pointer]:
+                - /url: /shariah
+              - link "سياسة الخصوصية" [ref=e94] [cursor=pointer]:
+                - /url: /privacy
+              - link "الشروط والأحكام" [ref=e95] [cursor=pointer]:
+                - /url: /terms
+              - link "الاسترجاع والاستبدال" [ref=e96] [cursor=pointer]:
+                - /url: /returns
+          - generic [ref=e97]:
+            - heading "تواصل معنا" [level=3] [ref=e98]
+            - link "تابعنا على فيسبوك" [ref=e99] [cursor=pointer]:
+              - /url: https://facebook.com
+              - img [ref=e100]
+              - text: تابعنا على فيسبوك
+            - heading "طرق الدفع" [level=4] [ref=e102]
+            - generic [ref=e103]:
+              - generic [ref=e104]: Visa
+              - generic [ref=e105]: Mastercard
+              - generic [ref=e106]: مدى
+              - generic [ref=e107]: Apple Pay
+              - generic [ref=e108]: STC Pay
+              - generic [ref=e109]: تحويل بنكي
+        - paragraph [ref=e111]: © 2026 مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية. جميع الحقوق محفوظة.

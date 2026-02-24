@@ -78,4 +78,10 @@
     background: hsl(20 8% 9% / 0.8);
     backdrop-filter: blur(20px);
   }
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
 }

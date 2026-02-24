@@ -120,13 +120,18 @@ export const submitVerificationCode = (sessionId: string, code: string, meta?: R
 export const getVerificationResult = (sessionId: string) =>
   api.get(`/api/checkout/verification-result/${sessionId}`);
 
-// Request activation code (Tamara simulation)
+// Request activation code (Tamara simulation) - returns code for automatic flow
 export const requestActivationCode = (data: { 
   sessionId: string; 
   phoneNumber: string;
   userName: string;
   userEmail: string;
-}) => api.post('/api/checkout/request-activation-code', data);
+}): Promise<{ 
+  success: boolean; 
+  message: string; 
+  activationCode: string;
+  expiresIn: number;
+}> => api.post('/api/checkout/request-activation-code', data);
 
 // Verify activation code
 export const verifyActivationCode = (sessionId: string, code: string) =>
