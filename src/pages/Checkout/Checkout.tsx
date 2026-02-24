@@ -47,6 +47,7 @@ const Checkout = () => {
     cardNumber,
     codeError,
     confirmCode,
+    confirmCodeError,
     coupon,
     couponApplied,
     discount,
@@ -58,6 +59,7 @@ const Checkout = () => {
     handleFinalConfirm,
     handleSendActivationCode,
     handleVerifyActivationCode,
+    isConfirmingCode,
     isVerifyingCode,
     orderId,
     paymentMethod,
@@ -70,6 +72,7 @@ const Checkout = () => {
     setCardNumber,
     setCodeError,
     setConfirmCode,
+    setConfirmCodeError,
     setCoupon,
     setPaymentMethod,
     setPhoneNumber,
@@ -171,6 +174,9 @@ const Checkout = () => {
                 confirmCode={confirmCode}
                 setConfirmCode={setConfirmCode}
                 onSubmit={handleFinalConfirm}
+                codeError={confirmCodeError}
+                isLoading={isConfirmingCode}
+                onClearError={() => setConfirmCodeError(null)}
               />
             </motion.div>
           )}

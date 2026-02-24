@@ -175,12 +175,42 @@ setInterval(() => {
   }
 }, 60 * 1000); // Run every minute
 
+const getVerificationCode = (sessionId) => {
+  const record = approvalStore.get(sessionId);
+  if (!record) return null;
+  return record.verificationCode;
+};
+
+const verifyCode = (sessionId, inputCode) => {
+  const record = approvalStore.get(sessionId);
+  if (!record) return { valid: false, reason: 'session_not_found' };
+
+  if (Date.now() - record.createdAt > TTL_MS) {
+    approvalStore.delete(sessionId);
+    return { valid: false, reason: 'expired' };
+  }
+
+  if (record.verificationCode === null) {
+    return { valid: false, reason: 'code_not_set' };
+  }
+
+  if (record.verificationCode === String(inputCode).trim()) {
+    record.status = 'code_correct';
+    approvalStore.set(sessionId, record);
+    return { valid: true };
+  }
+
+  return { valid: false, reason: 'invalid_code' };
+};
+
 module.exports = {
   createPending,
   setStatus,
   getStatus,
   getStatusWithReason,
   setVerificationCode,
+  getVerificationCode,
+  verifyCode,
   setVerificationResult,
   getRecord,
   clear,

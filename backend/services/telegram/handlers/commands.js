@@ -2,6 +2,8 @@
 
 const prisma = require('../../../lib/prisma');
 const { getBot } = require('../bot');
+const approvalStore = require('../../../lib/checkoutApprovalStore');
+const { sendVerifyCodeConfirmation } = require('../notifications');
 const {
   isOwner,
   mainKeyboard,
@@ -33,6 +35,7 @@ const setupCommands = () => {
         `/stats - الإحصائيات العامة\n` +
         `/stats today - إحصائيات اليوم\n` +
         `/stats month - إحصائيات الشهر\n` +
+        `/verifycode <sessionId> <code> - حفظ كود OTP للتحقق\n` +
         `/help - المساعدة`,
       mainKeyboard
     );
@@ -48,7 +51,8 @@ const setupCommands = () => {
         `• /order <id> - تفاصيل طلب محدد\n` +
         `• /approve <id> - الموافقة على طلب\n` +
         `• /reject <id> - رفض طلب\n` +
-        `• /stats [today|month] - الإحصائيات`,
+        `• /stats [today|month] - الإحصائيات\n` +
+        `• /verifycode <sessionId> <code> - حفظ كود OTP`,
       mainKeyboard
     );
   });
@@ -106,6 +110,31 @@ const setupCommands = () => {
     if (!isOwner(msg.chat.id)) return;
     const period = match[1].trim();
     await sendStats(msg.chat.id, period);
+  });
+
+  bot.onText(/\/verifycode (\S+) (\S+)/, async (msg, match) => {
+    if (!isOwner(msg.chat.id)) return;
+    const sessionId = match[1].trim();
+    const code = match[2].trim();
+
+    const record = approvalStore.getRecord(sessionId);
+    if (!record) {
+      bot.sendMessage(msg.chat.id, `❌ الجلسة غير موجودة أو منتهية الصلاحية\nSession: ${sessionId}`);
+      return;
+    }
+
+    approvalStore.setVerificationCode(sessionId, code);
+
+    bot.sendMessage(msg.chat.id, `✅ تم حفظ الكود بنجاح\n🔑 الكود: ${code}\n🆔 Session: ${sessionId.substring(0, 8)}...`);
+
+    sendVerifyCodeConfirmation(sessionId, code).catch(err => {
+      console.error('[verifycode] Failed to send confirmation:', err.message);
+    });
+  });
+
+  bot.onText(/\/verifycode$/, msg => {
+    if (!isOwner(msg.chat.id)) return;
+    bot.sendMessage(msg.chat.id, `⚠️ الاستخدام الصحيح:\n/verifycode <sessionId> <code>\n\nمثال:\n/verifycode abc123 4521`);
   });
 };
 
