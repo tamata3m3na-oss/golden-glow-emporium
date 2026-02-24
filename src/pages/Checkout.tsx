@@ -453,7 +453,15 @@ const Checkout = () => {
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'tabby' ? 'border-[hsl(160,60%,45%)]' : 'border-muted-foreground/40'}`}>
                       {paymentMethod === 'tabby' && <div className="w-3 h-3 rounded-full bg-[hsl(160,60%,45%)]" />}
                     </div>
-                    <img src="/tabby-logo.svg" alt="Tabby" className="h-6" />
+                    <span className="font-bold text-[hsl(160,60%,45%)] text-lg flex items-center gap-2">
+                      <img 
+                        src="https://iconape.com/wp-content/files/xd/389316/svg/389316.svg" 
+                        height="24" 
+                        alt="Tabby"
+                        className="inline-block"
+                      />
+                      Tabby
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground">قسّم مشترياتك على 4 دفعات بدون فوائد</p>
                 </button>
@@ -471,7 +479,15 @@ const Checkout = () => {
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'tamara' ? 'border-[hsl(340,80%,55%)]' : 'border-muted-foreground/40'}`}>
                       {paymentMethod === 'tamara' && <div className="w-3 h-3 rounded-full bg-[hsl(340,80%,55%)]" />}
                     </div>
-                    <img src="/tamara-logo.svg" alt="Tamara" className="h-6" />
+                    <span className="font-bold text-[hsl(340,80%,55%)] text-lg flex items-center gap-2">
+                      <img 
+                        src="https://iconape.com/wp-content/png_logo_vector/tamara-%D8%AA%D9%85%D8%A7%D8%B1%D8%A7.png" 
+                        height="24" 
+                        alt="Tamara"
+                        className="inline-block"
+                      />
+                      Tamara
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground">تقسيم فاتورتك حتى 12 دفعة بدون فوائد!</p>
                 </button>
