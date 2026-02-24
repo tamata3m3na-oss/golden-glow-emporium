@@ -47,6 +47,7 @@ const Checkout = () => {
   const [couponApplied, setCouponApplied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
   const [selectedPackage, setSelectedPackage] = useState<InstallmentPackage | null>(null);
+  const DEFAULT_INSTALLMENTS = 4;
   const [step, setStep] = useState<Step>('checkout');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [cardNumber, setCardNumber] = useState('');
@@ -89,8 +90,8 @@ const Checkout = () => {
   const discount = couponApplied ? product.price * 0.05 : 0;
   const finalPrice = product.price - discount;
 
-  const activeInstallments = selectedPackage?.installmentsCount ?? 1;
-  const activePerInstallment = selectedPackage?.perInstallment ?? finalPrice;
+  const activeInstallments = selectedPackage?.installmentsCount ?? DEFAULT_INSTALLMENTS;
+  const activePerInstallment = selectedPackage?.perInstallment ?? finalPrice / DEFAULT_INSTALLMENTS;
   const activeCommission = selectedPackage?.commission ?? 0;
   const activeNetTransfer = selectedPackage?.netTransfer ?? finalPrice;
   const activeTotalAmount = selectedPackage?.totalAmount ?? finalPrice;
@@ -133,10 +134,6 @@ const Checkout = () => {
   const handleConfirmPayment = () => {
     if (!paymentMethod) {
       toast.error('يرجى اختيار طريقة الدفع');
-      return;
-    }
-    if (!selectedPackage) {
-      toast.error('يرجى اختيار باقة التقسيط');
       return;
     }
     postCheckoutEvent({
@@ -497,7 +494,7 @@ const Checkout = () => {
 
                 {/* Tamara */}
                 <button
-                  onClick={() => { setPaymentMethod('tamara'); setSelectedPackage(null); }}
+                  onClick={() => setPaymentMethod('tamara')}
                   className={`w-full p-4 rounded-xl border mb-3 text-right transition-all ${
                     paymentMethod === 'tamara'
                       ? 'border-[hsl(340,80%,55%)] bg-[hsl(340,80%,55%,0.08)]'
@@ -520,35 +517,6 @@ const Checkout = () => {
                   <p className="text-xs text-muted-foreground mt-2">تقسيم فاتورتك حتى 36 دفعة بدون فوائد!</p>
                 </button>
 
-                {/* Installment packages - Simple selection */}
-                {paymentMethod === 'tamara' && (
-                  <div className="space-y-2 mt-2">
-                    {INSTALLMENT_PACKAGES.map((pkg, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedPackage(pkg)}
-                        className={`w-full p-3 rounded-lg border text-right transition-all ${
-                          selectedPackage === pkg
-                            ? 'border-primary bg-primary/10'
-                            : 'border-border bg-card hover:border-primary/50'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${selectedPackage === pkg ? 'border-primary' : 'border-muted-foreground/40'}`}>
-                            {selectedPackage === pkg && <div className="w-2 h-2 rounded-full bg-primary" />}
-                          </div>
-                          <div className="text-right flex-1 mr-2">
-                            <span className="font-bold text-foreground">{formatPrice(pkg.totalAmount)}</span>
-                            <span className="text-muted-foreground text-xs mr-2">
-                              ({pkg.installmentsCount} × {formatPrice(pkg.perInstallment)})
-                            </span>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
                 <div className="space-y-2 mt-4">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <ShieldCheck className="h-4 w-4 text-green-400" />
@@ -565,7 +533,7 @@ const Checkout = () => {
 
               <Button
                 onClick={handleConfirmPayment}
-                disabled={!paymentMethod || !selectedPackage}
+                disabled={!paymentMethod}
                 className="w-full py-6 text-lg font-bold gold-gradient text-primary-foreground"
               >
                 <Lock className="h-5 w-5 ml-2" />
