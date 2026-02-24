@@ -9,11 +9,11 @@ import { getCheckoutSessionId } from '@/lib/checkoutSession';
 const ProductCard = ({ product }: { product: Product }) => {
   const { user } = useAuth();
 
-  const formattedPrice = new Intl.NumberFormat('ar-SA', {
-    style: 'currency',
-    currency: 'SAR',
-    minimumFractionDigits: 2,
-  }).format(product.price);
+  const formattedPrice = new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(product.price) + ' ر.س';
 
   const handleBuyNow = () => {
     // Send product selection event to Telegram (fire-and-forget)

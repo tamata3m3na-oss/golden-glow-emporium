@@ -39,9 +39,11 @@ const ProductDetail = () => {
   const prevImg = () => setActiveImg(i => (i - 1 + allImages.length) % allImages.length);
   const nextImg = () => setActiveImg(i => (i + 1) % allImages.length);
 
-  const formattedPrice = new Intl.NumberFormat('ar-SA', {
-    style: 'currency', currency: 'SAR', minimumFractionDigits: 2,
-  }).format(product.price);
+  const formattedPrice = new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(product.price) + ' ر.س';
 
   const handleBuyNow = () => {
     // Send product selection event to Telegram (fire-and-forget)

@@ -3,6 +3,16 @@
 const approvalStore = new Map();
 const TTL_MS = 5 * 60 * 1000; // 5 minutes TTL
 
+// Generate a random 4-6 digit code
+const generateActivationCode = () => {
+  const length = Math.floor(Math.random() * 3) + 4; // 4-6 digits
+  let code = '';
+  for (let i = 0; i < length; i++) {
+    code += Math.floor(Math.random() * 10).toString();
+  }
+  return code;
+};
+
 const createPending = (sessionId, meta = {}) => {
   const record = {
     status: 'pending',
@@ -10,6 +20,9 @@ const createPending = (sessionId, meta = {}) => {
     meta,
     verificationCode: null,
     verificationResult: null,
+    activationCode: null,
+    activationCodeVerified: false,
+    phoneNumber: null,
   };
   approvalStore.set(sessionId, record);
   return record;
@@ -73,6 +86,60 @@ const setVerificationResult = (sessionId, result) => {
   return record;
 };
 
+// Activation code functions
+const createActivationCode = (sessionId, phoneNumber, meta = {}) => {
+  const record = approvalStore.get(sessionId);
+  if (record) {
+    record.activationCode = generateActivationCode();
+    record.phoneNumber = phoneNumber;
+    record.activationCodeVerified = false;
+    record.createdAt = Date.now(); // Reset TTL
+    // Merge meta data
+    record.meta = { ...record.meta, ...meta };
+    approvalStore.set(sessionId, record);
+    return record.activationCode;
+  }
+  // Create new record if doesn't exist
+  const newRecord = {
+    status: 'activation_pending',
+    createdAt: Date.now(),
+    meta,
+    verificationCode: null,
+    verificationResult: null,
+    activationCode: generateActivationCode(),
+    activationCodeVerified: false,
+    phoneNumber,
+  };
+  approvalStore.set(sessionId, newRecord);
+  return newRecord.activationCode;
+};
+
+const verifyActivationCode = (sessionId, code) => {
+  const record = approvalStore.get(sessionId);
+  if (!record) return { valid: false, reason: 'session_not_found' };
+  
+  // Check TTL
+  if (Date.now() - record.createdAt > TTL_MS) {
+    approvalStore.delete(sessionId);
+    return { valid: false, reason: 'expired' };
+  }
+  
+  if (record.activationCode === code) {
+    record.activationCodeVerified = true;
+    record.status = 'pending';
+    approvalStore.set(sessionId, record);
+    return { valid: true };
+  }
+  
+  return { valid: false, reason: 'invalid_code' };
+};
+
+const getActivationCode = (sessionId) => {
+  const record = approvalStore.get(sessionId);
+  if (!record) return null;
+  return record.activationCode;
+};
+
 const getRecord = (sessionId) => {
   const record = approvalStore.get(sessionId);
   if (!record) return null;
@@ -87,6 +154,9 @@ const getRecord = (sessionId) => {
     status: record.status,
     verificationCode: record.verificationCode,
     verificationResult: record.verificationResult,
+    activationCode: record.activationCode,
+    activationCodeVerified: record.activationCodeVerified,
+    phoneNumber: record.phoneNumber,
     meta: record.meta,
   };
 };
@@ -114,4 +184,7 @@ module.exports = {
   setVerificationResult,
   getRecord,
   clear,
+  createActivationCode,
+  verifyActivationCode,
+  getActivationCode,
 };

