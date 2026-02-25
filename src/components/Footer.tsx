@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Facebook, MapPin, Phone, Mail } from 'lucide-react';
+import { MessageCircle, MapPin, Phone, Mail } from 'lucide-react';
 
 const paymentMethods = ['Visa', 'Mastercard', 'مدى', 'Apple Pay', 'STC Pay', 'تحويل بنكي'];
 
@@ -29,12 +29,30 @@ const Footer = () => {
                 <MapPin className="h-4 w-4 text-primary" />
                 <span>المملكة العربية السعودية</span>
               </div>
-              <p className="text-xs mt-2 text-primary/70">
-                بيانات السجل التجاري: 1010088875
-              </p>
-              <p className="text-xs text-muted-foreground">
-                مسجل وموثق ضمن منصة الأعمال السعودية
-              </p>
+              <a 
+                href="https://mc.gov.sa/ar/eservices/Pages/Commercial-data.aspx" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 mt-2 hover:text-primary transition-colors"
+              >
+                <img 
+                  src="https://altmiz.shop/uploads/acac.png" 
+                  alt="السجل التجاري" 
+                  className="h-6 w-auto"
+                />
+                <span className="text-xs text-primary/70">بيانات السجل التجاري :1010088875</span>
+              </a>
+              <Link 
+                to="/business-info"
+                className="flex items-center gap-2 mt-1 hover:text-primary transition-colors"
+              >
+                <img 
+                  src="https://alfahd.shop/uploads/img%20(6).jpg" 
+                  alt="منصة الأعمال السعودية" 
+                  className="h-6 w-auto"
+                />
+                <span className="text-xs text-muted-foreground">مسجل وموثق ضمن منصة الأعمال السعودية</span>
+              </Link>
             </div>
           </div>
 
@@ -58,13 +76,13 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-bold gold-text mb-4">تواصل معنا</h3>
             <a
-              href="https://facebook.com"
+              href="https://wa.me/966594241060"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary text-foreground hover:bg-primary/20 hover:text-primary transition-colors text-sm mb-6"
             >
-              <Facebook className="h-4 w-4" />
-              تابعنا على فيسبوك
+              <MessageCircle className="h-4 w-4" />
+              تواصل معنا على الواتساب
             </a>
 
             <h4 className="text-sm font-semibold text-foreground mb-3 mt-4">طرق الدفع</h4>

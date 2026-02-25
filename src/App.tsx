@@ -19,6 +19,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminLogin from "./pages/AdminLogin";
 import ProductDetail from "./pages/ProductDetail";
 import Checkout from "./pages/Checkout";
+import BusinessInfo from "./pages/BusinessInfo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,7 @@ const App = () => (
               />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/checkout/:id" element={<Checkout />} />
+              <Route path="/business-info" element={<BusinessInfo />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
