@@ -160,7 +160,7 @@ const Checkout = () => {
 
           {step === 'verification-failed' && (
             <motion.div key="verification-failed" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-              <VerificationFailed verificationError={verificationError} />
+              <VerificationFailed verificationError={verificationError} onRetry={() => setStep('confirm-code')} />
             </motion.div>
           )}
 
