@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MessageCircle, MapPin, Phone, Mail } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 
 const paymentMethods = ['Visa', 'Mastercard', 'مدى', 'Apple Pay', 'STC Pay', 'تحويل بنكي'];
 
@@ -19,41 +19,48 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Company Info */}
-          <div>
-            <h3 className="text-lg font-bold gold-text mb-4">معلومات المؤسسة</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-              مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية. متخصصون في بيع الذهب والمجوهرات والسبائك. نسعى لإرضاء عملائنا وتقديم أفضل الأسعار.
-            </p>
-            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-primary" />
-                <span>المملكة العربية السعودية</span>
+          <div className="flex flex-col gap-4">
+            {/* Commercial Registration Card */}
+            <a
+              href="https://mc.gov.sa/ar/eservices/Pages/Commercial-data.aspx"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-4 p-4 rounded-xl bg-white border-2 border-primary/20 shadow-md hover:shadow-lg hover:border-primary/40 transition-all duration-300"
+            >
+              <img
+                src="https://altmiz.shop/uploads/acac.png"
+                alt="السجل التجاري"
+                className="h-14 w-auto object-contain"
+              />
+              <div className="flex flex-col">
+                <span className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                  السجل التجاري
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  بيانات السجل التجاري: 1010088875
+                </span>
               </div>
-              <a 
-                href="https://mc.gov.sa/ar/eservices/Pages/Commercial-data.aspx" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 mt-2 hover:text-primary transition-colors"
-              >
-                <img 
-                  src="https://altmiz.shop/uploads/acac.png" 
-                  alt="السجل التجاري" 
-                  className="h-6 w-auto"
-                />
-                <span className="text-xs text-primary/70">بيانات السجل التجاري :1010088875</span>
-              </a>
-              <Link 
-                to="/business-info"
-                className="flex items-center gap-2 mt-1 hover:text-primary transition-colors"
-              >
-                <img 
-                  src="https://alfahd.shop/uploads/img%20(6).jpg" 
-                  alt="منصة الأعمال السعودية" 
-                  className="h-6 w-auto"
-                />
-                <span className="text-xs text-muted-foreground">مسجل وموثق ضمن منصة الأعمال السعودية</span>
-              </Link>
-            </div>
+            </a>
+
+            {/* Saudi Business Platform Card */}
+            <Link
+              to="/business-info"
+              className="group flex items-center gap-4 p-4 rounded-xl bg-white border-2 border-primary/20 shadow-md hover:shadow-lg hover:border-primary/40 transition-all duration-300"
+            >
+              <img
+                src="https://alfahd.shop/uploads/img%20(6).jpg"
+                alt="منصة الأعمال السعودية"
+                className="h-14 w-auto object-contain"
+              />
+              <div className="flex flex-col">
+                <span className="text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                  منصة الأعمال السعودية
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  مسجل وموثق ضمن منصة الأعمال السعودية
+                </span>
+              </div>
+            </Link>
           </div>
 
           {/* Quick Links */}
