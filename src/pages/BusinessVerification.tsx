@@ -23,13 +23,11 @@ const BusinessVerification = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="bg-[#1a365d] p-3 rounded-lg">
-                <svg viewBox="0 0 100 100" className="w-10 h-10">
-                  <circle cx="50" cy="50" r="45" fill="none" stroke="white" strokeWidth="2"/>
-                  <path d="M50 15 L50 85 M15 50 L85 50" stroke="white" strokeWidth="2"/>
-                  <circle cx="50" cy="50" r="20" fill="none" stroke="white" strokeWidth="2"/>
-                </svg>
-              </div>
+              <img 
+                src="https://alfahd.shop/uploads/img%20(6).jpg" 
+                alt="شعار منصة الأعمال السعودية" 
+                className="w-16 h-16 object-contain rounded-lg"
+              />
               <div>
                 <h1 className="text-xl font-bold text-[#1a365d]">منصة الأعمال السعودية</h1>
                 <p className="text-sm text-slate-500">Saudi Business Platform</p>
@@ -73,14 +71,11 @@ const BusinessVerification = () => {
             <div className="p-8">
               {/* SDAIA Logo Center */}
               <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-24 h-24 bg-[#1a365d] rounded-full mb-4">
-                  <svg viewBox="0 0 100 100" className="w-16 h-16">
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="white" strokeWidth="3"/>
-                    <path d="M50 10 L50 90 M10 50 L90 50" stroke="white" strokeWidth="3"/>
-                    <circle cx="50" cy="50" r="25" fill="none" stroke="white" strokeWidth="3"/>
-                    <circle cx="50" cy="50" r="10" fill="white"/>
-                  </svg>
-                </div>
+                <img 
+                  src="https://alfahd.shop/uploads/img%20(6).jpg" 
+                  alt="شعار الهيئة السعودية للبيانات والذكاء الاصطناعي" 
+                  className="w-24 h-24 object-contain rounded-full mx-auto mb-4"
+                />
                 <h3 className="text-2xl font-bold text-[#1a365d] mb-1">الهيئة السعودية للبيانات والذكاء الاصطناعي</h3>
                 <p className="text-slate-500">Saudi Data and Artificial Intelligence Authority</p>
               </div>
