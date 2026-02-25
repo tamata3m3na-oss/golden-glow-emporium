@@ -55,7 +55,7 @@ const ConfirmCode = ({ confirmCode, setConfirmCode, onSubmit, codeError, isLoadi
 
           <div className="bg-[hsl(340,80%,55%,0.05)] border border-[hsl(340,80%,55%,0.2)] rounded-lg p-3">
             <p className="text-xs text-gray-500">
-              💡 للعرض التجريبي: أدخل أي 4-6 أرقام للمتابعة
+              سيتم التحقق من الرمز خلال ثوانٍ عبر تمارا
             </p>
           </div>
 
