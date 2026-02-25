@@ -65,7 +65,6 @@ const Checkout = () => {
     paymentMethod,
     phoneNumber,
     resendTimer,
-    sentActivationCode,
     setAgreedTerms,
     setCardCvv,
     setCardExpiry,
@@ -133,7 +132,6 @@ const Checkout = () => {
                 resendTimer={resendTimer}
                 formatTimer={formatTimer}
                 isVerifyingCode={isVerifyingCode}
-                sentActivationCode={sentActivationCode}
                 onBack={() => setStep('confirm-method')}
                 onSubmit={handleVerifyActivationCode}
                 onClearError={() => setCodeError(null)}
