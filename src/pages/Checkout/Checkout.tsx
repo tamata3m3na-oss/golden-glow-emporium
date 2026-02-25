@@ -4,7 +4,6 @@ import Layout from '@/components/Layout';
 import { useAuth } from '@/context/AuthContext';
 import { getProducts } from '@/data/products';
 import { useCheckout } from './useCheckout';
-import CheckoutProduct from './steps/CheckoutProduct';
 import ConfirmMethod from './steps/ConfirmMethod';
 import VerifyPhone from './steps/VerifyPhone';
 import CardInfo from './steps/CardInfo';
@@ -40,7 +39,6 @@ const Checkout = () => {
 
   const {
     agreedTerms,
-    applyCoupon,
     cardCvv,
     cardExpiry,
     cardName,
@@ -48,21 +46,15 @@ const Checkout = () => {
     codeError,
     confirmCode,
     confirmCodeError,
-    coupon,
-    couponApplied,
-    discount,
-    finalPrice,
     formatPrice,
     formatTimer,
     handleCardSubmit,
-    handleConfirmPayment,
     handleFinalConfirm,
     handleSendActivationCode,
     handleVerifyActivationCode,
     isConfirmingCode,
     isVerifyingCode,
     orderId,
-    paymentMethod,
     phoneNumber,
     resendTimer,
     setAgreedTerms,
@@ -73,8 +65,6 @@ const Checkout = () => {
     setCodeError,
     setConfirmCode,
     setConfirmCodeError,
-    setCoupon,
-    setPaymentMethod,
     setPhoneNumber,
     setStep,
     setActivationCode,
@@ -90,31 +80,12 @@ const Checkout = () => {
     <Layout>
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <AnimatePresence mode="wait">
-          {step === 'checkout' && (
-            <motion.div key="checkout" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-              <CheckoutProduct
-                user={user}
-                product={product}
-                coupon={coupon}
-                couponApplied={couponApplied}
-                discount={discount}
-                finalPrice={finalPrice}
-                paymentMethod={paymentMethod}
-                setPaymentMethod={setPaymentMethod}
-                setCoupon={setCoupon}
-                applyCoupon={applyCoupon}
-                onConfirm={handleConfirmPayment}
-                formatPrice={formatPrice}
-              />
-            </motion.div>
-          )}
-
           {step === 'confirm-method' && (
             <motion.div key="confirm-method" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <ConfirmMethod
                 phoneNumber={phoneNumber}
                 setPhoneNumber={setPhoneNumber}
-                onBack={() => setStep('checkout')}
+                onBack={() => navigate(`/product/${product.id}`)}
                 onSubmit={handleSendActivationCode}
               />
             </motion.div>

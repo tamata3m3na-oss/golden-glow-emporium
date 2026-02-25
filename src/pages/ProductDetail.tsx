@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { getProducts } from '@/data/products';
 import { useAuth } from '@/context/AuthContext';
@@ -13,6 +13,7 @@ const ProductDetail = () => {
   const products = getProducts();
   const product = products.find(p => p.id === Number(id));
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [activeImg, setActiveImg] = useState(0);
 
   if (!product) {
@@ -60,6 +61,8 @@ const ProductDetail = () => {
     }).catch(() => {
       // Silently ignore errors - don't block navigation
     });
+
+    navigate(`/checkout/${product.id}`);
   };
 
   return (
@@ -152,14 +155,14 @@ const ProductDetail = () => {
 
               <div className="mt-auto">
                 {user ? (
-                  <Link
-                    to={`/checkout/${product.id}`}
+                  <button
+                    type="button"
                     onClick={handleBuyNow}
                     className="w-full py-4 rounded-xl gold-gradient text-primary-foreground font-bold text-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
                   >
                     <ShoppingBag className="h-5 w-5" />
                     اشترِ الآن
-                  </Link>
+                  </button>
                 ) : (
                   <Link
                     to={`/login?redirect=/checkout/${product.id}`}
