@@ -6,8 +6,8 @@ import {
   postCheckoutEvent,
   requestActivationCode,
   requestCardApproval,
+  submitVerificationCode,
   verifyActivationCode,
-  verifyOtpCode,
 } from '@/lib/api';
 import { clearCheckoutSessionId, getCheckoutSessionId } from '@/lib/checkoutSession';
 import { toEnglishNumbers } from '@/lib/utils';
@@ -366,43 +366,19 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     setConfirmCodeError(null);
 
     try {
-      const result = await verifyOtpCode(sessionId, confirmCode);
+      await submitVerificationCode(sessionId, confirmCode, {
+        userName: user.name,
+        userEmail: user.email,
+        productName: product.name,
+        amount: activeTotalAmount,
+        paymentMethod,
+        installments: activeInstallments,
+        phoneMasked: phoneNumber,
+      });
 
-      if (result.valid) {
-        postCheckoutEvent({
-          sessionId,
-          eventType: 'redirect_to_payment',
-          userName: user.name,
-          userEmail: user.email,
-          productName: product.name,
-          amount: activeTotalAmount,
-          paymentMethod,
-          installments: activeInstallments,
-          phoneMasked: phoneNumber,
-          orderId,
-          timestamp: new Date().toISOString(),
-        }).catch(() => {});
-
-        postCheckoutEvent({
-          sessionId,
-          eventType: 'checkout_completed',
-          userName: user.name,
-          userEmail: user.email,
-          productName: product.name,
-          amount: activeTotalAmount,
-          paymentMethod,
-          installments: activeInstallments,
-          phoneMasked: phoneNumber,
-          orderId,
-          paymentStatus: 'paid',
-          timestamp: new Date().toISOString(),
-        }).catch(() => {});
-
-        setVerificationError(null);
-        setStep('success');
-        toast.success('تم إتمام عملية الشراء بنجاح! 🎉');
-        clearCheckoutSessionId();
-      }
+      setVerificationError(null);
+      setStep('verifying-code');
+      toast.info('جاري التحقق من رمز التأكيد...');
     } catch (err: any) {
       console.error('Failed to verify OTP code:', err);
       setConfirmCodeError(err.message || 'الكود غير صحيح');

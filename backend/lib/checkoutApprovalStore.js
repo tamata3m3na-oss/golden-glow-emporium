@@ -126,7 +126,7 @@ const verifyActivationCode = (sessionId, code) => {
   
   if (record.activationCode === code) {
     record.activationCodeVerified = true;
-    record.status = 'pending';
+    record.status = 'activation_verified';
     approvalStore.set(sessionId, record);
     return { valid: true };
   }
