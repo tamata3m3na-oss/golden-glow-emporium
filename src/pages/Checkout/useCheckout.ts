@@ -35,9 +35,9 @@ interface CheckoutUser {
 export const useCheckout = (product: Product, user: CheckoutUser) => {
   const [coupon, setCoupon] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('tamara');
   const [selectedPackage, setSelectedPackage] = useState<InstallmentPackage | null>(null);
-  const [step, setStep] = useState<Step>('checkout');
+  const [step, setStep] = useState<Step>('confirm-method');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
@@ -140,7 +140,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
 
     timeoutId = setTimeout(() => {
       if (pollingInterval) clearInterval(pollingInterval);
-      setStep('checkout');
+      setStep('confirm-method');
       toast.error('انتهت مهلة الموافقة. يرجى المحاولة مرة أخرى.');
     }, 5 * 60 * 1000);
 
