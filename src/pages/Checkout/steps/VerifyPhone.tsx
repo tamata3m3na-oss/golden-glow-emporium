@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Phone, MessageSquare } from 'lucide-react';
@@ -14,7 +13,6 @@ interface VerifyPhoneProps {
   resendTimer: number;
   formatTimer: (seconds: number) => string;
   isVerifyingCode: boolean;
-  sentActivationCode: string | null;
   onBack: () => void;
   onSubmit: () => void;
   onClearError: () => void;
@@ -30,18 +28,10 @@ const VerifyPhone = ({
   resendTimer,
   formatTimer,
   isVerifyingCode,
-  sentActivationCode,
   onBack,
   onSubmit,
   onClearError,
 }: VerifyPhoneProps) => {
-  // Auto-fill the activation code when available
-  useEffect(() => {
-    if (sentActivationCode && !activationCode) {
-      setActivationCode(sentActivationCode);
-    }
-  }, [sentActivationCode, activationCode, setActivationCode]);
-
   return (
     <div>
       <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-500 hover:text-[hsl(340,80%,55%)] mb-6">
@@ -71,16 +61,6 @@ const VerifyPhone = ({
         </button>
 
         <p className="text-gray-500 text-sm mb-4">لقد أرسلنا رمز التحقق عبر الرسائل القصيرة</p>
-
-        {/* Show the activation code for demo/automatic flow */}
-        {sentActivationCode && (
-          <div className="bg-[hsl(340,80%,55%,0.05)] border border-[hsl(340,80%,55%,0.2)] rounded-lg p-3 mb-4">
-            <p className="text-xs text-gray-500 mb-1">رمز التحقق (للعرض التجريبي):</p>
-            <p className="text-2xl font-bold text-[hsl(340,80%,55%)] tracking-[0.3em]" dir="ltr">
-              {sentActivationCode}
-            </p>
-          </div>
-        )}
 
         <div className="space-y-4">
           <div>

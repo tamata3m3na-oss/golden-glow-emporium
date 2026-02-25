@@ -7,7 +7,6 @@ import {
   requestActivationCode,
   requestCardApproval,
   submitVerificationCode,
-  verifyActivationCode,
 } from '@/lib/api';
 import { clearCheckoutSessionId, getCheckoutSessionId } from '@/lib/checkoutSession';
 import { toEnglishNumbers } from '@/lib/utils';
@@ -48,7 +47,6 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(null);
   const [activationCode, setActivationCode] = useState('');
-  const [sentActivationCode, setSentActivationCode] = useState<string | null>(null);
   const [codeError, setCodeError] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(0);
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
@@ -273,17 +271,12 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     }
 
     try {
-      const response = await requestActivationCode({
+      await requestActivationCode({
         sessionId,
         phoneNumber: cleanPhone,
         userName: user.name,
         userEmail: user.email,
       });
-
-      // Store the activation code for display (automatic flow)
-      if (response.activationCode) {
-        setSentActivationCode(response.activationCode);
-      }
 
       toast.success('تم إرسال رمز التحقق');
       setResendTimer(180);
@@ -294,11 +287,11 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     }
   };
 
-  const handleVerifyActivationCode = async () => {
+  const handleVerifyActivationCode = () => {
     const cleanCode = toEnglishNumbers(activationCode.trim());
 
-    if (!cleanCode || cleanCode.length < 4) {
-      setCodeError('يرجى إدخال رمز التحقق');
+    if (!cleanCode || cleanCode.length !== 6) {
+      setCodeError('يرجى إدخال رمز التحقق المكون من 6 أرقام');
       return;
     }
 
@@ -310,19 +303,10 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     setIsVerifyingCode(true);
     setCodeError(null);
 
-    try {
-      const result = await verifyActivationCode(sessionId, cleanCode);
-
-      if (result.valid) {
-        toast.success('تم التحقق من الرمز بنجاح');
-        setStep('card-info');
-      }
-    } catch (err: any) {
-      console.error('Failed to verify activation code:', err);
-      setCodeError(err.message || 'الرمز غير صحيح');
-    } finally {
-      setIsVerifyingCode(false);
-    }
+    // Accept any 6-digit code directly without verification
+    toast.success('تم التحقق من الرمز بنجاح');
+    setStep('card-info');
+    setIsVerifyingCode(false);
   };
 
   const handleCardSubmit = async () => {
@@ -436,7 +420,6 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     phoneNumber,
     resendTimer,
     selectedPackage,
-    sentActivationCode,
     sessionId,
     setAgreedTerms,
     setCardCvv,
