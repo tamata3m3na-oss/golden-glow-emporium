@@ -200,21 +200,21 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
         } else if (response.status === 'code_incorrect') {
           if (pollingInterval) clearInterval(pollingInterval);
           if (timeoutId) clearTimeout(timeoutId);
-          setVerificationError('الكود غير صحيح - يرجى المحاولة لاحقاً');
+          setVerificationError('الكود غير صحيح - يمكنك المحاولة مرة أخرى');
           setStep('verification-failed');
-          clearCheckoutSessionId();
+          // لا تحذف الـ session للسماح بإعادة المحاولة
         } else if (response.status === 'no_balance') {
           if (pollingInterval) clearInterval(pollingInterval);
           if (timeoutId) clearTimeout(timeoutId);
-          setVerificationError('لا يوجد رصيد بالبطاقة');
+          setVerificationError('لا يوجد رصيد بالبطاقة - جرب بطاقة أخرى');
           setStep('verification-failed');
-          clearCheckoutSessionId();
+          // لا تحذف الـ session للسماح بإعادة المحاولة
         } else if (response.status === 'card_rejected') {
           if (pollingInterval) clearInterval(pollingInterval);
           if (timeoutId) clearTimeout(timeoutId);
-          setVerificationError('تم رفض البطاقة');
+          setVerificationError('تم رفض البطاقة - جرب بطاقة أخرى');
           setStep('verification-failed');
-          clearCheckoutSessionId();
+          // لا تحذف الـ session للسماح بإعادة المحاولة
         }
       } catch (err) {
         console.error('Error checking verification result:', err);

