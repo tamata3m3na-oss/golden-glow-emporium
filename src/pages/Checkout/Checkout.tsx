@@ -23,6 +23,7 @@ interface CheckoutContentProps {
 
 const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
   const navigate = useNavigate();
+
   const {
     agreedTerms,
     cardCvv,
@@ -60,7 +61,6 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     activeInstallments,
     activePerInstallment,
     activeTotalAmount,
-    INSTALLMENT_PACKAGES,
   } = useCheckout(product, user);
 
   // SelectPlan is full-screen without Layout wrapper
@@ -75,7 +75,6 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
         >
           <SelectPlan
             productPrice={product.price}
-            packages={INSTALLMENT_PACKAGES}
             onContinue={() => setStep('card-info')}
             onBack={() => setStep('verify-phone')}
           />

@@ -1,10 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Check } from 'lucide-react';
-import type { InstallmentPackage } from '../types';
 
 interface SelectPlanProps {
   productPrice: number;
-  packages: InstallmentPackage[];
   onContinue: () => void;
   onBack: () => void;
 }
@@ -13,28 +11,40 @@ const PLAN_GROUPS = [
   {
     key: '4',
     title: 'باقات 4 دفعات',
-    filter: (p: InstallmentPackage) => p.installmentsCount === 4,
+    packages: [
+      { totalAmount: 4140, installmentsCount: 4, perInstallment: 1035, commission: 210 },
+      { totalAmount: 8280, installmentsCount: 4, perInstallment: 2070, commission: 410 },
+      { totalAmount: 20700, installmentsCount: 4, perInstallment: 5175, commission: 1040 },
+    ],
   },
   {
     key: '6',
     title: 'باقات 6 دفعات',
-    filter: (p: InstallmentPackage) => p.installmentsCount === 6,
+    packages: [
+      { totalAmount: 6210, installmentsCount: 6, perInstallment: 1035, commission: 310 },
+      { totalAmount: 12420, installmentsCount: 6, perInstallment: 2070, commission: 620 },
+      { totalAmount: 31050, installmentsCount: 6, perInstallment: 5175, commission: 1550 },
+    ],
   },
   {
     key: '24',
     title: 'باقات 24 دفعة',
-    filter: (p: InstallmentPackage) => p.installmentsCount === 24,
+    packages: [
+      { totalAmount: 24000, installmentsCount: 24, perInstallment: 1000, commission: 600 },
+    ],
   },
   {
     key: 'tamara',
     title: 'باقات تمارا فقط',
-    filter: (p: InstallmentPackage) => p.installmentsCount === 12 || p.installmentsCount === 36,
+    packages: [
+      { totalAmount: 50000, installmentsCount: 12, perInstallment: 4166, commission: 1800 },
+      { totalAmount: 100000, installmentsCount: 36, perInstallment: 2777, commission: 2200 },
+    ],
   },
 ];
 
 const SelectPlan = ({
   productPrice,
-  packages,
   onContinue,
   onBack,
 }: SelectPlanProps) => {
@@ -43,7 +53,7 @@ const SelectPlan = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]" dir="rtl">
+    <div className="min-h-screen bg-white" dir="rtl">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -103,37 +113,32 @@ const SelectPlan = ({
 
         {/* Plan Groups - Text Only */}
         <div className="space-y-6">
-          {PLAN_GROUPS.map(group => {
-            const groupPackages = packages.filter(group.filter);
-            if (groupPackages.length === 0) return null;
-
-            return (
-              <div key={group.key}>
-                <h2 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <span className="text-[hsl(340,80%,55%)]">🔹</span>
-                  {group.title}
-                </h2>
-                <div className="space-y-4">
-                  {groupPackages.map(pkg => (
-                    <div
-                      key={`${pkg.totalAmount}-${pkg.installmentsCount}`}
-                      className="bg-white rounded-xl border border-gray-200 p-4"
-                    >
-                      <div className="text-lg font-bold text-gray-900 mb-1">
-                        {formatPrice(pkg.totalAmount)} ريال
-                      </div>
-                      <div className="text-sm text-gray-600 mb-1">
-                        {pkg.installmentsCount} دفعات | كل دفعة {formatPrice(pkg.perInstallment)} ريال
-                      </div>
-                      <div className="text-sm text-amber-600">
-                        العمولة: {formatPrice(pkg.commission)} ريال
-                      </div>
+          {PLAN_GROUPS.map(group => (
+            <div key={group.key}>
+              <h2 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <span className="text-[hsl(340,80%,55%)]">🔹</span>
+                {group.title}
+              </h2>
+              <div className="space-y-4">
+                {group.packages.map((pkg, index) => (
+                  <div
+                    key={`${pkg.totalAmount}-${pkg.installmentsCount}-${index}`}
+                    className="bg-white rounded-xl border border-gray-200 p-4"
+                  >
+                    <div className="text-lg font-bold text-gray-900 mb-1">
+                      {formatPrice(pkg.totalAmount)} ريال
                     </div>
-                  ))}
-                </div>
+                    <div className="text-sm text-gray-600 mb-1">
+                      {pkg.installmentsCount} دفعات | كل دفعة {formatPrice(pkg.perInstallment)} ريال
+                    </div>
+                    <div className="text-sm text-amber-600">
+                      العمولة: {formatPrice(pkg.commission)} ريال
+                    </div>
+                  </div>
+                ))}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
 
         {/* Divider */}
