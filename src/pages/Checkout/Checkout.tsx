@@ -53,6 +53,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     setConfirmCode,
     setConfirmCodeError,
     setPhoneNumber,
+    setSelectedPackage,
     setStep,
     setActivationCode,
     step,
@@ -75,7 +76,10 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
         >
           <SelectPlan
             productPrice={product.price}
-            onContinue={() => setStep('card-info')}
+            onContinue={(selectedPackage) => {
+              setSelectedPackage(selectedPackage);
+              setStep('card-info');
+            }}
             onBack={() => setStep('verify-phone')}
           />
         </motion.div>
