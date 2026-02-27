@@ -1,0 +1,94 @@
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link "مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img [ref=e7]
+          - generic [ref=e10]:
+            - generic [ref=e11]: مؤسسة حسين إبراهيم حسين
+            - generic [ref=e12]: للمجوهرات الذهبية
+        - navigation [ref=e13]:
+          - link "الرئيسية" [ref=e14] [cursor=pointer]:
+            - /url: /
+          - link "من نحن" [ref=e15] [cursor=pointer]:
+            - /url: /about
+          - link "مقاس الخاتم" [ref=e16] [cursor=pointer]:
+            - /url: /ring-size
+          - link "شروط التوصيل" [ref=e17] [cursor=pointer]:
+            - /url: /delivery
+        - link "Test User" [ref=e19] [cursor=pointer]:
+          - /url: /dashboard
+          - button "Test User" [ref=e20]:
+            - img
+            - text: Test User
+    - main [ref=e21]:
+      - generic [ref=e24]:
+        - button "← رجوع" [ref=e25] [cursor=pointer]
+        - generic [ref=e26]:
+          - img "Tamara" [ref=e28]
+          - img [ref=e30]
+          - heading "أدخل رقم الجوال" [level=2] [ref=e32]
+          - paragraph [ref=e33]: سنرسل لك رمز تحقق لتأكيد رقمك
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - generic [ref=e36]:
+                - generic [ref=e37]: 🇸🇦
+                - generic [ref=e38]: "+966"
+              - textbox "05XXXXXXXX" [ref=e39]
+            - paragraph [ref=e40]: يجب أن يكون الرقم مسجل باسمك في البنك
+            - button "إرسال الرمز" [disabled]
+          - generic [ref=e42]:
+            - img [ref=e43]
+            - generic [ref=e46]: معتمد من هيئة السعودية للبيانات والذكاء الاصطناعي
+    - contentinfo [ref=e47]:
+      - generic [ref=e48]:
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - 'link "السجل التجاري السجل التجاري بيانات السجل التجاري: 1010088875" [ref=e51] [cursor=pointer]':
+              - /url: https://mc.gov.sa/ar/eservices/Pages/Commercial-data.aspx
+              - img "السجل التجاري" [ref=e52]
+              - generic [ref=e53]:
+                - generic [ref=e54]: السجل التجاري
+                - generic [ref=e55]: "بيانات السجل التجاري: 1010088875"
+            - link "منصة الأعمال السعودية منصة الأعمال السعودية مسجل وموثق ضمن منصة الأعمال السعودية" [ref=e56] [cursor=pointer]:
+              - /url: /business-info
+              - img "منصة الأعمال السعودية" [ref=e57]
+              - generic [ref=e58]:
+                - generic [ref=e59]: منصة الأعمال السعودية
+                - generic [ref=e60]: مسجل وموثق ضمن منصة الأعمال السعودية
+          - generic [ref=e61]:
+            - heading "روابط سريعة" [level=3] [ref=e62]
+            - generic [ref=e63]:
+              - link "من نحن" [ref=e64] [cursor=pointer]:
+                - /url: /about
+              - link "مقاس الخاتم" [ref=e65] [cursor=pointer]:
+                - /url: /ring-size
+              - link "شروط التوصيل" [ref=e66] [cursor=pointer]:
+                - /url: /delivery
+              - link "الأحكام الشرعية" [ref=e67] [cursor=pointer]:
+                - /url: /shariah
+              - link "سياسة الخصوصية" [ref=e68] [cursor=pointer]:
+                - /url: /privacy
+              - link "الشروط والأحكام" [ref=e69] [cursor=pointer]:
+                - /url: /terms
+              - link "الاسترجاع والاستبدال" [ref=e70] [cursor=pointer]:
+                - /url: /returns
+          - generic [ref=e71]:
+            - heading "تواصل معنا" [level=3] [ref=e72]
+            - link "تواصل معنا على الواتساب" [ref=e73] [cursor=pointer]:
+              - /url: https://wa.me/966594241060
+              - img [ref=e74]
+              - text: تواصل معنا على الواتساب
+            - heading "طرق الدفع" [level=4] [ref=e76]
+            - generic [ref=e77]:
+              - generic [ref=e78]: Visa
+              - generic [ref=e79]: Mastercard
+              - generic [ref=e80]: مدى
+              - generic [ref=e81]: Apple Pay
+              - generic [ref=e82]: STC Pay
+              - generic [ref=e83]: تحويل بنكي
+        - paragraph [ref=e85]: © 2026 مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية. جميع الحقوق محفوظة.

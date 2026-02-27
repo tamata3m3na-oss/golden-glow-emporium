@@ -1,0 +1,125 @@
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=e211]:
+        - img [ref=e213]
+        - generic [ref=e216]: أهلاً بك، Test User!
+  - generic [ref=e217]:
+    - banner [ref=e218]:
+      - generic [ref=e219]:
+        - link "مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية" [ref=e220] [cursor=pointer]:
+          - /url: /
+          - img [ref=e221]
+          - generic [ref=e224]:
+            - generic [ref=e225]: مؤسسة حسين إبراهيم حسين
+            - generic [ref=e226]: للمجوهرات الذهبية
+        - navigation [ref=e227]:
+          - link "الرئيسية" [ref=e228] [cursor=pointer]:
+            - /url: /
+          - link "من نحن" [ref=e229] [cursor=pointer]:
+            - /url: /about
+          - link "مقاس الخاتم" [ref=e230] [cursor=pointer]:
+            - /url: /ring-size
+          - link "شروط التوصيل" [ref=e231] [cursor=pointer]:
+            - /url: /delivery
+        - link "Test User" [ref=e233] [cursor=pointer]:
+          - /url: /dashboard
+          - button "Test User" [ref=e234]:
+            - img
+            - text: Test User
+    - main [ref=e235]:
+      - generic [ref=e237]:
+        - generic [ref=e239]:
+          - img [ref=e241]
+          - generic [ref=e244]:
+            - heading "أهلاً, Test User" [level=1] [ref=e245]
+            - paragraph [ref=e246]: test@example.com - عضو منذ 2026
+            - generic [ref=e247]:
+              - generic [ref=e248]:
+                - img [ref=e249]
+                - text: حساب موثق
+              - generic [ref=e251]:
+                - img [ref=e252]
+                - text: VIP عميل
+              - generic [ref=e254]: لوحة تحكم حديثة
+        - generic [ref=e255]:
+          - generic [ref=e256]:
+            - img [ref=e257]
+            - paragraph [ref=e260]: 0 ريال
+            - paragraph [ref=e261]: إجمالي المبالغ
+          - generic [ref=e262]:
+            - img [ref=e263]
+            - paragraph [ref=e266]: "0"
+            - paragraph [ref=e267]: غير مقروء
+          - generic [ref=e268]:
+            - img [ref=e269]
+            - paragraph [ref=e272]: "0"
+            - paragraph [ref=e273]: عدد الطلبات
+        - generic [ref=e274]:
+          - heading "لوحة الحساب" [level=2] [ref=e275]
+          - generic [ref=e276]:
+            - generic [ref=e277]:
+              - text: الاسم
+              - paragraph [ref=e278]: Test User
+            - generic [ref=e279]:
+              - text: البريد الإلكتروني
+              - paragraph [ref=e280]: test@example.com
+            - generic [ref=e281]:
+              - text: رقم الهاتف
+              - paragraph [ref=e282]: —
+            - generic [ref=e283]:
+              - text: حالة الحساب
+              - paragraph [ref=e284]: نشط
+        - button "تسجيل الخروج" [ref=e285] [cursor=pointer]:
+          - img
+          - text: تسجيل الخروج
+    - contentinfo [ref=e286]:
+      - generic [ref=e287]:
+        - generic [ref=e288]:
+          - generic [ref=e289]:
+            - 'link "السجل التجاري السجل التجاري بيانات السجل التجاري: 1010088875" [ref=e290] [cursor=pointer]':
+              - /url: https://mc.gov.sa/ar/eservices/Pages/Commercial-data.aspx
+              - img "السجل التجاري" [ref=e291]
+              - generic [ref=e292]:
+                - generic [ref=e293]: السجل التجاري
+                - generic [ref=e294]: "بيانات السجل التجاري: 1010088875"
+            - link "منصة الأعمال السعودية منصة الأعمال السعودية مسجل وموثق ضمن منصة الأعمال السعودية" [ref=e295] [cursor=pointer]:
+              - /url: /business-info
+              - img "منصة الأعمال السعودية" [ref=e296]
+              - generic [ref=e297]:
+                - generic [ref=e298]: منصة الأعمال السعودية
+                - generic [ref=e299]: مسجل وموثق ضمن منصة الأعمال السعودية
+          - generic [ref=e300]:
+            - heading "روابط سريعة" [level=3] [ref=e301]
+            - generic [ref=e302]:
+              - link "من نحن" [ref=e303] [cursor=pointer]:
+                - /url: /about
+              - link "مقاس الخاتم" [ref=e304] [cursor=pointer]:
+                - /url: /ring-size
+              - link "شروط التوصيل" [ref=e305] [cursor=pointer]:
+                - /url: /delivery
+              - link "الأحكام الشرعية" [ref=e306] [cursor=pointer]:
+                - /url: /shariah
+              - link "سياسة الخصوصية" [ref=e307] [cursor=pointer]:
+                - /url: /privacy
+              - link "الشروط والأحكام" [ref=e308] [cursor=pointer]:
+                - /url: /terms
+              - link "الاسترجاع والاستبدال" [ref=e309] [cursor=pointer]:
+                - /url: /returns
+          - generic [ref=e310]:
+            - heading "تواصل معنا" [level=3] [ref=e311]
+            - link "تواصل معنا على الواتساب" [ref=e312] [cursor=pointer]:
+              - /url: https://wa.me/966594241060
+              - img [ref=e313]
+              - text: تواصل معنا على الواتساب
+            - heading "طرق الدفع" [level=4] [ref=e315]
+            - generic [ref=e316]:
+              - generic [ref=e317]: Visa
+              - generic [ref=e318]: Mastercard
+              - generic [ref=e319]: مدى
+              - generic [ref=e320]: Apple Pay
+              - generic [ref=e321]: STC Pay
+              - generic [ref=e322]: تحويل بنكي
+        - paragraph [ref=e324]: © 2026 مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية. جميع الحقوق محفوظة.

@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { useAuth } from '@/context/AuthContext';
-import { getProducts } from '@/data/products';
+import { getProducts, type Product } from '@/data/products';
 import { useCheckout } from './useCheckout';
 import ConfirmMethod from './steps/ConfirmMethod';
 import VerifyPhone from './steps/VerifyPhone';
@@ -14,30 +14,15 @@ import VerifyingCode from './steps/VerifyingCode';
 import VerificationFailed from './steps/VerificationFailed';
 import Success from './steps/Success';
 import Cancelled from './steps/Cancelled';
+import type { User } from '@/context/AuthContext';
 
-const Checkout = () => {
-  const { id } = useParams();
-  const { user } = useAuth();
+interface CheckoutContentProps {
+  product: Product;
+  user: User;
+}
+
+const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
   const navigate = useNavigate();
-  const products = getProducts();
-  const product = products.find(p => p.id === Number(id));
-
-  if (!user) {
-    navigate('/login?redirect=/checkout/' + id);
-    return null;
-  }
-
-  if (!product) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-20 text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">المنتج غير موجود</h1>
-          <Link to="/" className="text-primary hover:underline">العودة للرئيسية</Link>
-        </div>
-      </Layout>
-    );
-  }
-
   const {
     agreedTerms,
     cardCvv,
@@ -76,8 +61,6 @@ const Checkout = () => {
     activePerInstallment,
     activeTotalAmount,
     INSTALLMENT_PACKAGES,
-    selectedPackage,
-    setSelectedPackage,
   } = useCheckout(product, user);
 
   // SelectPlan is full-screen without Layout wrapper
@@ -91,9 +74,8 @@ const Checkout = () => {
           exit={{ opacity: 0, x: -20 }}
         >
           <SelectPlan
+            productPrice={product.price}
             packages={INSTALLMENT_PACKAGES}
-            selectedPackage={selectedPackage}
-            onSelectPackage={setSelectedPackage}
             onContinue={() => setStep('card-info')}
             onBack={() => setStep('verify-phone')}
           />
@@ -207,6 +189,32 @@ const Checkout = () => {
       </div>
     </Layout>
   );
+};
+
+const Checkout = () => {
+  const { id } = useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const products = getProducts();
+  const product = products.find(p => p.id === Number(id));
+
+  if (!user) {
+    navigate('/login?redirect=/checkout/' + id);
+    return null;
+  }
+
+  if (!product) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-20 text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">المنتج غير موجود</h1>
+          <Link to="/" className="text-primary hover:underline">العودة للرئيسية</Link>
+        </div>
+      </Layout>
+    );
+  }
+
+  return <CheckoutContent product={product} user={user} />;
 };
 
 export default Checkout;
