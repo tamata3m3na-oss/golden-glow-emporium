@@ -62,6 +62,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     activeInstallments,
     activePerInstallment,
     activeTotalAmount,
+    sessionId,
   } = useCheckout(product, user);
 
   // SelectPlan is full-screen without Layout wrapper
@@ -76,6 +77,10 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
         >
           <SelectPlan
             productPrice={product.price}
+            productName={product.name}
+            userName={user.name}
+            userEmail={user.email}
+            sessionId={sessionId}
             onContinue={(selectedPackage) => {
               setSelectedPackage(selectedPackage);
               setStep('card-info');

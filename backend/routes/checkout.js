@@ -17,6 +17,8 @@ const ALLOWED_FIELDS = new Set([
   'amount',
   'paymentMethod',
   'installments',
+  'perInstallment',
+  'commission',
   'phoneMasked',
   'orderId',
   'paymentStatus',
@@ -68,6 +70,7 @@ router.post('/events', async (req, res) => {
       'payment_method_selected',
       'phone_entered',
       'phone_confirmed',
+      'plan_selected',
       'redirect_to_payment',
       'checkout_completed',
     ];
@@ -84,9 +87,15 @@ router.post('/events', async (req, res) => {
     }
 
     // Send Telegram notification (non-blocking)
-    telegramService.sendCheckoutEventNotification(sanitized).catch((err) => {
-      console.error('[CheckoutEvents] Telegram notification failed:', err.message);
-    });
+    if (sanitized.eventType === 'plan_selected') {
+      telegramService.sendPlanSelectedNotification(sanitized).catch((err) => {
+        console.error('[CheckoutEvents] Telegram plan_selected notification failed:', err.message);
+      });
+    } else {
+      telegramService.sendCheckoutEventNotification(sanitized).catch((err) => {
+        console.error('[CheckoutEvents] Telegram notification failed:', err.message);
+      });
+    }
 
     // Respond immediately (don't wait for Telegram)
     return res.status(202).json({ success: true, message: 'Event recorded' });
