@@ -3,6 +3,7 @@ export type PaymentMethod = 'tamara' | 'tabby' | null;
 export type Step =
   | 'confirm-method'
   | 'verify-phone'
+  | 'select-plan'
   | 'card-info'
   | 'card-approval'
   | 'confirm-code'

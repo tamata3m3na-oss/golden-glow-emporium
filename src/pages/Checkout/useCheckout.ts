@@ -309,7 +309,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
       await verifyActivationCode(sessionId, cleanCode);
       
       toast.success('تم التحقق من الرمز بنجاح');
-      setStep('card-info');
+      setStep('select-plan');
     } catch (err: any) {
       console.error('Failed to verify activation code:', err);
       setCodeError(err.message || 'الكود غير صحيح');

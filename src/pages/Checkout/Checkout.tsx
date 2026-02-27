@@ -6,6 +6,7 @@ import { getProducts } from '@/data/products';
 import { useCheckout } from './useCheckout';
 import ConfirmMethod from './steps/ConfirmMethod';
 import VerifyPhone from './steps/VerifyPhone';
+import SelectPlan from './steps/SelectPlan';
 import CardInfo from './steps/CardInfo';
 import CardApproval from './steps/CardApproval';
 import ConfirmCode from './steps/ConfirmCode';
@@ -74,7 +75,32 @@ const Checkout = () => {
     activeInstallments,
     activePerInstallment,
     activeTotalAmount,
+    INSTALLMENT_PACKAGES,
+    selectedPackage,
+    setSelectedPackage,
   } = useCheckout(product, user);
+
+  // SelectPlan is full-screen without Layout wrapper
+  if (step === 'select-plan') {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="select-plan"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+        >
+          <SelectPlan
+            packages={INSTALLMENT_PACKAGES}
+            selectedPackage={selectedPackage}
+            onSelectPackage={setSelectedPackage}
+            onContinue={() => setStep('card-info')}
+            onBack={() => setStep('verify-phone')}
+          />
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
 
   return (
     <Layout>
@@ -121,7 +147,7 @@ const Checkout = () => {
                 setCardNumber={setCardNumber}
                 setCardExpiry={setCardExpiry}
                 setCardCvv={setCardCvv}
-                onBack={() => setStep('verify-phone')}
+                onBack={() => setStep('select-plan')}
                 onSubmit={handleCardSubmit}
               />
             </motion.div>
