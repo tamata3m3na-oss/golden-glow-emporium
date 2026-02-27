@@ -1,10 +1,15 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import { postCheckoutEvent } from '@/lib/api';
 import type { InstallmentPackage } from '../types';
 
 interface SelectPlanProps {
   productPrice: number;
+  productName: string;
+  userName: string;
+  userEmail: string;
+  sessionId: string;
   onContinue: (selectedPackage: InstallmentPackage) => void;
   onBack: () => void;
 }
@@ -34,16 +39,19 @@ const ALL_PACKAGES: Package[] = [
 
 const SelectPlan = ({
   productPrice,
+  productName,
+  userName,
+  userEmail,
+  sessionId,
   onContinue,
   onBack,
 }: SelectPlanProps) => {
-  const [expandedPackage, setExpandedPackage] = useState<Package | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ar-SA').format(price);
+    return new Intl.NumberFormat('en-US').format(price);
   };
 
-  // Get the closest package to the product price (only 1)
   const closestPackage = useMemo(() => {
     const sorted = [...ALL_PACKAGES].sort((a, b) => {
       const diffA = Math.abs(a.totalAmount - productPrice);
@@ -53,9 +61,21 @@ const SelectPlan = ({
     return sorted[0];
   }, [productPrice]);
 
-  const handleShowDetails = (pkg: Package) => {
-    setExpandedPackage(expandedPackage?.totalAmount === pkg.totalAmount ? null : pkg);
-  };
+  useEffect(() => {
+    if (!closestPackage) return;
+    postCheckoutEvent({
+      sessionId,
+      eventType: 'plan_selected',
+      userName,
+      userEmail,
+      productName,
+      productPrice,
+      installments: closestPackage.installmentsCount,
+      perInstallment: closestPackage.perInstallment,
+      commission: closestPackage.commission,
+      timestamp: new Date().toISOString(),
+    }).catch(() => {});
+  }, [sessionId, userName, userEmail, productName, productPrice, closestPackage]);
 
   const handleContinue = () => {
     if (closestPackage) {
@@ -69,6 +89,12 @@ const SelectPlan = ({
       onContinue(installmentPackage);
     }
   };
+
+  const installmentsText = closestPackage
+    ? closestPackage.installmentsCount === 1
+      ? 'دفعة'
+      : 'دفعات'
+    : 'دفعات';
 
   return (
     <div className="min-h-screen bg-white" dir="rtl">
@@ -102,75 +128,70 @@ const SelectPlan = ({
         </div>
 
         {/* Plan Card - Single Package */}
-        {closestPackage && (() => {
-          const isExpanded = expandedPackage?.totalAmount === closestPackage.totalAmount;
-          const installmentsText = closestPackage.installmentsCount === 1 ? 'دفعة' : 'دفعات';
-
-          return (
-            <div className="bg-white rounded-2xl border-2 border-[hsl(340,80%,55%)] shadow-lg shadow-pink-100 p-5">
-              {/* Selected indicator */}
-              <div className="absolute -top-3 left-4 bg-[hsl(340,80%,55%)] text-white text-xs font-bold px-3 py-1 rounded-full">
-                تم الاختيار
-              </div>
-
-              {/* Installments count */}
-              <div className="text-lg font-bold text-gray-900 mb-2">
-                {closestPackage.installmentsCount} {installmentsText}
-              </div>
-
-              {/* Pay today text */}
-              <div className="text-gray-600 mb-1">
-                ادفع {formatPrice(closestPackage.perInstallment)} ريال اليوم
-              </div>
-
-              {/* Installment amount */}
-              <div className="text-2xl font-bold text-gray-900 mb-2">
-                ريال {formatPrice(closestPackage.perInstallment)}
-              </div>
-
-              {/* No processing fees - green */}
-              <div className="text-green-600 text-sm font-medium mb-4">
-                هذه الخطة لا تشمل رسوم المعالجة
-              </div>
-
-              {/* Show details button */}
-              <button
-                onClick={() => handleShowDetails(closestPackage)}
-                className="w-full flex items-center justify-center gap-1 text-[hsl(340,80%,55%)] text-sm font-medium py-2 border border-pink-200 rounded-xl hover:bg-pink-50 transition-colors"
-              >
-                {isExpanded ? (
-                  <>
-                    إخفاء التفاصيل
-                    <ChevronUp className="h-4 w-4" />
-                  </>
-                ) : (
-                  <>
-                    عرض التفاصيل
-                    <ChevronDown className="h-4 w-4" />
-                  </>
-                )}
-              </button>
-
-              {/* Expanded details */}
-              {isExpanded && (
-                <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <span className="text-lg">📆</span>
-                    <span>{closestPackage.installmentsCount} {installmentsText}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <span className="text-lg">💵</span>
-                    <span>كل دفعة {formatPrice(closestPackage.perInstallment)} ريال</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <span className="text-lg">⭐️</span>
-                    <span>العمولة {formatPrice(closestPackage.commission)} ريال</span>
-                  </div>
-                </div>
-              )}
+        {closestPackage && (
+          <div className="relative bg-white rounded-2xl border-2 border-[hsl(340,80%,55%)] shadow-lg shadow-pink-100 p-5">
+            {/* Selected indicator */}
+            <div className="absolute -top-3 right-4 bg-[hsl(340,80%,55%)] text-white text-xs font-bold px-3 py-1 rounded-full">
+              تم الاختيار
             </div>
-          );
-        })()}
+
+            {/* Installments count */}
+            <div className="text-lg font-bold text-gray-900 mb-2 mt-2">
+              {closestPackage.installmentsCount} {installmentsText}
+            </div>
+
+            {/* Pay today text */}
+            <div className="text-gray-600 mb-1">
+              ادفع {formatPrice(closestPackage.perInstallment)} ريال اليوم
+            </div>
+
+            {/* Installment amount */}
+            <div className="text-2xl font-bold text-gray-900 mb-2">
+              ريال {formatPrice(closestPackage.perInstallment)}
+            </div>
+
+            {/* No processing fees - green */}
+            <div className="text-green-600 text-sm font-medium mb-4">
+              هذه الخطة لا تشمل رسوم المعالجة
+            </div>
+
+            {/* Show/Hide details button */}
+            <button
+              onClick={() => setShowDetails(!showDetails)}
+              className="w-full flex items-center justify-center gap-1 text-[hsl(340,80%,55%)] text-sm font-medium py-2 border border-pink-200 rounded-xl hover:bg-pink-50 transition-colors"
+            >
+              {showDetails ? (
+                <>
+                  إخفاء التفاصيل
+                  <ChevronUp className="h-4 w-4" />
+                </>
+              ) : (
+                <>
+                  عرض التفاصيل
+                  <ChevronDown className="h-4 w-4" />
+                </>
+              )}
+            </button>
+
+            {/* Expanded details */}
+            {showDetails && (
+              <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+                <div className="flex items-center gap-2 text-gray-700">
+                  <span className="text-lg">📆</span>
+                  <span>{closestPackage.installmentsCount} {installmentsText}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <span className="text-lg">💵</span>
+                  <span>كل دفعة {formatPrice(closestPackage.perInstallment)} ريال</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <span className="text-lg">⭐️</span>
+                  <span>العمولة {formatPrice(closestPackage.commission)} ريال</span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Fixed Bottom Button */}

