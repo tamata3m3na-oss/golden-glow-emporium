@@ -173,26 +173,18 @@ const CardInfo = ({
         {/* Content */}
         <div className="flex flex-col flex-1" style={{ paddingBottom: '80px' }}>
           {/* Page Title */}
-          <h1 className="page-title">دفع آمن</h1>
+          <h1 className="page-title">التأكيد والدفع</h1>
 
           {/* Card Form Section */}
           <div className="card-form-section">
             {/* Card Header */}
             <div className="card-header">
-              <div className="flex items-center gap-2">
-                <div className="radio-circle" />
-                <span className="add-card-text">أضف بطاقة جديدة</span>
-              </div>
+              <span className="add-card-text">أضف بطاقة جديدة</span>
+              <span className="radio-circle"></span>
             </div>
 
             {/* Card Number Input with Brand Icons Inside */}
             <div className="card-number-input-container" style={{ padding: '0 20px' }}>
-              <label 
-                className="text-[13px] font-medium block mb-2 text-right"
-                style={{ color: '#4B5563' }}
-              >
-                رقم البطاقة
-              </label>
               <div className="relative">
                 <input
                   id="card_number"
@@ -201,7 +193,6 @@ const CardInfo = ({
                   placeholder="0000 0000 0000 0000"
                   className="card-input-field"
                   style={{ 
-                    backgroundColor: '#FFFFFF',
                     color: '#1F2937',
                     letterSpacing: '0.15em',
                     direction: 'ltr'
@@ -215,12 +206,6 @@ const CardInfo = ({
             {/* CVV and Expiry Row - No Gap */}
             <div className="cvv-expiry-row" style={{ padding: '0 20px 20px' }}>
               <div className="card-number-input-container">
-                <label 
-                  className="text-[13px] font-medium block mb-2 text-right"
-                  style={{ color: '#4B5563' }}
-                >
-                  تاريخ الانتهاء
-                </label>
                 <input
                   value={cardExpiry}
                   onChange={handleExpiryChange}
@@ -233,7 +218,6 @@ const CardInfo = ({
                     borderBottom: expiryInvalid 
                       ? 'none' 
                       : '1px solid var(--purple-line)',
-                    backgroundColor: '#FFFFFF',
                     color: '#1F2937',
                     direction: 'ltr'
                   }}
@@ -244,22 +228,15 @@ const CardInfo = ({
                 )}
               </div>
               <div className="card-number-input-container">
-                <label 
-                  className="text-[13px] font-medium block mb-2 text-right"
-                  style={{ color: '#4B5563' }}
-                >
-                  CVV
-                </label>
                 <input
                   value={cardCvv}
                   onChange={e => setCardCvv(toEnglishNumbers(e.target.value))}
-                  placeholder="•••"
+                  placeholder="CVV"
                   type="password"
                   className="card-input-field"
                   style={{ 
                     border: 'none',
                     borderBottom: '1px solid var(--purple-line)',
-                    backgroundColor: '#FFFFFF',
                     color: '#1F2937',
                     direction: 'ltr'
                   }}
@@ -272,7 +249,7 @@ const CardInfo = ({
           {/* Plan Section */}
           {selectedPlan && (
             <>
-              <div className="plan-title">الخطة</div>
+              <div className="plan-title">اختار الخطة</div>
               
               <div 
                 className="plan-box"
@@ -281,13 +258,20 @@ const CardInfo = ({
                 <div className="plan-header">
                   <div className="plan-details">
                     <div className="monthly-amount">
+                      {formatPrice(selectedPlan.perInstallment)} ريال
                       <span className="usd-badge">
                         <small>$</small>{monthlyAmountUSD}
                       </span>
-                      {formatPrice(selectedPlan.perInstallment)} ريال
+                      <span>/شهرياً</span>
                     </div>
                     <div className="total-amount-details">
-                      الإجمالي: {formatPrice(selectedPlan.totalAmount)} ريال ({totalAmountUSD} $)
+                      {selectedPlan.installmentsCount} دفعات · الإجمالي
+                      <span>
+                        {formatPrice(selectedPlan.totalAmount)} ريال
+                        <span className="usd-badge" style={{ marginRight: '4px' }}>
+                          <small>$</small>{totalAmountUSD}
+                        </span>
+                      </span>
                     </div>
                   </div>
                   <span className={`arrow-icon ${showPlanDetails ? 'rotated' : ''}`}>›</span>
