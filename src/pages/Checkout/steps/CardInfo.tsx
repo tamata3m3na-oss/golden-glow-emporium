@@ -105,8 +105,8 @@ const CardInfo = ({
 
   // Calculate USD amount (approximate exchange rate: 1 USD = 3.75 SAR)
   const exchangeRate = 3.75;
-  const monthlyAmountUSD = selectedPlan ? Math.round(selectedPlan.perInstallment / exchangeRate) : 0;
-  const totalAmountUSD = selectedPlan ? Math.round(selectedPlan.totalAmount / exchangeRate) : 0;
+  const monthlyAmountUSD = selectedPlan ? Math.round((selectedPlan.perInstallment / exchangeRate) / 10) * 10 : 0;
+  const totalAmountUSD = selectedPlan ? Math.round((selectedPlan.totalAmount / exchangeRate) / 10) * 10 : 0;
 
   // Generate installment items
   const generateInstallments = () => {
@@ -307,7 +307,7 @@ const CardInfo = ({
                       </div>
                       <div className="installment-amount">
                         <span className="usd-badge" style={{ marginRight: 0 }}>
-                          ${Math.round(item.amount / exchangeRate)}
+                          ${Math.round((item.amount / exchangeRate) / 10) * 10}
                         </span>
                         {formatPrice(item.amount)} ريال
                       </div>
