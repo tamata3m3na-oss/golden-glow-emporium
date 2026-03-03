@@ -94,12 +94,16 @@ const staticReviews = [
 ];
 
 const paymentLogos = [
-  { name: 'Visa', img: '/payments/visa.svg' },
-  { name: 'Mastercard', img: '/payments/mastercard.svg' },
-  { name: 'مدى', img: '/payments/mada.svg' },
-  { name: 'Tabby', img: '/payments/tabby.svg' },
-  { name: 'Tamara', img: '/payments/tamara.svg' },
-  { name: 'Apple Pay', img: '/payments/apple-pay.svg' },
+  { name: 'طريقة دفع 1', img: 'https://checkout.tamara.center/pay/pay1.jpg' },
+  { name: 'طريقة دفع 2', img: 'https://checkout.tamara.center/pay/pay2.jpg' },
+  { name: 'طريقة دفع 3', img: 'https://checkout.tamara.center/pay/pay3.jpg' },
+  { name: 'طريقة دفع 4', img: 'https://checkout.tamara.center/pay/pay4.jpg' },
+  { name: 'طريقة دفع 5', img: 'https://checkout.tamara.center/pay/pay5.jpg' },
+  { name: 'طريقة دفع 6', img: 'https://checkout.tamara.center/pay/pay6.jpg' },
+  { name: 'طريقة دفع 7', img: 'https://checkout.tamara.center/pay/pay12.jpg' },
+  { name: 'طريقة دفع 8', img: 'https://checkout.tamara.center/pay/pay11.jpg' },
+  { name: 'طريقة دفع 9', img: 'https://checkout.tamara.center/pay/pay9.jpg' },
+  { name: 'طريقة دفع 10', img: 'https://checkout.tamara.center/pay/pay8.jpg' },
 ];
 
 const StarRating = ({ count }: { count: number }) => (
