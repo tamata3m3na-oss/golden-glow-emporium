@@ -95,4 +95,59 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* تأثير الذهب اللامع */
+  .gold-shine {
+    background: linear-gradient(90deg, #d4af37, #f4e4ba, #d4af37);
+    background-size: 200% auto;
+    animation: shine 3s linear infinite;
+  }
+
+  @keyframes shine {
+    to {
+      background-position: 200% center;
+    }
+  }
+
+  /* زر المفضلة */
+  .wish {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    padding: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .wish:hover {
+    background: white;
+    transform: scale(1.1);
+  }
+
+  /* معلومات المنتج */
+  .carousel-item-info {
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .carousel-item-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .carousel-item-price {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: hsl(43 74% 49%);
+    margin-bottom: 1rem;
+  }
+
+  /* صورة المنتج */
+  .carousel-item-image {
+    object-fit: contain;
+    padding: 1rem;
+  }
 }

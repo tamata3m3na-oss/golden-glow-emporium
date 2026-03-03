@@ -11,6 +11,8 @@ export interface Product {
   isDefault?: boolean;
 }
 
+const newImageUrl = "https://raw.githubusercontent.com/tamata3m3na-oss/golden-glow-emporium/main/src/assets/gold-photo.png";
+
 export const defaultProducts: Product[] = [
   {
     id: 1,
@@ -19,7 +21,7 @@ export const defaultProducts: Product[] = [
     weight: "1",
     karat: "24",
     description: "سبيكة ذهب خالص عيار 24 قيراط",
-    imageUrl: "https://i.ibb.co/tpBc0ZXp/Whats-App-Image-2026-02-26-at-12-36-12-AM.jpg",
+    imageUrl: newImageUrl,
     isDefault: true,
     order: 0,
   },
@@ -30,7 +32,7 @@ export const defaultProducts: Product[] = [
     weight: "4",
     karat: "24",
     description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 4 جرام",
-    imageUrl: "https://i.ibb.co/tpBc0ZXp/Whats-App-Image-2026-02-26-at-12-36-12-AM.jpg",
+    imageUrl: newImageUrl,
     isDefault: true,
     order: 1,
   },
@@ -41,7 +43,7 @@ export const defaultProducts: Product[] = [
     weight: "15",
     karat: "24",
     description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 15 جرام",
-    imageUrl: "https://i.ibb.co/tpBc0ZXp/Whats-App-Image-2026-02-26-at-12-36-12-AM.jpg",
+    imageUrl: newImageUrl,
     isDefault: true,
     order: 2,
   },
@@ -52,7 +54,7 @@ export const defaultProducts: Product[] = [
     weight: "8",
     karat: "24",
     description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 8 جرام",
-    imageUrl: "https://i.ibb.co/tpBc0ZXp/Whats-App-Image-2026-02-26-at-12-36-12-AM.jpg",
+    imageUrl: newImageUrl,
     isDefault: true,
     order: 3,
   },
@@ -63,7 +65,7 @@ export const defaultProducts: Product[] = [
     weight: "36",
     karat: "24",
     description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 36 جرام",
-    imageUrl: "https://i.ibb.co/tpBc0ZXp/Whats-App-Image-2026-02-26-at-12-36-12-AM.jpg",
+    imageUrl: newImageUrl,
     isDefault: true,
     order: 4,
   },
@@ -74,7 +76,7 @@ export const defaultProducts: Product[] = [
     weight: "8",
     karat: "24",
     description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 8 جرام",
-    imageUrl: "https://i.ibb.co/tpBc0ZXp/Whats-App-Image-2026-02-26-at-12-36-12-AM.jpg",
+    imageUrl: newImageUrl,
     isDefault: true,
     order: 5,
   },
@@ -85,7 +87,7 @@ export const defaultProducts: Product[] = [
     weight: "14",
     karat: "24",
     description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 14 جرام",
-    imageUrl: "https://i.ibb.co/tpBc0ZXp/Whats-App-Image-2026-02-26-at-12-36-12-AM.jpg",
+    imageUrl: newImageUrl,
     isDefault: true,
     order: 6,
   },
@@ -96,7 +98,7 @@ export const defaultProducts: Product[] = [
     weight: "4",
     karat: "24",
     description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 4 جرام",
-    imageUrl: "https://i.ibb.co/tpBc0ZXp/Whats-App-Image-2026-02-26-at-12-36-12-AM.jpg",
+    imageUrl: newImageUrl,
     isDefault: true,
     order: 7,
   },
