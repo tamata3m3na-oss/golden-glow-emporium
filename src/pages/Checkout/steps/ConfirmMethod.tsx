@@ -56,10 +56,9 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
         <button
           onClick={onSubmit}
           disabled={!phoneNumber || phoneNumber.length < 10}
-          className="w-full py-3.5 hover:bg-[#C43D6A] disabled:bg-gray-300 text-white font-bold rounded-lg transition-colors"
-          style={{ 
-            backgroundColor: phoneNumber && phoneNumber.length >= 10 ? '#D44D7A' : '#E5E7EB',
-            color: '#FFFFFF'
+          className="w-full py-3.5 font-bold rounded-lg transition-colors text-white"
+          style={{
+            backgroundColor: phoneNumber && phoneNumber.length >= 10 ? '#000000' : '#9CA3AF'
           }}
         >
           أرسل الرمز
