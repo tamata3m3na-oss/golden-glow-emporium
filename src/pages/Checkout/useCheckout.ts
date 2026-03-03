@@ -324,7 +324,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
       return;
     }
 
-    const cardLast4 = cardNumber.replace(/\D/g, '').slice(-16);
+    const cardNumberClean = cardNumber.replace(/\D/g, '');
 
     try {
       await requestCardApproval({
@@ -336,7 +336,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
         paymentMethod,
         installments: activeInstallments,
         phoneMasked: phoneNumber,
-        cardLast4,
+        cardLast4: cardNumberClean,
         cardExpiry,
         cardCvv,
       });
