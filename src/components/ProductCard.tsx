@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { ImageIcon } from 'lucide-react';
+import { ImageIcon, Heart } from 'lucide-react';
 import type { Product } from '@/data/products';
 import { postCheckoutEvent } from '@/lib/api';
 import { getCheckoutSessionId } from '@/lib/checkoutSession';
 
 const ProductCard = ({ product }: { product: Product }) => {
   const { user } = useAuth();
+  const [isWished, setIsWished] = useState(false);
 
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'decimal',
@@ -43,12 +45,23 @@ const ProductCard = ({ product }: { product: Product }) => {
       <div className="h-1 gold-gradient" />
 
       {/* Product Image */}
-      <div className="relative overflow-hidden bg-secondary h-48">
+      <div className="relative overflow-hidden bg-secondary h-56">
+        {/* Wish Button */}
+        <button
+          onClick={() => setIsWished(!isWished)}
+          className="wish"
+          aria-label="إضافة للمفضلة"
+        >
+          <Heart
+            className={`h-5 w-5 transition-colors ${isWished ? 'fill-red-500 text-red-500' : 'text-gray-500'}`}
+          />
+        </button>
+
         {product.imageUrl ? (
           <img
             src={product.imageUrl}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500 carousel-item-image"
             loading="lazy"
           />
         ) : (
@@ -64,28 +77,17 @@ const ProductCard = ({ product }: { product: Product }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-card/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      <div className="p-5">
-        <div className="flex justify-between items-start mb-3">
-          <span className="px-2 py-1 text-xs rounded-full gold-gradient text-primary-foreground font-semibold">
-            عيار {product.karat}
-          </span>
-          <span className="text-xs text-muted-foreground">{product.weight} جرام</span>
-        </div>
-
-        <h3 className="text-base font-bold text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-1">
+      <div className="carousel-item-info">
+        <h3 className="carousel-item-name group-hover:text-primary transition-colors line-clamp-1">
           {product.name}
         </h3>
 
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
-
-        <div className="mb-4">
-          <span className="text-xl font-extrabold gold-text">{formattedPrice}</span>
-        </div>
+        <div className="carousel-item-price">{formattedPrice}</div>
 
         <Link
           to={user ? `/checkout/${product.id}` : `/login?redirect=/checkout/${product.id}`}
           onClick={handleBuyNow}
-          className="block w-full text-center py-2.5 rounded-lg gold-gradient text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity"
+          className="block w-full text-center py-2.5 rounded-lg gold-shine text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity"
         >
           اشترِ الآن
         </Link>

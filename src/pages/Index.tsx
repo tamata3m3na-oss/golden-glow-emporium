@@ -120,7 +120,7 @@ const Index = () => {
 
   const scroll = (dir: 'left' | 'right') => {
     if (scrollRef.current) {
-      const amount = 280;
+      const amount = 320;
       scrollRef.current.scrollBy({ left: dir === 'left' ? amount : -amount, behavior: 'smooth' });
     }
   };
@@ -160,7 +160,7 @@ const Index = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.05 }}
-                className="flex-shrink-0 w-[240px] snap-start"
+                className="flex-shrink-0 w-[300px] snap-start"
               >
                 <ProductCard product={product} />
               </motion.div>
