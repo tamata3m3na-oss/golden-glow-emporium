@@ -101,92 +101,88 @@ const SelectPlan = ({
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-1 text-gray-500 hover:text-[hsl(340,80%,55%)] transition-colors"
-          >
-            <ChevronLeft className="h-5 w-5" />
-            <span className="text-sm">رجوع</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <span className="text-gray-600 text-sm">English</span>
+            <span className="text-gray-400">[|]</span>
+            <button
+              onClick={onBack}
+              className="text-gray-500 hover:text-gray-700 transition-colors"
+            >
+              <span className="text-lg">✕</span>
+            </button>
+          </div>
           <img
             src="/tamara-logo.webp"
             alt="Tamara"
             className="h-8 object-contain"
           />
-          <div className="w-16" />
         </div>
       </div>
 
       {/* Content */}
       <div className="max-w-2xl mx-auto px-4 py-6 pb-32">
         {/* Title Section */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">خطة الدفع الخاصة بالمنتج</h1>
-          <p className="text-xl font-semibold text-[hsl(340,80%,55%)]">
-            طريقة الدفع لـ {formatPrice(productPrice)} ريال
+        <div className="mb-8">
+          <h1 className="text-[24px] font-bold text-black mb-2">اختر خطتك</h1>
+          <p className="text-[14px] text-gray-600">
+            حدد طريقة دفعك لـ {formatPrice(productPrice)} ريال
           </p>
         </div>
 
         {/* Plan Card - Single Package */}
         {closestPackage && (
-          <div className="relative bg-white rounded-2xl border-2 border-[hsl(340,80%,55%)] shadow-lg shadow-pink-100 p-5">
-            {/* Selected indicator */}
-            <div className="absolute -top-3 right-4 bg-[hsl(340,80%,55%)] text-white text-xs font-bold px-3 py-1 rounded-full">
-              تم الاختيار
+          <div className="bg-[#f7f3ff] rounded-xl p-5 text-right">
+            {/* Header Row */}
+            <div className="flex items-center justify-between mb-2">
+              <span className="bg-[#ab8dff1a] text-[#5e47b7] px-2 py-1 rounded text-xs font-semibold">
+                {closestPackage.installmentsCount} دفعات
+              </span>
+              <span className="text-black font-semibold text-base">
+                ادفع {formatPrice(closestPackage.perInstallment)} ريال اليوم
+              </span>
             </div>
 
-            {/* Installments count */}
-            <div className="text-lg font-bold text-gray-900 mb-2 mt-2">
-              {closestPackage.installmentsCount} {installmentsText}
+            {/* Monthly Payment */}
+            <div className="text-black font-semibold text-base mb-3">
+              بعدها {formatPrice(closestPackage.perInstallment)} ريال شهريًا
             </div>
 
-            {/* Pay today text */}
-            <div className="text-gray-600 mb-1">
-              ادفع {formatPrice(closestPackage.perInstallment)} ريال اليوم
+            {/* Note */}
+            <p className="text-[rgb(82,149,105)] text-xs mb-4">
+              هذه الخطة لا تشمل رسوم معالجة!
+            </p>
+
+            {/* Circle with number */}
+            <div className="flex justify-center mb-4">
+              <div className="w-10 h-10 bg-[#9c6af8] rounded-full flex items-center justify-center text-white font-bold text-lg">
+                {closestPackage.installmentsCount}
+              </div>
             </div>
 
-            {/* Installment amount */}
-            <div className="text-2xl font-bold text-gray-900 mb-2">
-              ريال {formatPrice(closestPackage.perInstallment)}
-            </div>
-
-            {/* No processing fees - green */}
-            <div className="text-green-600 text-sm font-medium mb-4">
-              هذه الخطة لا تشمل رسوم المعالجة
-            </div>
-
-            {/* Show/Hide details button */}
+            {/* Details Button */}
             <button
-              onClick={() => setShowDetails(!showDetails)}
-              className="w-full flex items-center justify-center gap-1 text-[hsl(340,80%,55%)] text-sm font-medium py-2 border border-pink-200 rounded-xl hover:bg-pink-50 transition-colors"
+              onClick={() => setShowDetails(true)}
+              className="w-full text-center text-black font-bold py-2"
             >
-              {showDetails ? (
-                <>
-                  إخفاء التفاصيل
-                  <ChevronUp className="h-4 w-4" />
-                </>
-              ) : (
-                <>
-                  عرض التفاصيل
-                  <ChevronDown className="h-4 w-4" />
-                </>
-              )}
+              عرض التفاصيل
             </button>
 
-            {/* Expanded details */}
+            {/* Expanded details - Bottom Sheet */}
             {showDetails && (
-              <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
-                <div className="flex items-center gap-2 text-gray-700">
-                  <span className="text-lg">📆</span>
-                  <span>{closestPackage.installmentsCount} {installmentsText}</span>
+              <div className="mt-4 pt-4 border-t border-purple-100 space-y-2">
+                <div className="flex items-center justify-between text-gray-700 text-sm">
+                  <span>اليوم</span>
+                  <span className="font-semibold">{formatPrice(closestPackage.perInstallment)} ريال</span>
                 </div>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <span className="text-lg">💵</span>
-                  <span>كل دفعة {formatPrice(closestPackage.perInstallment)} ريال</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <span className="text-lg">⭐️</span>
-                  <span>العمولة {formatPrice(closestPackage.commission)} ريال</span>
+                {Array.from({ length: closestPackage.installmentsCount - 1 }, (_, i) => (
+                  <div key={i} className="flex items-center justify-between text-gray-700 text-sm">
+                    <span>الدفعة {i + 1}</span>
+                    <span className="font-semibold">{formatPrice(closestPackage.perInstallment)} ريال</span>
+                  </div>
+                ))}
+                <div className="flex items-center justify-between text-black font-bold text-base pt-2 border-t border-purple-100 mt-2">
+                  <span>الإجمالي</span>
+                  <span>{formatPrice(closestPackage.totalAmount)} ريال</span>
                 </div>
               </div>
             )}
@@ -199,7 +195,7 @@ const SelectPlan = ({
         <div className="max-w-2xl mx-auto">
           <Button
             onClick={handleContinue}
-            className="w-full py-4 font-bold rounded-xl transition-all bg-[hsl(340,80%,55%)] hover:bg-[hsl(340,80%,50%)] text-white"
+            className="w-full py-4 font-bold rounded-[10px] transition-all bg-[#000] hover:bg-gray-800 text-white"
           >
             متابعة الدفع
           </Button>
