@@ -179,7 +179,7 @@ const CardInfo = ({
                 id="card_number"
                 value={cardNumber}
                 onChange={handleCardNumberChange}
-                placeholder="0000 0000 0000 0000"
+                placeholder="رقم البطاقة"
                 className="card-input-field"
                 style={{
                   height: '43px',
@@ -257,14 +257,14 @@ const CardInfo = ({
                   <div className="plan-details" style={{ width: '245.17px', height: '57px' }}>
                     <div className="monthly-amount">
                       {formatPrice(selectedPlan.perInstallment)} ريال
-                      <span className="usd-badge"><small>$</small>{monthlyAmountUSD}</span>
+                      <span className="usd-badge">${monthlyAmountUSD}</span>
                       <span>/شهرياً</span>
                     </div>
                     <div className="total-amount-details">
                       {selectedPlan.installmentsCount} دفعات · الإجمالي
                       <span>
                         {formatPrice(selectedPlan.totalAmount)} ريال
-                        <span className="usd-badge"><small>$</small>{totalAmountUSD}</span>
+                        <span className="usd-badge">${totalAmountUSD}</span>
                       </span>
                     </div>
                   </div>
@@ -307,7 +307,7 @@ const CardInfo = ({
                       </div>
                       <div className="installment-amount">
                         <span className="usd-badge" style={{ marginRight: 0 }}>
-                          <small>$</small>{Math.round(item.amount / exchangeRate)}
+                          ${Math.round(item.amount / exchangeRate)}
                         </span>
                         {formatPrice(item.amount)} ريال
                       </div>
@@ -352,7 +352,7 @@ const CardInfo = ({
           {selectedPlan ? (
             <>
               ادفع {formatPrice(selectedPlan.perInstallment)} ريال
-              <span className="usd-badge"><small>$</small>{monthlyAmountUSD}</span>
+              <span className="usd-badge">${monthlyAmountUSD}</span>
             </>
           ) : 'ادفع الآن'}
         </button>
