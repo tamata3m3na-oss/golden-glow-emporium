@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
 
 interface CheckoutProductProps {
   onConfirm: (phoneNumber: string) => void;
@@ -14,7 +13,8 @@ const CheckoutProduct = ({ onConfirm, onBack }: CheckoutProductProps) => {
     setPhoneNumber(val);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     if (phoneNumber.trim()) {
       onConfirm(phoneNumber);
     }
@@ -22,10 +22,24 @@ const CheckoutProduct = ({ onConfirm, onBack }: CheckoutProductProps) => {
 
   return (
     <div className="min-h-screen bg-white" dir="rtl">
+      {/* Google Font */}
+      <link
+        href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap"
+        rel="stylesheet"
+      />
+
       {/* Header */}
-      <div className="flex justify-between items-center px-4 py-3 border-b border-gray-100">
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '14px 18px',
+          borderBottom: '1px solid #eee',
+        }}
+      >
         {/* Right - Tamara Logo */}
-        <div>
+        <div className="brand">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="60"
@@ -47,60 +61,160 @@ const CheckoutProduct = ({ onConfirm, onBack }: CheckoutProductProps) => {
         </div>
 
         {/* Left - Language and Close */}
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-500 cursor-pointer">English</span>
-          <button
-            onClick={onBack}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-            aria-label="إغلاق"
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+          }}
+        >
+          <span
+            style={{
+              fontSize: '14px',
+              color: '#555',
+              cursor: 'pointer',
+            }}
           >
-            <X className="h-6 w-6" />
-          </button>
+            English
+          </span>
+          <span
+            onClick={onBack}
+            style={{
+              fontSize: '22px',
+              color: '#444',
+              cursor: 'pointer',
+            }}
+          >
+            &times;
+          </span>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-md mx-auto px-6 py-10">
+      <div
+        style={{
+          maxWidth: '400px',
+          margin: '40px auto',
+          padding: '20px',
+          fontFamily: "'Tajawal', sans-serif",
+        }}
+      >
         {/* Title */}
-        <h1 className="text-2xl font-bold text-black mb-2">أدخل رقم الجوال</h1>
-        <p className="text-gray-500 text-sm mb-8">سيتم إرسال رمز تحقق للمتابعة</p>
+        <h2
+          style={{
+            fontSize: '24px',
+            fontWeight: 700,
+            marginBottom: '8px',
+            textAlign: 'right',
+          }}
+        >
+          أدخل رقم الجوال
+        </h2>
+        <p
+          style={{
+            fontSize: '14px',
+            color: '#666',
+            marginBottom: '28px',
+            textAlign: 'right',
+          }}
+        >
+          سيتم إرسال رمز تحقق للمتابعة
+        </p>
 
         {/* Phone Input Form */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm text-gray-700 mb-2">رقم الجوال</label>
-            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
-              {/* Country Code */}
-              <div className="flex items-center gap-2 bg-gray-100 border-l border-gray-300 px-3 py-3">
-                <span className="text-gray-700 text-sm">+966</span>
-                <img
-                  src="https://flagcdn.com/w20/sa.png"
-                  alt="SA"
-                  className="w-5 h-3 rounded-sm"
-                />
-              </div>
-              {/* Input */}
+        <form onSubmit={handleSubmit}>
+          <div
+            style={{
+              textAlign: 'right',
+              marginBottom: '20px',
+            }}
+          >
+            <label
+              htmlFor="phone"
+              style={{
+                display: 'block',
+                fontSize: '14px',
+                marginBottom: '8px',
+                color: '#333',
+              }}
+            >
+              رقم الجوال
+            </label>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                border: '1px solid #dcdcdc',
+                borderRadius: '10px',
+                overflow: 'hidden',
+                background: '#fff',
+                flexDirection: 'row-reverse',
+              }}
+            >
               <input
                 type="tel"
+                id="phone"
+                name="phone"
                 value={phoneNumber}
                 onChange={handlePhoneChange}
                 placeholder="اكتب رقمك"
                 inputMode="numeric"
-                className="flex-1 px-3 py-3 border-none outline-none text-gray-900 text-base bg-transparent"
-                dir="ltr"
+                required
+                style={{
+                  border: 'none',
+                  flex: 1,
+                  padding: '12px 10px',
+                  fontSize: '16px',
+                  outline: 'none',
+                  direction: 'ltr',
+                }}
               />
+              <span
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: '#f7f7f7',
+                  borderRight: '1px solid #ddd',
+                  padding: '12px 10px',
+                  fontSize: '16px',
+                }}
+              >
+                +966
+                <img
+                  src="https://flagcdn.com/w20/sa.png"
+                  alt="SA Flag"
+                  style={{
+                    width: '22px',
+                    height: '15px',
+                    borderRadius: '3px',
+                  }}
+                />
+              </span>
             </div>
           </div>
 
           {/* Submit Button */}
           <button
-            onClick={handleSubmit}
+            type="submit"
             disabled={!phoneNumber.trim()}
-            className="w-full bg-black text-white py-4 rounded-full font-semibold text-base transition-all duration-200 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed hover:bg-gray-900"
+            style={{
+              width: '100%',
+              border: 'none',
+              borderRadius: '30px',
+              padding: '14px',
+              fontSize: '16px',
+              fontWeight: 600,
+              backgroundColor: phoneNumber.trim() ? '#000' : '#ddd',
+              color: phoneNumber.trim() ? '#fff' : '#999',
+              cursor: phoneNumber.trim() ? 'pointer' : 'not-allowed',
+              transition: 'background 0.3s',
+              fontFamily: "'Tajawal', sans-serif",
+            }}
           >
             أرسل الرمز
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );
