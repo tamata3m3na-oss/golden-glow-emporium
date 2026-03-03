@@ -1,4 +1,5 @@
 import { toEnglishNumbers } from '@/lib/utils';
+import TamaraLogo from '@/components/TamaraLogo';
 
 interface ConfirmMethodProps {
   phoneNumber: string;
@@ -19,22 +20,23 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
       <div className="max-w-[430px] mx-auto w-full flex flex-col flex-1">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {}}
+              className="text-[14px] text-[#333] font-medium"
+            >
+              English
+            </button>
+            <span className="text-[#ccc]">|</span>
             <button
               onClick={onBack}
               aria-label="إغلاق"
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-[#ddd] hover:bg-gray-50 transition-colors"
             >
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14 4L4 14M4 4L14 14" stroke="#333" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
+              <span className="text-[#333] text-lg leading-none">✕</span>
             </button>
           </div>
-          <img
-            src="/tamara-logo.webp"
-            alt="تمارا"
-            className="h-8 object-contain"
-          />
+          <TamaraLogo />
         </div>
 
         {/* Separator */}
@@ -42,43 +44,40 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
 
         {/* Content */}
         <div className="px-5 py-6 flex flex-col flex-1">
-          <h1 className="text-[22px] font-bold text-black mb-1 text-right">
-            ادخل رقم جوالك
+          <h1 className="text-[22px] font-bold text-black mb-6 text-right">
+            أدخل رقم الجوال
           </h1>
-          <p className="text-[13px] text-[#555] mb-6 text-right">
-            راح نرسل لك رمز تحقق عشان نتأكد من هويتك
-          </p>
 
           {/* Phone input */}
-          <div
-            className="flex items-center border rounded-[10px] overflow-hidden mb-2"
-            style={{ borderColor: '#dcdcdc' }}
-          >
-            {/* Country code - right side for RTL */}
+          <div className="mb-8">
+            <label className="block text-[14px] font-medium text-[#333] mb-2 text-right">
+              رقم الجوال
+            </label>
             <div
-              className="flex items-center gap-2 px-3 py-3 border-l"
-              style={{ borderColor: '#dcdcdc', backgroundColor: '#fafafa' }}
+              className="flex items-center border rounded-[10px] overflow-hidden"
+              style={{ borderColor: '#dcdcdc' }}
             >
-              <span className="text-lg leading-none">🇸🇦</span>
-              <span className="text-[14px] font-bold text-black" dir="ltr">+966</span>
+              {/* Phone number input */}
+              <input
+                value={phoneNumber}
+                onChange={e => setPhoneNumber(toEnglishNumbers(e.target.value))}
+                placeholder="5XX XXX XXX"
+                className="flex-1 px-3 py-3 text-[15px] text-black bg-white outline-none placeholder-[#aaa]"
+                style={{ direction: 'ltr', textAlign: 'right' }}
+                maxLength={10}
+                type="tel"
+                inputMode="numeric"
+              />
+              {/* Country code - right side for RTL */}
+              <div
+                className="flex items-center gap-2 px-3 py-3 border-r"
+                style={{ borderColor: '#dcdcdc', backgroundColor: '#fafafa' }}
+              >
+                <span className="text-lg leading-none">🇸🇦</span>
+                <span className="text-[14px] font-bold text-black" dir="ltr">+966</span>
+              </div>
             </div>
-
-            {/* Phone number input */}
-            <input
-              value={phoneNumber}
-              onChange={e => setPhoneNumber(toEnglishNumbers(e.target.value))}
-              placeholder="اكتب رقمك"
-              className="flex-1 px-3 py-3 text-[15px] text-black bg-white outline-none placeholder-[#aaa]"
-              style={{ direction: 'ltr', textAlign: 'right' }}
-              maxLength={10}
-              type="tel"
-              inputMode="numeric"
-            />
           </div>
-
-          <p className="text-[12px] text-[#888] mb-8 text-right">
-            يجب أن يكون الرقم مسجل باسمك في البنك
-          </p>
 
           {/* Submit button */}
           <button
@@ -93,19 +92,6 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
           >
             أرسل الرمز
           </button>
-
-          {/* Bottom note */}
-          <p className="text-[11px] text-[#aaa] text-center mt-6">
-            بالمتابعة، أنت توافق على{' '}
-            <a
-              href="https://tamara.co/terms"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#6C1DD6] underline"
-            >
-              شروط وأحكام تمارا
-            </a>
-          </p>
         </div>
       </div>
     </div>
