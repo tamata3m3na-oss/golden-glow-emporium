@@ -221,7 +221,7 @@ const VerifyPhone = ({
           )}
 
           {/* Timer / resend - right aligned with title */}
-          <div className="mb-6 flex justify-end">
+          <div className="mb-6 flex justify-start">
             {resendTimer > 0 ? (
               <div
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-[20px] text-[13px]"
