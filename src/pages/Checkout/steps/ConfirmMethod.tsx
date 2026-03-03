@@ -62,12 +62,12 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
                 className="flex items-center gap-2 px-3 py-3 border-l"
                 style={{ borderColor: '#dcdcdc', backgroundColor: '#fafafa' }}
               >
-                <img 
-                  src="https://flagcdn.com/w20/sa.png" 
-                  alt="SA" 
+                <span className="text-[14px] font-bold text-black" dir="ltr">+966</span>
+                <img
+                  src="https://flagcdn.com/w20/sa.png"
+                  alt="SA"
                   className="w-[22px] h-[15px] rounded-sm"
                 />
-                <span className="text-[14px] font-bold text-black" dir="ltr">+966</span>
               </div>
               {/* Phone number input - 15% wider */}
               <input
