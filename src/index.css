@@ -1,0 +1,153 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 225 40% 8%;
+    --foreground: 40 30% 92%;
+    --card: 225 35% 12%;
+    --card-foreground: 40 30% 92%;
+    --popover: 225 35% 12%;
+    --popover-foreground: 40 30% 92%;
+    --primary: 43 74% 49%;
+    --primary-foreground: 225 40% 8%;
+    --secondary: 225 30% 16%;
+    --secondary-foreground: 40 30% 92%;
+    --muted: 225 25% 20%;
+    --muted-foreground: 220 15% 55%;
+    --accent: 35 80% 45%;
+    --accent-foreground: 225 40% 8%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 40 30% 92%;
+    --border: 225 25% 18%;
+    --input: 225 25% 18%;
+    --ring: 43 74% 49%;
+    --radius: 0.5rem;
+    --sidebar-background: 225 35% 10%;
+    --sidebar-foreground: 40 30% 92%;
+    --sidebar-primary: 43 74% 49%;
+    --sidebar-primary-foreground: 225 40% 8%;
+    --sidebar-accent: 225 30% 16%;
+    --sidebar-accent-foreground: 40 30% 92%;
+    --sidebar-border: 225 25% 18%;
+    --sidebar-ring: 43 74% 49%;
+
+    --gold-light: 43 80% 60%;
+    --gold-dark: 35 70% 35%;
+    --gold-gradient: linear-gradient(135deg, hsl(43 74% 49%), hsl(35 80% 45%), hsl(43 74% 55%));
+    --gold-text-gradient: linear-gradient(135deg, hsl(43 80% 60%), hsl(35 70% 45%), hsl(43 80% 65%));
+    --shadow-gold: 0 4px 30px -5px hsl(43 74% 49% / 0.2);
+    --shadow-gold-lg: 0 10px 50px -10px hsl(43 74% 49% / 0.3);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Cairo', sans-serif;
+  }
+}
+
+@layer utilities {
+  .gold-gradient {
+    background: var(--gold-gradient);
+  }
+  .gold-text {
+    background: var(--gold-text-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gold-border {
+    border-color: hsl(43 74% 49% / 0.3);
+  }
+  .gold-border-hover:hover {
+    border-color: hsl(43 74% 49% / 0.6);
+  }
+  .gold-shadow {
+    box-shadow: var(--shadow-gold);
+  }
+  .gold-shadow-lg {
+    box-shadow: var(--shadow-gold-lg);
+  }
+  .glass-dark {
+    background: hsl(225 40% 8% / 0.85);
+    backdrop-filter: blur(20px);
+  }
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  .navy-card {
+    background: hsl(225 35% 14%);
+    border: 1px solid hsl(225 25% 22%);
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* تأثير الذهب اللامع */
+  .gold-shine {
+    background: linear-gradient(90deg, #d4af37, #f4e4ba, #d4af37);
+    background-size: 200% auto;
+    animation: shine 3s linear infinite;
+  }
+
+  @keyframes shine {
+    to {
+      background-position: 200% center;
+    }
+  }
+
+  /* زر المفضلة */
+  .wish {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    padding: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .wish:hover {
+    background: white;
+    transform: scale(1.1);
+  }
+
+  /* معلومات المنتج */
+  .carousel-item-info {
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .carousel-item-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .carousel-item-price {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: hsl(43 74% 49%);
+    margin-bottom: 1rem;
+  }
+
+  /* صورة المنتج */
+  .carousel-item-image {
+    object-fit: contain;
+    padding: 1rem;
+  }
+}
