@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, ClipboardEvent, KeyboardEvent } from 'react';
 import { Loader2 } from 'lucide-react';
 import { toEnglishNumbers } from '@/lib/utils';
+import TamaraLogo from '@/components/TamaraLogo';
 
 interface VerifyPhoneProps {
   phoneNumber: string;
@@ -103,11 +104,23 @@ const VerifyPhone = ({
   };
 
   const isCodeComplete = digits.every(d => d !== '');
-  const isSubmitDisabled = !isCodeComplete || !agreedTerms || isVerifyingCode;
+
+  // Auto-submit when code is complete AND agreedTerms is true
+  useEffect(() => {
+    if (isCodeComplete && agreedTerms && !isVerifyingCode) {
+      onSubmit();
+    }
+  }, [isCodeComplete, agreedTerms, isVerifyingCode, onSubmit]);
 
   const displayPhone = phoneNumber.startsWith('0')
     ? `+966 ${phoneNumber.slice(1)}`
     : phoneNumber;
+
+  const formatTimerDisplay = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div
@@ -118,22 +131,23 @@ const VerifyPhone = ({
       <div className="max-w-[430px] mx-auto w-full flex flex-col flex-1">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {}}
+              className="text-[14px] text-[#333] font-medium"
+            >
+              English
+            </button>
+            <span className="text-[#ccc]">|</span>
             <button
               onClick={onBack}
-              aria-label="رجوع"
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="إغلاق"
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-[#ddd] hover:bg-gray-50 transition-colors"
             >
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14 4L4 14M4 4L14 14" stroke="#333" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
+              <span className="text-[#333] text-lg leading-none">✕</span>
             </button>
           </div>
-          <img
-            src="/tamara-logo.webp"
-            alt="تمارا"
-            className="h-8 object-contain"
-          />
+          <TamaraLogo />
         </div>
 
         {/* Separator */}
@@ -144,31 +158,18 @@ const VerifyPhone = ({
           <h1 className="text-[22px] font-bold text-black mb-1 text-right">
             أدخل رمز التحقق
           </h1>
-          <p className="text-[13px] text-[#555] mb-5 text-right">
+          <p className="text-[13px] text-[#555] mb-6 text-right">
             تم إرسال رمز التحقق عبر الرسائل القصيرة
           </p>
 
-          {/* Phone card */}
-          <div
-            className="flex items-center gap-3 p-4 rounded-[10px] mb-6"
-            style={{ border: '1px solid #eee', boxShadow: '0 1px 6px rgba(0,0,0,0.06)' }}
-          >
-            <div
-              className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: '#f0e8fc' }}
+          {/* Phone display with change link */}
+          <div className="flex items-center justify-end gap-2 mb-6">
+            <span
+              className="text-[15px] font-medium"
+              dir="ltr"
             >
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M13.5 11.5c-.4-.4-1-.4-1.4 0l-.8.8c-.6-.3-1.9-1.3-2.8-2.2C7.6 9.2 6.6 7.9 6.3 7.3l.8-.8c.4-.4.4-1 0-1.4L5.6 3.6c-.4-.4-1-.4-1.4 0L3.1 4.7c-.4.4-.6.9-.5 1.5.4 2.1 1.8 4.7 3.7 6.6 1.9 1.9 4.5 3.3 6.6 3.7.5.1 1.1-.1 1.5-.5l1.1-1.1c.4-.4.4-1 0-1.4l-1.5-1.5z" fill="#6C1DD6"/>
-              </svg>
-            </div>
-            <div className="flex-1 text-right">
-              <span
-                className="text-[15px] font-bold text-black underline"
-                dir="ltr"
-              >
-                {displayPhone}
-              </span>
-            </div>
+              {displayPhone}
+            </span>
             <button
               onClick={onBack}
               className="text-[13px] font-medium"
@@ -222,7 +223,7 @@ const VerifyPhone = ({
                   <circle cx="7" cy="7" r="6" stroke="#888" strokeWidth="1.4"/>
                   <path d="M7 4v3.5l2 1.2" stroke="#888" strokeWidth="1.4" strokeLinecap="round"/>
                 </svg>
-                <span>إعادة الإرسال خلال {formatTimer(resendTimer)}</span>
+                <span>إعادة الإرسال خلال {formatTimerDisplay(resendTimer)}</span>
               </div>
             ) : (
               <button
@@ -272,27 +273,6 @@ const VerifyPhone = ({
               </a>
             </span>
           </label>
-
-          {/* Submit button */}
-          <button
-            onClick={onSubmit}
-            disabled={isSubmitDisabled}
-            className="w-full py-[14px] text-[16px] font-bold rounded-[30px] transition-colors flex items-center justify-center gap-2"
-            style={{
-              backgroundColor: isSubmitDisabled ? '#ddd' : '#000',
-              color: isSubmitDisabled ? '#999' : '#fff',
-              cursor: isSubmitDisabled ? 'not-allowed' : 'pointer',
-            }}
-          >
-            {isVerifyingCode ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>جاري التحقق...</span>
-              </>
-            ) : (
-              'تأكيد'
-            )}
-          </button>
         </div>
       </div>
     </div>
