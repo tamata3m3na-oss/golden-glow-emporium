@@ -132,7 +132,7 @@ const CardInfo = ({
       dir="rtl"
       style={{ 
         fontFamily: "'Cairo', 'Tajawal', sans-serif",
-        background: '#F8F9FA'
+        background: '#ffffff'
       }}
     >
       <div className="max-w-[430px] mx-auto w-full flex flex-col flex-1">
