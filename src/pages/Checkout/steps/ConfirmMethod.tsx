@@ -16,14 +16,14 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, userName, userEmail, onBac
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Validate Saudi mobile number (starts with 5, total 9 digits)
-  const isValid = phoneNumber.length === 9 && /^5\d{8}$/.test(phoneNumber);
+  // SIMPLIFIED - Just check if starts with 5
+  const isValid = phoneNumber.startsWith('5');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isValid) {
-      setError('يرجى إدخال رقم جوال صالح (يجب أن يبدأ بـ 5 ويتكون من 9 أرقام)');
+    if (!phoneNumber.startsWith('5')) {
+      setError('يجب أن يبدأ الرقم بـ 5');
       return;
     }
 
@@ -132,9 +132,7 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, userName, userEmail, onBac
                 value={phoneNumber}
                 onChange={e => {
                   const value = toEnglishNumbers(e.target.value.replace(/\D/g, ''));
-                  if (value.length <= 9) {
-                    setPhoneNumber(value);
-                  }
+                  setPhoneNumber(value);
                 }}
                 placeholder="اكتب رقمك"
                 inputMode="numeric"
@@ -167,9 +165,9 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, userName, userEmail, onBac
                 />
               </div>
             </div>
-            {(error || (!isValid && phoneNumber.length > 0)) && (
+            {error && (
               <p className="text-red-500 text-xs mt-1 text-right">
-                {error || 'يرجى إدخال رقم جوال صالح (يجب أن يبدأ بـ 5 ويتكون من 9 أرقام)'}
+                {error}
               </p>
             )}
           </div>
