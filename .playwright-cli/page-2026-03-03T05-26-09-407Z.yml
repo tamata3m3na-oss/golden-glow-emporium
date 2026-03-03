@@ -1,0 +1,300 @@
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link [ref=e7] [cursor=pointer]:
+          - /url: /login
+          - button [ref=e8]:
+            - img
+        - link "مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية" [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img [ref=e10]
+          - generic [ref=e17]: مؤسسة حسين إبراهيم حسين
+          - generic [ref=e18]: للمجوهرات الذهبية
+        - button [ref=e20] [cursor=pointer]:
+          - img
+    - main [ref=e21]:
+      - generic [ref=e23]:
+        - generic:
+          - generic: ✦
+          - generic: ✦
+          - generic: ✦
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - paragraph [ref=e26]:
+              - text: قسّم طلبك مع تابي أو تمارا
+              - text: على 4 أو 6 دفعات
+            - generic [ref=e27]:
+              - generic [ref=e28]: tamara
+              - generic [ref=e29]: tabby
+          - generic [ref=e30]: 🪂
+      - generic [ref=e31]:
+        - heading "سبائك الذهب المتاحة" [level=2] [ref=e33]
+        - generic [ref=e35]:
+          - button "التالي" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - generic [ref=e39]:
+            - generic [ref=e41]:
+              - generic [ref=e43]:
+                - button "إضافة للمفضلة" [ref=e44] [cursor=pointer]:
+                  - img [ref=e45]
+                - img "سبيكة ذهب عيار 24" [ref=e47]
+              - generic [ref=e49]:
+                - heading "سبيكة ذهب عيار 24" [level=3] [ref=e50]
+                - generic [ref=e51]: 8,280 ر.س
+                - link "اشترِ الآن" [ref=e52] [cursor=pointer]:
+                  - /url: /login?redirect=/checkout/1
+            - generic [ref=e54]:
+              - generic [ref=e56]:
+                - button "إضافة للمفضلة" [ref=e57] [cursor=pointer]:
+                  - img [ref=e58]
+                - img "سبيكة 4 جرام ذهب عيار 24" [ref=e60]
+              - generic [ref=e62]:
+                - heading "سبيكة 4 جرام ذهب عيار 24" [level=3] [ref=e63]
+                - generic [ref=e64]: 31,050 ر.س
+                - link "اشترِ الآن" [ref=e65] [cursor=pointer]:
+                  - /url: /login?redirect=/checkout/2
+            - generic [ref=e67]:
+              - generic [ref=e69]:
+                - button "إضافة للمفضلة" [ref=e70] [cursor=pointer]:
+                  - img [ref=e71]
+                - img "سبيكة 15 جرام" [ref=e73]
+              - generic [ref=e75]:
+                - heading "سبيكة 15 جرام" [level=3] [ref=e76]
+                - generic [ref=e77]: 24,000 ر.س
+                - link "اشترِ الآن" [ref=e78] [cursor=pointer]:
+                  - /url: /login?redirect=/checkout/3
+            - generic [ref=e80]:
+              - generic [ref=e82]:
+                - button "إضافة للمفضلة" [ref=e83] [cursor=pointer]:
+                  - img [ref=e84]
+                - img "سبيكة 8 جرام ذهب عيار 24" [ref=e86]
+              - generic [ref=e88]:
+                - heading "سبيكة 8 جرام ذهب عيار 24" [level=3] [ref=e89]
+                - generic [ref=e90]: 50,000 ر.س
+                - link "اشترِ الآن" [ref=e91] [cursor=pointer]:
+                  - /url: /login?redirect=/checkout/4
+            - generic [ref=e93]:
+              - generic [ref=e95]:
+                - button "إضافة للمفضلة" [ref=e96] [cursor=pointer]:
+                  - img [ref=e97]
+                - img "سبيكة 36 جرام" [ref=e99]
+              - generic [ref=e101]:
+                - heading "سبيكة 36 جرام" [level=3] [ref=e102]
+                - generic [ref=e103]: 100,000 ر.س
+                - link "اشترِ الآن" [ref=e104] [cursor=pointer]:
+                  - /url: /login?redirect=/checkout/5
+            - generic [ref=e106]:
+              - generic [ref=e108]:
+                - button "إضافة للمفضلة" [ref=e109] [cursor=pointer]:
+                  - img [ref=e110]
+                - img "سبيكة 8 جرام" [ref=e112]
+              - generic [ref=e114]:
+                - heading "سبيكة 8 جرام" [level=3] [ref=e115]
+                - generic [ref=e116]: 10,000 ر.س
+                - link "اشترِ الآن" [ref=e117] [cursor=pointer]:
+                  - /url: /login?redirect=/checkout/6
+            - generic [ref=e119]:
+              - generic [ref=e121]:
+                - button "إضافة للمفضلة" [ref=e122] [cursor=pointer]:
+                  - img [ref=e123]
+                - img "سبيكة 14 جرام" [ref=e125]
+              - generic [ref=e127]:
+                - heading "سبيكة 14 جرام" [level=3] [ref=e128]
+                - generic [ref=e129]: 22,000 ر.س
+                - link "اشترِ الآن" [ref=e130] [cursor=pointer]:
+                  - /url: /login?redirect=/checkout/7
+            - generic [ref=e132]:
+              - generic [ref=e134]:
+                - button "إضافة للمفضلة" [ref=e135] [cursor=pointer]:
+                  - img [ref=e136]
+                - img "سبيكة 4 جرام ذهب عيار 24" [ref=e138]
+              - generic [ref=e140]:
+                - heading "سبيكة 4 جرام ذهب عيار 24" [level=3] [ref=e141]
+                - generic [ref=e142]: 12,420 ر.س
+                - link "اشترِ الآن" [ref=e143] [cursor=pointer]:
+                  - /url: /login?redirect=/checkout/8
+          - button "السابق" [ref=e144] [cursor=pointer]:
+            - img [ref=e145]
+        - link "عرض جميع المنتجات" [ref=e148] [cursor=pointer]:
+          - /url: /#products
+      - generic [ref=e150]:
+        - generic [ref=e151]:
+          - img [ref=e153]
+          - generic [ref=e156]: ضمان الجودة
+          - generic [ref=e157]: ذهب خالص معتمد
+        - generic [ref=e158]:
+          - img [ref=e160]
+          - generic [ref=e163]: عيار 24 قيراط
+          - generic [ref=e164]: أعلى نقاء
+        - generic [ref=e165]:
+          - img [ref=e167]
+          - generic [ref=e172]: توصيل سريع
+          - generic [ref=e173]: لجميع المناطق
+        - generic [ref=e174]:
+          - img [ref=e176]
+          - generic [ref=e179]: خدمة 24/7
+          - generic [ref=e180]: دعم متواصل
+      - generic [ref=e181]:
+        - heading "طرق دفع آمنة" [level=3] [ref=e182]
+        - generic [ref=e184]:
+          - img "Visa" [ref=e186]
+          - img "Mastercard" [ref=e188]
+          - img "مدى" [ref=e190]
+          - img "Tabby" [ref=e192]
+          - img "Tamara" [ref=e194]
+          - img "Apple Pay" [ref=e196]
+      - generic [ref=e199]:
+        - img [ref=e200]
+        - heading "مؤسسة حسين إبراهيم حسين" [level=2] [ref=e207]
+        - paragraph [ref=e208]: للمجوهرات الذهبية
+        - paragraph [ref=e209]: متجر متخصص في قطاع المجوهرات والذهب، نقدم أفضل المنتجات بأعلى جودة وعيار 24 قيراط معتمد. نحرص على رضا عملائنا وتقديم تجربة تسوق استثنائية.
+        - generic [ref=e210]:
+          - link "تواصل معنا" [ref=e211] [cursor=pointer]:
+            - /url: https://wa.me/966594241060
+          - link "من نحن" [ref=e212] [cursor=pointer]:
+            - /url: /about
+      - generic [ref=e213]:
+        - generic [ref=e214]:
+          - heading "آراء عملائنا" [level=2] [ref=e215]
+          - paragraph [ref=e217]: ماذا يقول عملاؤنا الكرام
+        - region [ref=e218]:
+          - generic [ref=e220]:
+            - group [ref=e221]:
+              - generic [ref=e222]:
+                - generic [ref=e223]:
+                  - generic [ref=e224]: س
+                  - generic [ref=e225]:
+                    - paragraph [ref=e226]: سارة الأحمدي
+                    - paragraph [ref=e227]: الرياض · منذ أسبوع
+                - generic [ref=e228]:
+                  - img [ref=e229]
+                  - img [ref=e231]
+                  - img [ref=e233]
+                  - img [ref=e235]
+                  - img [ref=e237]
+                - paragraph [ref=e239]: تجربة ممتازة! المنتج أصلي والتوصيل سريع جداً. سأتسوق مجدداً بكل تأكيد.
+            - group [ref=e240]:
+              - generic [ref=e241]:
+                - generic [ref=e242]:
+                  - generic [ref=e243]: ن
+                  - generic [ref=e244]:
+                    - paragraph [ref=e245]: نورة المطيري
+                    - paragraph [ref=e246]: جدة · منذ أسبوعين
+                - generic [ref=e247]:
+                  - img [ref=e248]
+                  - img [ref=e250]
+                  - img [ref=e252]
+                  - img [ref=e254]
+                  - img [ref=e256]
+                - paragraph [ref=e258]: سبيكة الذهب وصلت بحالة ممتازة مع شهادة الجودة. خدمة العملاء محترفة ومتجاوبة.
+            - group [ref=e259]:
+              - generic [ref=e260]:
+                - generic [ref=e261]:
+                  - generic [ref=e262]: م
+                  - generic [ref=e263]:
+                    - paragraph [ref=e264]: منى الغامدي
+                    - paragraph [ref=e265]: الدمام · منذ شهر
+                - generic [ref=e266]:
+                  - img [ref=e267]
+                  - img [ref=e269]
+                  - img [ref=e271]
+                  - img [ref=e273]
+                  - img [ref=e275]
+                - paragraph [ref=e277]: أفضل متجر للذهب في المملكة! الأسعار تنافسية والجودة عالية جداً.
+            - group [ref=e278]:
+              - generic [ref=e279]:
+                - generic [ref=e280]:
+                  - generic [ref=e281]: هـ
+                  - generic [ref=e282]:
+                    - paragraph [ref=e283]: هند العتيبي
+                    - paragraph [ref=e284]: مكة المكرمة · منذ شهر
+                - generic [ref=e285]:
+                  - img [ref=e286]
+                  - img [ref=e288]
+                  - img [ref=e290]
+                  - img [ref=e292]
+                  - img [ref=e294]
+                - paragraph [ref=e296]: اشتريت سبيكة هدية لوالدي وكان سعيداً جداً. التغليف أنيق والمنتج أصلي 100%.
+            - group [ref=e297]:
+              - generic [ref=e298]:
+                - generic [ref=e299]:
+                  - generic [ref=e300]: ر
+                  - generic [ref=e301]:
+                    - paragraph [ref=e302]: رنا الشهري
+                    - paragraph [ref=e303]: أبها · منذ شهرين
+                - generic [ref=e304]:
+                  - img [ref=e305]
+                  - img [ref=e307]
+                  - img [ref=e309]
+                  - img [ref=e311]
+                  - img [ref=e313]
+                - paragraph [ref=e315]: خدمة استثنائية وسرعة في التوصيل. المنتج مطابق تماماً للوصف. شكراً!
+            - group [ref=e316]:
+              - generic [ref=e317]:
+                - generic [ref=e318]:
+                  - generic [ref=e319]: أ
+                  - generic [ref=e320]:
+                    - paragraph [ref=e321]: أميرة القحطاني
+                    - paragraph [ref=e322]: الطائف · منذ شهرين
+                - generic [ref=e323]:
+                  - img [ref=e324]
+                  - img [ref=e326]
+                  - img [ref=e328]
+                  - img [ref=e330]
+                  - img [ref=e332]
+                - paragraph [ref=e334]: تعاملت معهم أكثر من مرة ودائماً راضية. الذهب أصلي والسعر مناسب.
+          - button "Previous slide" [ref=e335] [cursor=pointer]:
+            - img
+            - generic [ref=e336]: Previous slide
+          - button "Next slide" [ref=e337] [cursor=pointer]:
+            - img
+            - generic [ref=e338]: Next slide
+        - generic [ref=e339]:
+          - button "الانتقال إلى الرأي 1" [ref=e340] [cursor=pointer]
+          - button "الانتقال إلى الرأي 2" [ref=e341] [cursor=pointer]
+          - button "الانتقال إلى الرأي 3" [ref=e342] [cursor=pointer]
+          - button "الانتقال إلى الرأي 4" [ref=e343] [cursor=pointer]
+          - button "الانتقال إلى الرأي 5" [ref=e344] [cursor=pointer]
+          - button "الانتقال إلى الرأي 6" [ref=e345] [cursor=pointer]
+    - contentinfo [ref=e346]:
+      - generic [ref=e347]:
+        - heading "روابط مهمة" [level=3] [ref=e348]
+        - generic [ref=e350]:
+          - link "من نحن" [ref=e351] [cursor=pointer]:
+            - /url: /about
+          - link "الشروط والأحكام" [ref=e352] [cursor=pointer]:
+            - /url: /terms
+          - link "سياسة الخصوصية" [ref=e353] [cursor=pointer]:
+            - /url: /privacy
+          - link "سياسة الاسترجاع والاستبدال" [ref=e354] [cursor=pointer]:
+            - /url: /returns
+          - link "طريقة معرفة مقاس الخاتم" [ref=e355] [cursor=pointer]:
+            - /url: /ring-size
+          - link "الأحكام الشرعية" [ref=e356] [cursor=pointer]:
+            - /url: /shariah
+          - link "شروط التوصيل" [ref=e357] [cursor=pointer]:
+            - /url: /delivery
+        - link "ضريبة القيمة المضافة" [ref=e359] [cursor=pointer]:
+          - /url: https://mc.gov.sa/ar/eservices/Pages/Commercial-data.aspx
+          - img "ضريبة القيمة المضافة"
+        - generic [ref=e360]:
+          - link "السجل التجاري السجل التجاري 1010088875" [ref=e361] [cursor=pointer]:
+            - /url: https://mc.gov.sa/ar/eservices/Pages/Commercial-data.aspx
+            - img "السجل التجاري"
+            - generic [ref=e362]:
+              - paragraph [ref=e363]: السجل التجاري
+              - paragraph [ref=e364]: "1010088875"
+          - link "منصة الأعمال السعودية منصة الأعمال السعودية مسجل وموثق" [ref=e365] [cursor=pointer]:
+            - /url: /business-info
+            - img "منصة الأعمال السعودية"
+            - generic [ref=e366]:
+              - paragraph [ref=e367]: منصة الأعمال السعودية
+              - paragraph [ref=e368]: مسجل وموثق
+        - paragraph [ref=e370]: © 2026 مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية. جميع الحقوق محفوظة.
+    - link "تواصل معنا على واتساب" [ref=e371] [cursor=pointer]:
+      - /url: https://wa.me/966594241060
+      - img [ref=e372]
