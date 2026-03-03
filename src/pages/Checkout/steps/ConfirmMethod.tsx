@@ -8,18 +8,13 @@ interface ConfirmMethodProps {
 }
 
 const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: ConfirmMethodProps) => {
-  const isValid = phoneNumber.length === 9;
+  // Validate Saudi mobile number (starts with 5, total 9 digits)
+  const isValid = phoneNumber.length === 9 && /^5\d{8}$/.test(phoneNumber);
 
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+    <div className="min-h-screen bg-white flex flex-col px-6 py-8">
       {/* Header */}
-      <div
-        className="flex justify-between items-center px-5 py-3.5"
-        style={{
-          height: '69px',
-          borderBottom: '1px solid #eee'
-        }}
-      >
+      <div className="flex justify-between items-center mb-8">
         {/* Tamara Logo - Right */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -42,15 +37,15 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
         {/* Right side - Language and Close */}
         <div className="flex items-center gap-2.5">
           <span
-            className="cursor-pointer"
-            style={{ fontSize: '14px', color: '#555' }}
+            className="cursor-pointer text-sm"
+            style={{ color: '#555' }}
           >
             English
           </span>
           <span
             onClick={onBack}
-            className="cursor-pointer"
-            style={{ fontSize: '22px', color: '#444' }}
+            className="cursor-pointer text-2xl"
+            style={{ color: '#444' }}
           >
             &times;
           </span>
@@ -58,43 +53,26 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
       </div>
 
       {/* Main Content */}
-      <div
-        className="mx-auto px-5"
-        style={{
-          maxWidth: '400px',
-          marginTop: '40px'
-        }}
-      >
+      <div className="max-w-sm mx-auto w-full">
         <h2
-          className="font-bold mb-2"
-          style={{
-            fontSize: '24px',
-            textAlign: 'right',
-            color: '#000'
-          }}
+          className="text-2xl font-bold mb-2 text-right"
+          style={{ color: '#000' }}
         >
           أدخل رقم الجوال
         </h2>
         <p
-          className="mb-7"
-          style={{
-            fontSize: '14px',
-            textAlign: 'right',
-            color: '#666'
-          }}
+          className="mb-7 text-sm text-right"
+          style={{ color: '#666' }}
         >
           سيتم إرسال رمز تحقق للمتابعة
         </p>
 
         <form onSubmit={(e) => { e.preventDefault(); if (isValid) onSubmit(); }}>
-          <div className="mb-5" style={{ textAlign: 'right' }}>
+          <div className="mb-5">
             <label
               htmlFor="phone"
-              className="block mb-2"
-              style={{
-                fontSize: '14px',
-                color: '#333'
-              }}
+              className="block mb-2 text-sm text-right"
+              style={{ color: '#333' }}
             >
               رقم الجوال
             </label>
@@ -104,7 +82,6 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
                 border: '1px solid #dcdcdc',
                 flexDirection: 'row-reverse',
                 height: '45px',
-                width: '360px'
               }}
             >
               <input
@@ -120,7 +97,7 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
                 }}
                 placeholder="اكتب رقمك"
                 inputMode="numeric"
-                className="flex-1 px-2.5 outline-none"
+                className="flex-1 px-3 outline-none"
                 style={{
                   fontSize: '16px',
                   direction: 'ltr',
@@ -128,7 +105,7 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
                 }}
               />
               <div
-                className="flex items-center gap-1.5 px-2.5"
+                className="flex items-center gap-1.5 px-3"
                 style={{
                   backgroundColor: '#f7f7f7',
                   borderRight: '1px solid #ddd',
@@ -148,21 +125,25 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
                 />
               </div>
             </div>
+            {!isValid && phoneNumber.length > 0 && (
+              <p className="text-red-500 text-xs mt-1 text-right">
+                يرجى إدخال رقم جوال صالح (يجب أن يبدأ بـ 5 ويتكون من 9 أرقام)
+              </p>
+            )}
           </div>
 
           <button
             type="submit"
             id="sendBtn"
             disabled={!isValid}
-            className="rounded-full font-semibold transition-colors"
+            className="w-full py-3 font-semibold transition-colors"
             style={{
-              width: '360px',
-              height: '46px',
               fontSize: '16px',
               backgroundColor: isValid ? '#000' : '#ddd',
               color: isValid ? '#fff' : '#999',
               cursor: isValid ? 'pointer' : 'not-allowed',
-              border: 'none'
+              border: 'none',
+              borderRadius: '30px'
             }}
           >
             أرسل الرمز
