@@ -65,7 +65,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
   } = useCheckout(product, user);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <AnimatePresence mode="wait">
         {step === 'confirm-method' && (
           <motion.div key="confirm-method" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
@@ -200,7 +200,7 @@ const Checkout = () => {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">المنتج غير موجود</h1>
           <Link to="/" className="text-primary hover:underline">العودة للرئيسية</Link>
