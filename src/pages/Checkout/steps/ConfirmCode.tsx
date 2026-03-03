@@ -61,7 +61,7 @@ const ConfirmCode = ({ confirmCode, setConfirmCode, onSubmit, codeError, isLoadi
 
           <Button
             onClick={onSubmit}
-            className="w-full py-4 font-bold bg-[hsl(340,80%,55%)] hover:bg-[hsl(340,80%,50%)] text-white rounded-lg"
+            className="w-full py-4 font-bold bg-[#d4af37] hover:bg-[#c9a030] text-white rounded-lg"
             disabled={!confirmCode || confirmCode.length < 4 || isLoading}
           >
             {isLoading ? (
