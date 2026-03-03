@@ -101,7 +101,8 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
                 style={{
                   fontSize: '16px',
                   direction: 'ltr',
-                  height: '100%'
+                  height: '100%',
+                  color: '#000000'
                 }}
               />
               <div
@@ -113,7 +114,7 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
                   fontSize: '16px'
                 }}
               >
-                <span>+966</span>
+                <span style={{ color: '#000000' }}>+966</span>
                 <img
                   src="https://flagcdn.com/w20/sa.png"
                   alt="SA Flag"
