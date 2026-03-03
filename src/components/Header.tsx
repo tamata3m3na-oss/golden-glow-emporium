@@ -43,8 +43,15 @@ const Header = () => {
           )}
         </div>
 
-        <Link to="/" className="flex items-center">
-          <img src="/se3ar.svg" alt="مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية" className="h-12 w-auto object-contain scale-120" />
+        <Link to="/" className="flex flex-col items-center gap-1">
+          <img 
+            src="/se3ar.jpg" 
+            alt="مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية" 
+            className="h-12 w-auto object-contain mix-blend-multiply" 
+          />
+          <span className="text-xs font-bold gold-text leading-tight text-center font-cairo">
+            مؤسسة حسين إبراهيم حسين للمجوهرات
+          </span>
         </Link>
 
         <div className="flex items-center">
