@@ -55,7 +55,7 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
           <div className="mb-8">
             <div
               className="flex items-center border rounded-[10px] overflow-hidden"
-              style={{ borderColor: '#dcdcdc' }}
+              style={{ borderColor: '#dcdcdc', width: 360, height: 48 }}
             >
               {/* Country code - right side for RTL (left side visually) */}
               <div
