@@ -1,5 +1,4 @@
 import { useRef, useEffect, useState, ClipboardEvent, KeyboardEvent } from 'react';
-import { Loader2 } from 'lucide-react';
 import { toEnglishNumbers } from '@/lib/utils';
 import TamaraLogo from '@/components/TamaraLogo';
 
@@ -155,21 +154,45 @@ const VerifyPhone = ({
 
         {/* Content */}
         <div className="px-5 py-6 flex flex-col flex-1">
-          <h1 className="text-[22px] font-bold text-black mb-1 text-right">
-            أدخل رمز التحقق
+          <h1 className="text-[22px] font-bold text-black mb-1 text-right" style={{ fontFamily: "'Cairo', sans-serif" }}>
+            تحقق من رقمك
           </h1>
-          <p className="text-[13px] text-[#555] mb-6 text-right">
-            تم إرسال رمز التحقق عبر الرسائل القصيرة
-          </p>
 
-          {/* Phone display with change link */}
-          <div className="flex items-center justify-end gap-2 mb-6">
-            <span
-              className="text-[15px] font-medium"
-              dir="ltr"
+          {/* Phone Card */}
+          <div 
+            className="flex items-center gap-3 p-4 rounded-[10px] mb-6"
+            style={{ backgroundColor: '#fafafa', border: '1px solid #eee' }}
+          >
+            {/* Phone Icon */}
+            <div 
+              className="w-10 h-10 flex items-center justify-center rounded-full"
+              style={{ backgroundColor: '#fafafa', border: '1px solid #eee' }}
             >
-              {displayPhone}
-            </span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
+                <mask id="phone-mask" fill="#fff">
+                  <path d="M16.45 1.63H7.42c-1.06 0-1.92.86-1.92 1.92v16.92c0 1.06.86 1.92 1.92 1.92h9.03c1.06 0 1.92-.86 1.92-1.92V3.54c0-1.06-.86-1.91-1.92-1.91Z" />
+                </mask>
+                <path fill="#000" d="M13.6 5.31a.5.5 0 0 0 0-1zm-3.26-1a.5.5 0 0 0 0 1zm3.26.5v-.5h-3.26v1h3.26zm2.85-3.18v-1H7.42v2h9.03v-1m-9.03 0v-1A2.92 2.92 0 0 0 4.5 3.55h2a.92.92 0 0 1 .92-.92zM5.5 3.55h-1v16.92h2V3.55h-1Zm0 16.92h-1a2.92 2.92 0 0 0 2.92 2.92v-2a.92.92 0 0 1-.92-.92zm1.92 1.92v1h9.03v-2H7.42zm9.03 0v1a2.92 2.92 0 0 0 2.92-2.92h-2a.92.92 0 0 1-.92.92v1Zm1.92-1.92h1V3.54h-2v16.93h1m0-16.93h1c0-1.62-1.315-2.91-2.92-2.91v2c.515 0 .92.409.92.91h1" mask="url(#phone-mask)" />
+              </svg>
+            </div>
+            
+            {/* Phone Number */}
+            <div className="flex-1">
+              <span 
+                className="text-[16px] font-medium"
+                dir="ltr"
+                style={{ unicodeBidi: 'bidi-override', borderBottom: '1px solid #000' }}
+              >
+                {displayPhone}
+              </span>
+              <p className="text-[10px] text-[#666] mt-1">
+                لقد أرسلنا للتو رمز التحقق عبر الرسائل القصيرة
+              </p>
+            </div>
+          </div>
+
+          {/* Change phone link */}
+          <div className="flex justify-end mb-6">
             <button
               onClick={onBack}
               className="text-[13px] font-medium"
@@ -192,16 +215,16 @@ const VerifyPhone = ({
                 onChange={e => handleDigitChange(index, e.target.value)}
                 onKeyDown={e => handleKeyDown(index, e)}
                 onPaste={handlePaste}
-                className="w-[44px] h-[52px] text-center text-[20px] font-bold rounded-[10px] outline-none transition-all"
+                className="w-[36px] h-[44px] text-center text-[18px] font-bold rounded-[6px] outline-none transition-all"
                 style={{
                   border: codeError
-                    ? '2px solid #ef4444'
+                    ? '1px solid #ef4444'
                     : digit
-                    ? '2px solid #6C1DD6'
-                    : '2px solid #dcdcdc',
+                    ? '1px solid #6C1DD6'
+                    : '1px solid #ddd',
                   color: '#000',
-                  backgroundColor: digit ? '#f6f0fe' : '#fff',
-                  boxShadow: digit ? '0 0 0 3px rgba(108,29,214,0.08)' : 'none',
+                  backgroundColor: '#f7f7f7',
+                  boxShadow: digit ? '0 0 0 2px rgba(108,29,214,0.1)' : 'none',
                 }}
               />
             ))}
@@ -216,14 +239,14 @@ const VerifyPhone = ({
           <div className="mb-6 text-center">
             {resendTimer > 0 ? (
               <div
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] text-[#555]"
-                style={{ backgroundColor: '#f5f6f9' }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-[20px] text-[13px]"
+                style={{ backgroundColor: '#f5f6f9', color: '#777' }}
               >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="7" cy="7" r="6" stroke="#888" strokeWidth="1.4"/>
                   <path d="M7 4v3.5l2 1.2" stroke="#888" strokeWidth="1.4" strokeLinecap="round"/>
                 </svg>
-                <span>إعادة الإرسال خلال {formatTimerDisplay(resendTimer)}</span>
+                <span>إعادة الإرسال في {formatTimerDisplay(resendTimer)}</span>
               </div>
             ) : (
               <button
@@ -236,44 +259,46 @@ const VerifyPhone = ({
             )}
           </div>
 
-          {/* Terms checkbox */}
-          <label className="flex items-start gap-3 cursor-pointer mb-6 text-right">
-            <div className="relative mt-0.5 flex-shrink-0">
-              <input
-                type="checkbox"
-                checked={agreedTerms}
-                onChange={e => setAgreedTerms(e.target.checked)}
-                className="sr-only"
-              />
-              <div
-                className="w-5 h-5 rounded-[6px] flex items-center justify-center transition-colors"
-                style={{
-                  backgroundColor: agreedTerms ? '#6C1DD6' : '#fff',
-                  border: agreedTerms ? '2px solid #6C1DD6' : '2px solid #ccc',
-                }}
-                onClick={() => setAgreedTerms(!agreedTerms)}
-              >
-                {agreedTerms && (
-                  <svg width="12" height="9" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 4L4.5 7.5L11 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                )}
-              </div>
-            </div>
-            <span className="text-[13px] text-[#444] leading-relaxed">
-              أوافق على{' '}
-              <a
-                href="https://tamara.co/terms"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#6C1DD6' }}
-                className="underline font-medium"
-              >
-                شروط وأحكام تمارا
-              </a>
-            </span>
-          </label>
+          {/* Spacer for fixed checkbox */}
+          <div className="flex-1" />
         </div>
+      </div>
+
+      {/* Fixed Terms Checkbox at bottom right */}
+      <div 
+        className="fixed bottom-[10px] right-[10px] z-50"
+        dir="rtl"
+      >
+        <label className="flex items-center gap-2 cursor-pointer">
+          <div className="relative">
+            <input
+              type="checkbox"
+              checked={agreedTerms}
+              onChange={e => setAgreedTerms(e.target.checked)}
+              className="sr-only"
+            />
+            <div
+              className="w-6 h-6 rounded-[4px] flex items-center justify-center transition-colors"
+              style={{
+                backgroundColor: agreedTerms ? '#6C1DD6' : '#fff',
+                border: agreedTerms ? '2px solid #6C1DD6' : '2px solid #ccc',
+              }}
+              onClick={() => setAgreedTerms(!agreedTerms)}
+            >
+              {agreedTerms && (
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 5L5.5 9.5L13 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+            </div>
+          </div>
+          <span 
+            className="text-[12px] font-medium"
+            style={{ color: '#6C1DD6' }}
+          >
+            أوافق على شروط وأحكام تمارا
+          </span>
+        </label>
       </div>
     </div>
   );
