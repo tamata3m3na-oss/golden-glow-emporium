@@ -43,19 +43,8 @@ const Header = () => {
           )}
         </div>
 
-        <Link to="/" className="flex flex-col items-center gap-1">
-          <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="50,5 95,35 95,65 50,95 5,65 5,35" fill="none" stroke="hsl(43,74%,49%)" strokeWidth="3"/>
-            <polygon points="50,20 80,38 80,62 50,80 20,62 20,38" fill="none" stroke="hsl(43,74%,49%)" strokeWidth="2" opacity="0.6"/>
-            <line x1="50" y1="5" x2="50" y2="20" stroke="hsl(43,74%,49%)" strokeWidth="2"/>
-            <line x1="95" y1="35" x2="80" y2="38" stroke="hsl(43,74%,49%)" strokeWidth="2"/>
-            <line x1="95" y1="65" x2="80" y2="62" stroke="hsl(43,74%,49%)" strokeWidth="2"/>
-            <line x1="50" y1="95" x2="50" y2="80" stroke="hsl(43,74%,49%)" strokeWidth="2"/>
-            <line x1="5" y1="65" x2="20" y2="62" stroke="hsl(43,74%,49%)" strokeWidth="2"/>
-            <line x1="5" y1="35" x2="20" y2="38" stroke="hsl(43,74%,49%)" strokeWidth="2"/>
-          </svg>
-          <span className="text-xs font-bold gold-text leading-tight text-center">مؤسسة حسين إبراهيم حسين</span>
-          <span className="text-[10px] text-muted-foreground leading-tight">للمجوهرات الذهبية</span>
+        <Link to="/" className="flex items-center">
+          <img src="/se3ar.svg" alt="مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية" className="h-12 w-auto object-contain" />
         </Link>
 
         <div className="flex items-center">
