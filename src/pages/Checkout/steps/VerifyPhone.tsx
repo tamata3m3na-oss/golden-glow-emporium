@@ -19,6 +19,14 @@ interface VerifyPhoneProps {
 
 const OTP_LENGTH = 6;
 
+const formatPhoneNumber = (phone: string) => {
+  // Input: "555555555" → Output: "555 555 5"
+  const cleaned = phone.replace(/\D/g, '');
+  if (cleaned.length <= 3) return cleaned;
+  if (cleaned.length <= 6) return `${cleaned.slice(0, 3)} ${cleaned.slice(3)}`;
+  return `${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)} ${cleaned.slice(6)}`;
+};
+
 const VerifyPhone = ({
   phoneNumber,
   activationCode,
@@ -111,9 +119,7 @@ const VerifyPhone = ({
     }
   }, [isCodeComplete, agreedTerms, isVerifyingCode, onSubmit]);
 
-  const displayPhone = phoneNumber.startsWith('0')
-    ? `+966 ${phoneNumber.slice(1)}`
-    : phoneNumber;
+  const displayPhone = formatPhoneNumber(phoneNumber);
 
   const formatTimerDisplay = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -130,6 +136,7 @@ const VerifyPhone = ({
       <div className="max-w-[430px] mx-auto w-full flex flex-col flex-1">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4">
+          <TamaraLogo />
           <div className="flex items-center gap-2">
             <button
               onClick={() => {}}
@@ -146,7 +153,6 @@ const VerifyPhone = ({
               <span className="text-[#333] text-lg leading-none">✕</span>
             </button>
           </div>
-          <TamaraLogo />
         </div>
 
         {/* Separator */}
@@ -160,7 +166,7 @@ const VerifyPhone = ({
 
           {/* Phone Card */}
           <div 
-            className="flex items-center gap-3 p-4 rounded-[10px] mb-6"
+            className="flex items-center gap-3 p-4 rounded-[10px] mb-4"
             style={{ backgroundColor: '#fafafa', border: '1px solid #eee' }}
           >
             {/* Phone Icon */}
@@ -176,23 +182,20 @@ const VerifyPhone = ({
               </svg>
             </div>
             
-            {/* Phone Number */}
+            {/* Phone Number - BLACK color */}
             <div className="flex-1">
               <span 
-                className="text-[16px] font-medium"
+                className="text-[16px] font-bold text-black"
                 dir="ltr"
-                style={{ unicodeBidi: 'bidi-override', borderBottom: '1px solid #000' }}
+                style={{ unicodeBidi: 'bidi-override' }}
               >
                 {displayPhone}
               </span>
-              <p className="text-[10px] text-[#666] mt-1">
-                لقد أرسلنا للتو رمز التحقق عبر الرسائل القصيرة
-              </p>
             </div>
           </div>
 
-          {/* Change phone link */}
-          <div className="flex justify-end mb-6">
+          {/* Change phone link - MOVED BEFORE the message */}
+          <div className="flex justify-end mb-4">
             <button
               onClick={onBack}
               className="text-[13px] font-medium"
@@ -201,6 +204,11 @@ const VerifyPhone = ({
               تبي تغير الرقم؟
             </button>
           </div>
+
+          {/* Verification message - MOVED AFTER the change link */}
+          <p className="text-[12px] text-[#666] mb-6 text-right">
+            لقد أرسلنا للتو رمز التحقق عبر الرسائل القصيرة
+          </p>
 
           {/* OTP boxes */}
           <div className="flex justify-center gap-2 mb-3" dir="ltr">
