@@ -9,28 +9,8 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 
 const BNPLBanner = () => (
   <section className="px-4 py-4">
-    <div className="max-w-xl mx-auto rounded-2xl overflow-hidden relative" style={{ background: 'linear-gradient(135deg, #1a1060 0%, #2d1b8a 40%, #1e0a5c 100%)' }}>
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-6 -right-6 w-28 h-28 rounded-full bg-white/5" />
-        <div className="absolute -bottom-4 -left-4 w-20 h-20 rounded-full bg-yellow-400/10" />
-        <div className="absolute top-2 left-1/3 text-yellow-400 text-lg">✦</div>
-        <div className="absolute bottom-4 right-8 text-yellow-300 text-sm">✦</div>
-        <div className="absolute top-6 right-1/4 text-yellow-200 text-xs">✦</div>
-      </div>
-      <div className="relative z-10 flex items-center gap-4 p-5">
-        <div className="flex-1">
-          <p className="text-white font-bold text-lg leading-tight mb-3">
-            قسّم طلبك مع تابي أو تمارا
-            <br />
-            <span className="text-yellow-400">على 4 أو 6 دفعات</span>
-          </p>
-          <div className="flex gap-2 flex-wrap">
-            <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">tamara</span>
-            <span className="bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full">tabby</span>
-          </div>
-        </div>
-        <div className="flex-shrink-0 text-5xl">🪂</div>
-      </div>
+    <div className="max-w-xl mx-auto rounded-2xl overflow-hidden relative">
+      <img src="/logo2.jpg" alt="بانر الأقساط" className="w-full h-full object-cover" />
     </div>
   </section>
 );
@@ -231,18 +211,7 @@ const Index = () => {
       <section className="px-4 py-6 border-t gold-border">
         <div className="max-w-md mx-auto rounded-2xl overflow-hidden border gold-border" style={{ background: 'linear-gradient(135deg, hsl(43 74% 49% / 0.12), hsl(225 35% 14%))' }}>
           <div className="p-6 text-center">
-            <svg width="56" height="56" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-3">
-              <polygon points="50,5 95,35 95,65 50,95 5,65 5,35" fill="none" stroke="hsl(43,74%,49%)" strokeWidth="3"/>
-              <polygon points="50,20 80,38 80,62 50,80 20,62 20,38" fill="none" stroke="hsl(43,74%,49%)" strokeWidth="2" opacity="0.6"/>
-              <line x1="50" y1="5" x2="50" y2="20" stroke="hsl(43,74%,49%)" strokeWidth="2"/>
-              <line x1="95" y1="35" x2="80" y2="38" stroke="hsl(43,74%,49%)" strokeWidth="2"/>
-              <line x1="95" y1="65" x2="80" y2="62" stroke="hsl(43,74%,49%)" strokeWidth="2"/>
-              <line x1="50" y1="95" x2="50" y2="80" stroke="hsl(43,74%,49%)" strokeWidth="2"/>
-              <line x1="5" y1="65" x2="20" y2="62" stroke="hsl(43,74%,49%)" strokeWidth="2"/>
-              <line x1="5" y1="35" x2="20" y2="38" stroke="hsl(43,74%,49%)" strokeWidth="2"/>
-            </svg>
-            <h2 className="text-lg font-extrabold gold-text mb-1">مؤسسة حسين إبراهيم حسين</h2>
-            <p className="text-sm text-muted-foreground mb-3">للمجوهرات الذهبية</p>
+            <img src="/se3ar.svg" alt="شعار مؤسسة حسين إبراهيم حسين" className="mx-auto h-40 w-auto object-contain mb-3" />
             <p className="text-sm text-foreground/80 leading-relaxed">
               متجر متخصص في قطاع المجوهرات والذهب، نقدم أفضل المنتجات بأعلى جودة وعيار 24 قيراط معتمد. نحرص على رضا عملائنا وتقديم تجربة تسوق استثنائية.
             </p>
