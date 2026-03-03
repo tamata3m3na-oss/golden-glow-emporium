@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronDown, ChevronUp } from 'lucide-react';
 import { postCheckoutEvent } from '@/lib/api';
 import type { InstallmentPackage } from '../types';
+import TamaraLogo from '@/components/TamaraLogo';
 
 interface SelectPlanProps {
   productPrice: number;
@@ -99,25 +99,26 @@ const SelectPlan = ({
   return (
     <div className="min-h-screen bg-white" dir="rtl">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-gray-600 text-sm">English</span>
-            <span className="text-gray-400">[|]</span>
-            <button
-              onClick={onBack}
-              className="text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              <span className="text-lg">✕</span>
-            </button>
-          </div>
-          <img
-            src="/tamara-logo.webp"
-            alt="Tamara"
-            className="h-8 object-contain"
-          />
+      <div className="flex items-center justify-between px-5 py-4">
+        <TamaraLogo />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {}}
+            className="text-[14px] text-[#333] font-medium"
+          >
+            English
+          </button>
+          <span className="text-[#ccc]">|</span>
+          <button
+            onClick={onBack}
+            aria-label="إغلاق"
+            className="w-8 h-8 flex items-center justify-center rounded-full border border-[#ddd] hover:bg-gray-50 transition-colors"
+          >
+            <span className="text-[#333] text-lg leading-none">✕</span>
+          </button>
         </div>
       </div>
+      <div className="h-px bg-[#eee]" />
 
       {/* Content */}
       <div className="max-w-2xl mx-auto px-4 py-6 pb-32">
