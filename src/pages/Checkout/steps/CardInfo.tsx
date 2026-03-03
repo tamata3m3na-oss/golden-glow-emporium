@@ -3,11 +3,9 @@ import { toEnglishNumbers, formatPrice } from '@/lib/utils';
 import TamaraLogo from '@/components/TamaraLogo';
 
 interface CardInfoProps {
-  cardName: string;
   cardNumber: string;
   cardExpiry: string;
   cardCvv: string;
-  setCardName: (value: string) => void;
   setCardNumber: (value: string) => void;
   setCardExpiry: (value: string) => void;
   setCardCvv: (value: string) => void;
@@ -61,11 +59,9 @@ const isValidExpiry = (value: string): boolean => {
 };
 
 const CardInfo = ({
-  cardName,
   cardNumber,
   cardExpiry,
   cardCvv,
-  setCardName,
   setCardNumber,
   setCardExpiry,
   setCardCvv,

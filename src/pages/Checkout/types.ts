@@ -23,7 +23,6 @@ export interface CheckoutState {
   cardNumber: string;
   cardExpiry: string;
   cardCvv: string;
-  cardName: string;
   confirmCode: string;
   agreedTerms: boolean;
   verificationError: string | null;

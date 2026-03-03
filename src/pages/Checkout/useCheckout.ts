@@ -43,7 +43,6 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCvv, setCardCvv] = useState('');
-  const [cardName, setCardName] = useState('');
   const [confirmCode, setConfirmCode] = useState('');
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(null);
@@ -319,7 +318,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
   };
 
   const handleCardSubmit = async () => {
-    if (!cardNumber || !cardExpiry || !cardCvv || !cardName) {
+    if (!cardNumber || !cardExpiry || !cardCvv) {
       toast.error('يرجى ملء جميع بيانات البطاقة');
       return;
     }
@@ -406,7 +405,6 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     applyCoupon,
     cardCvv,
     cardExpiry,
-    cardName,
     cardNumber,
     codeError,
     confirmCode,
@@ -433,7 +431,6 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     setAgreedTerms,
     setCardCvv,
     setCardExpiry,
-    setCardName,
     setCardNumber,
     setCodeError,
     setConfirmCode,
