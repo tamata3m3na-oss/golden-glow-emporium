@@ -1,10 +1,11 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import ProductCard from '@/components/ProductCard';
 import { getProducts } from '@/data/products';
 import { Star, ChevronLeft, ChevronRight, ShieldCheck, Award, Truck, Clock } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 const BNPLBanner = () => (
   <section className="px-4 py-4">
@@ -93,14 +94,12 @@ const staticReviews = [
 ];
 
 const paymentLogos = [
-  { name: 'Google Pay', bg: 'bg-white', text: 'text-gray-800 font-bold text-sm', label: 'G Pay' },
-  { name: 'مدى', bg: 'bg-white', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Mada_Logo.svg/200px-Mada_Logo.svg.png' },
-  { name: 'Tabby', bg: 'bg-purple-600', text: 'text-white font-bold text-sm', label: 'tabby' },
-  { name: 'Tamara', bg: 'bg-green-500', text: 'text-white font-bold text-sm', label: 'tamara' },
-  { name: 'Apple Pay', bg: 'bg-black', text: 'text-white font-bold text-sm', label: '🍎 Pay' },
-  { name: 'STC Pay', bg: 'bg-purple-700', text: 'text-white font-bold text-sm', label: 'STC Pay' },
-  { name: 'Visa', bg: 'bg-blue-700', text: 'text-white font-bold text-sm', label: 'VISA' },
-  { name: 'تحويل بنكي', bg: 'bg-secondary', text: 'text-foreground text-xs', label: 'تحويل بنكي' },
+  { name: 'Visa', img: '/payments/visa.svg' },
+  { name: 'Mastercard', img: '/payments/mastercard.svg' },
+  { name: 'مدى', img: '/payments/mada.svg' },
+  { name: 'Tabby', img: '/payments/tabby.svg' },
+  { name: 'Tamara', img: '/payments/tamara.svg' },
+  { name: 'Apple Pay', img: '/payments/apple-pay.svg' },
 ];
 
 const StarRating = ({ count }: { count: number }) => (
@@ -117,6 +116,7 @@ const StarRating = ({ count }: { count: number }) => (
 const Index = () => {
   const products = getProducts();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [currentReview, setCurrentReview] = useState(0);
 
   const scroll = (dir: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -124,6 +124,13 @@ const Index = () => {
       scrollRef.current.scrollBy({ left: dir === 'left' ? amount : -amount, behavior: 'smooth' });
     }
   };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentReview((prev) => (prev + 1) % staticReviews.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <Layout>
@@ -204,17 +211,13 @@ const Index = () => {
       <section className="px-4 py-8 text-center">
         <h3 className="text-xl font-bold gold-text mb-2">طرق دفع آمنة</h3>
         <div className="w-12 h-0.5 gold-gradient mx-auto rounded-full mb-6" />
-        <div className="flex flex-wrap justify-center gap-3 max-w-lg mx-auto">
+        <div className="flex flex-wrap justify-center items-center gap-4 max-w-2xl mx-auto">
           {paymentLogos.map((p) => (
             <div
               key={p.name}
-              className={`w-16 h-12 rounded-xl flex items-center justify-center ${p.bg} border border-white/10 shadow-md`}
+              className="w-20 h-14 rounded-xl flex items-center justify-center bg-white/5 border border-white/10 shadow-md"
             >
-              {p.img ? (
-                <img src={p.img} alt={p.name} className="h-7 w-auto object-contain" />
-              ) : (
-                <span className={p.text}>{p.label}</span>
-              )}
+              <img src={p.img} alt={p.name} className="h-9 w-auto object-contain" />
             </div>
           ))}
         </div>
@@ -267,28 +270,53 @@ const Index = () => {
           <p className="text-sm text-muted-foreground mt-2">ماذا يقول عملاؤنا الكرام</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-          {staticReviews.map((review, i) => (
-            <motion.div
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full max-w-4xl mx-auto"
+        >
+          <CarouselContent>
+            {staticReviews.map((review, i) => (
+              <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3">
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.08 }}
+                  className="navy-card rounded-xl p-4 h-full"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-full gold-gradient flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
+                      {review.avatar}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-foreground">{review.name}</p>
+                      <p className="text-xs text-muted-foreground">{review.city} · {review.date}</p>
+                    </div>
+                  </div>
+                  <StarRating count={review.rating} />
+                  <p className="text-sm text-foreground/80 mt-2 leading-relaxed">{review.text}</p>
+                </motion.div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-0 -translate-x-1/2" />
+          <CarouselNext className="right-0 translate-x-1/2" />
+        </Carousel>
+
+        {/* Navigation Dots */}
+        <div className="flex justify-center gap-2 mt-4">
+          {staticReviews.map((_, i) => (
+            <button
               key={i}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="navy-card rounded-xl p-4"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full gold-gradient flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
-                  {review.avatar}
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">{review.name}</p>
-                  <p className="text-xs text-muted-foreground">{review.city} · {review.date}</p>
-                </div>
-              </div>
-              <StarRating count={review.rating} />
-              <p className="text-sm text-foreground/80 mt-2 leading-relaxed">{review.text}</p>
-            </motion.div>
+              onClick={() => setCurrentReview(i)}
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                i === currentReview ? 'w-6 gold-gradient' : 'bg-muted-foreground/30'
+              }`}
+              aria-label={`الانتقال إلى الرأي ${i + 1}`}
+            />
           ))}
         </div>
       </section>
