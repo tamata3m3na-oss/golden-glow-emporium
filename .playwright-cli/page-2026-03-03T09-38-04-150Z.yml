@@ -1,0 +1,71 @@
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link [ref=e7] [cursor=pointer]:
+          - /url: /dashboard
+          - button [ref=e8]:
+            - img
+        - link "مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية" [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img [ref=e10]
+          - generic [ref=e17]: مؤسسة حسين إبراهيم حسين
+          - generic [ref=e18]: للمجوهرات الذهبية
+        - button [ref=e20] [cursor=pointer]:
+          - img
+    - main [ref=e21]:
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - heading "تسجيل الدخول" [level=1] [ref=e26]
+          - paragraph [ref=e27]: أدخل بياناتك للمتابعة
+        - generic [ref=e28]:
+          - generic [ref=e29]:
+            - text: الاسم
+            - textbox "الاسم" [ref=e30]:
+              - /placeholder: أدخل اسمك
+          - generic [ref=e31]:
+            - text: البريد الإلكتروني
+            - textbox "البريد الإلكتروني" [ref=e32]:
+              - /placeholder: أدخل بريدك الإلكتروني
+          - button "دخول" [ref=e33] [cursor=pointer]
+    - contentinfo [ref=e34]:
+      - generic [ref=e35]:
+        - heading "روابط مهمة" [level=3] [ref=e36]
+        - generic [ref=e38]:
+          - link "من نحن" [ref=e39] [cursor=pointer]:
+            - /url: /about
+          - link "الشروط والأحكام" [ref=e40] [cursor=pointer]:
+            - /url: /terms
+          - link "سياسة الخصوصية" [ref=e41] [cursor=pointer]:
+            - /url: /privacy
+          - link "سياسة الاسترجاع والاستبدال" [ref=e42] [cursor=pointer]:
+            - /url: /returns
+          - link "طريقة معرفة مقاس الخاتم" [ref=e43] [cursor=pointer]:
+            - /url: /ring-size
+          - link "الأحكام الشرعية" [ref=e44] [cursor=pointer]:
+            - /url: /shariah
+          - link "شروط التوصيل" [ref=e45] [cursor=pointer]:
+            - /url: /delivery
+        - link "ضريبة القيمة المضافة" [ref=e47] [cursor=pointer]:
+          - /url: https://mc.gov.sa/ar/eservices/Pages/Commercial-data.aspx
+          - img "ضريبة القيمة المضافة"
+        - generic [ref=e48]:
+          - link "السجل التجاري السجل التجاري 1010088875" [ref=e49] [cursor=pointer]:
+            - /url: https://mc.gov.sa/ar/eservices/Pages/Commercial-data.aspx
+            - img "السجل التجاري"
+            - generic [ref=e50]:
+              - paragraph [ref=e51]: السجل التجاري
+              - paragraph [ref=e52]: "1010088875"
+          - link "منصة الأعمال السعودية منصة الأعمال السعودية مسجل وموثق" [ref=e53] [cursor=pointer]:
+            - /url: /business-info
+            - img "منصة الأعمال السعودية"
+            - generic [ref=e54]:
+              - paragraph [ref=e55]: منصة الأعمال السعودية
+              - paragraph [ref=e56]: مسجل وموثق
+        - paragraph [ref=e58]: © 2026 مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية. جميع الحقوق محفوظة.
+    - link "تواصل معنا على واتساب" [ref=e59] [cursor=pointer]:
+      - /url: https://wa.me/966594241060
+      - img [ref=e60]

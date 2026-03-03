@@ -1,0 +1,106 @@
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=e65]:
+        - img [ref=e67]
+        - generic [ref=e70]: أهلاً بك، Test User!
+  - generic [ref=e71]:
+    - banner [ref=e72]:
+      - generic [ref=e73]:
+        - link [ref=e75] [cursor=pointer]:
+          - /url: /dashboard
+          - button [ref=e76]:
+            - img
+        - link "مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية" [ref=e77] [cursor=pointer]:
+          - /url: /
+          - img [ref=e78]
+          - generic [ref=e85]: مؤسسة حسين إبراهيم حسين
+          - generic [ref=e86]: للمجوهرات الذهبية
+        - button [ref=e88] [cursor=pointer]:
+          - img
+    - main [ref=e89]:
+      - generic [ref=e91]:
+        - generic [ref=e93]:
+          - img [ref=e95]
+          - generic [ref=e98]:
+            - heading "أهلاً, Test User" [level=1] [ref=e99]
+            - paragraph [ref=e100]: test@example.com - عضو منذ 2026
+            - generic [ref=e101]:
+              - generic [ref=e102]:
+                - img [ref=e103]
+                - text: حساب موثق
+              - generic [ref=e105]:
+                - img [ref=e106]
+                - text: VIP عميل
+              - generic [ref=e108]: لوحة تحكم حديثة
+        - generic [ref=e109]:
+          - generic [ref=e110]:
+            - img [ref=e111]
+            - paragraph [ref=e114]: 0 ريال
+            - paragraph [ref=e115]: إجمالي المبالغ
+          - generic [ref=e116]:
+            - img [ref=e117]
+            - paragraph [ref=e120]: "0"
+            - paragraph [ref=e121]: غير مقروء
+          - generic [ref=e122]:
+            - img [ref=e123]
+            - paragraph [ref=e126]: "0"
+            - paragraph [ref=e127]: عدد الطلبات
+        - generic [ref=e128]:
+          - heading "لوحة الحساب" [level=2] [ref=e129]
+          - generic [ref=e130]:
+            - generic [ref=e131]:
+              - text: الاسم
+              - paragraph [ref=e132]: Test User
+            - generic [ref=e133]:
+              - text: البريد الإلكتروني
+              - paragraph [ref=e134]: test@example.com
+            - generic [ref=e135]:
+              - text: رقم الهاتف
+              - paragraph [ref=e136]: —
+            - generic [ref=e137]:
+              - text: حالة الحساب
+              - paragraph [ref=e138]: نشط
+        - button "تسجيل الخروج" [ref=e139] [cursor=pointer]:
+          - img
+          - text: تسجيل الخروج
+    - contentinfo [ref=e140]:
+      - generic [ref=e141]:
+        - heading "روابط مهمة" [level=3] [ref=e142]
+        - generic [ref=e144]:
+          - link "من نحن" [ref=e145] [cursor=pointer]:
+            - /url: /about
+          - link "الشروط والأحكام" [ref=e146] [cursor=pointer]:
+            - /url: /terms
+          - link "سياسة الخصوصية" [ref=e147] [cursor=pointer]:
+            - /url: /privacy
+          - link "سياسة الاسترجاع والاستبدال" [ref=e148] [cursor=pointer]:
+            - /url: /returns
+          - link "طريقة معرفة مقاس الخاتم" [ref=e149] [cursor=pointer]:
+            - /url: /ring-size
+          - link "الأحكام الشرعية" [ref=e150] [cursor=pointer]:
+            - /url: /shariah
+          - link "شروط التوصيل" [ref=e151] [cursor=pointer]:
+            - /url: /delivery
+        - link "ضريبة القيمة المضافة" [ref=e153] [cursor=pointer]:
+          - /url: https://mc.gov.sa/ar/eservices/Pages/Commercial-data.aspx
+          - img "ضريبة القيمة المضافة" [ref=e154]
+        - generic [ref=e155]:
+          - link "السجل التجاري السجل التجاري 1010088875" [ref=e156] [cursor=pointer]:
+            - /url: https://mc.gov.sa/ar/eservices/Pages/Commercial-data.aspx
+            - img "السجل التجاري" [ref=e157]
+            - generic [ref=e158]:
+              - paragraph [ref=e159]: السجل التجاري
+              - paragraph [ref=e160]: "1010088875"
+          - link "منصة الأعمال السعودية منصة الأعمال السعودية مسجل وموثق" [ref=e161] [cursor=pointer]:
+            - /url: /business-info
+            - img "منصة الأعمال السعودية" [ref=e162]
+            - generic [ref=e163]:
+              - paragraph [ref=e164]: منصة الأعمال السعودية
+              - paragraph [ref=e165]: مسجل وموثق
+        - paragraph [ref=e167]: © 2026 مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية. جميع الحقوق محفوظة.
+    - link "تواصل معنا على واتساب" [ref=e168] [cursor=pointer]:
+      - /url: https://wa.me/966594241060
+      - img [ref=e169]
