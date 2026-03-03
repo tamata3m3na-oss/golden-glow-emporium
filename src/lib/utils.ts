@@ -35,3 +35,8 @@ export function formatPriceEnglish(amount: number): string {
     minimumFractionDigits: 0 
   }).format(amount).replace('SAR', 'ر.س');
 }
+
+// Format price for checkout (plain number with currency)
+export function formatPrice(amount: number): string {
+  return new Intl.NumberFormat('en-US').format(amount);
+}

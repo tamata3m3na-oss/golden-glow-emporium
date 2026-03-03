@@ -62,6 +62,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     activePerInstallment,
     activeTotalAmount,
     sessionId,
+    selectedPackage,
   } = useCheckout(product, user);
 
   return (
@@ -127,6 +128,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
               setCardCvv={setCardCvv}
               onBack={() => setStep('select-plan')}
               onSubmit={handleCardSubmit}
+              selectedPlan={selectedPackage}
             />
           </motion.div>
         )}
