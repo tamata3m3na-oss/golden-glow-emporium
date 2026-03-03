@@ -27,7 +27,6 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     agreedTerms,
     cardCvv,
     cardExpiry,
-    cardName,
     cardNumber,
     codeError,
     confirmCode,
@@ -46,7 +45,6 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     setAgreedTerms,
     setCardCvv,
     setCardExpiry,
-    setCardName,
     setCardNumber,
     setCodeError,
     setConfirmCode,
@@ -118,11 +116,9 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
         {step === 'card-info' && (
           <motion.div key="card" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
             <CardInfo
-              cardName={cardName}
               cardNumber={cardNumber}
               cardExpiry={cardExpiry}
               cardCvv={cardCvv}
-              setCardName={setCardName}
               setCardNumber={setCardNumber}
               setCardExpiry={setCardExpiry}
               setCardCvv={setCardCvv}
