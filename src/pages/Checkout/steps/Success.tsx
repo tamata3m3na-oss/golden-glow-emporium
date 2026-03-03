@@ -73,7 +73,7 @@ const Success = ({
       </div>
 
       <Link to="/">
-        <Button className="w-full bg-[hsl(340,80%,55%)] hover:bg-[hsl(340,80%,50%)] text-white font-bold py-4 rounded-lg">
+        <Button className="w-full bg-[#d4af37] hover:bg-[#c9a030] text-white font-bold py-4 rounded-lg">
           <ShoppingBag className="h-4 w-4 ml-2" />
           العودة للتسوق
         </Button>

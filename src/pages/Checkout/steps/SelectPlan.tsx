@@ -196,7 +196,7 @@ const SelectPlan = ({
         <div className="max-w-2xl mx-auto">
           <Button
             onClick={handleContinue}
-            className="w-full py-4 font-bold rounded-[10px] transition-all bg-[#000] hover:bg-gray-800 text-white"
+            className="w-full py-4 font-bold rounded-[10px] transition-all bg-[#d4af37] hover:bg-[#c9a030] text-white"
           >
             متابعة الدفع
           </Button>

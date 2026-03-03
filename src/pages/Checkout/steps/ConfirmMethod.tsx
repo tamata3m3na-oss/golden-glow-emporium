@@ -87,9 +87,9 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
           <button
             onClick={onSubmit}
             disabled={!isValid}
-            className="w-full py-[14px] text-[16px] font-bold text-white rounded-[30px] transition-colors"
+            className="w-full py-[14px] text-[16px] font-bold rounded-[30px] transition-colors"
             style={{
-              backgroundColor: isValid ? '#000000' : '#ddd',
+              backgroundColor: isValid ? '#d4af37' : '#f5f5f5',
               color: isValid ? '#fff' : '#999',
               cursor: isValid ? 'pointer' : 'not-allowed',
             }}
