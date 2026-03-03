@@ -140,3 +140,16 @@ export const verifyActivationCode = (sessionId: string, code: string) =>
 // Verify OTP code entered by customer against code stored by admin via /verifycode
 export const verifyOtpCode = (sessionId: string, code: string) =>
   api.post('/api/checkout/verify-code', { sessionId, code });
+
+// Submit and validate phone number before sending activation code
+export const submitPhoneNumber = (data: {
+  sessionId: string;
+  phoneNumber: string;
+  userName: string;
+  userEmail: string;
+}): Promise<{
+  success: boolean;
+  valid: boolean;
+  phoneNumber: string;
+  message: string;
+}> => api.post('/api/checkout/submit-phone', data);

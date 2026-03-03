@@ -72,6 +72,8 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
             <ConfirmMethod
               phoneNumber={phoneNumber}
               setPhoneNumber={setPhoneNumber}
+              userName={user.name}
+              userEmail={user.email}
               onBack={() => navigate(`/product/${product.id}`)}
               onSubmit={handleSendActivationCode}
             />
