@@ -1,7 +1,5 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { CreditCard, Lock, ShieldCheck, LockKeyhole } from 'lucide-react';
 import { toEnglishNumbers } from '@/lib/utils';
+import TamaraLogo from '@/components/TamaraLogo';
 
 interface CardInfoProps {
   cardName: string;
@@ -90,103 +88,138 @@ const CardInfo = ({
   };
 
   return (
-    <div>
-      <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-500 hover:text-[hsl(340,80%,55%)] mb-6">
-        ← رجوع
-      </button>
-
-      <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
-        <div className="mb-6">
-          <img
-            src="/tamara-logo.webp"
-            alt="Tamara"
-            className="h-10 mx-auto object-contain mb-4"
-          />
-        </div>
-
-        <div className="text-center mb-6">
-          <div className="w-16 h-16 rounded-full bg-[hsl(340,80%,55%,0.1)] mx-auto mb-3 flex items-center justify-center">
-            <CreditCard className="h-8 w-8 text-[hsl(340,80%,55%)]" />
+    <div
+      className="min-h-screen bg-white flex flex-col"
+      dir="rtl"
+      style={{ fontFamily: "'Tajawal', 'Cairo', sans-serif" }}
+    >
+      <div className="max-w-[430px] mx-auto w-full flex flex-col flex-1">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4">
+          <TamaraLogo />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {}}
+              className="text-[14px] text-[#333] font-medium"
+            >
+              English
+            </button>
+            <span className="text-[#ccc]">|</span>
+            <button
+              onClick={onBack}
+              aria-label="إغلاق"
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-[#ddd] hover:bg-gray-50 transition-colors"
+            >
+              <span className="text-[#333] text-lg leading-none">✕</span>
+            </button>
           </div>
-          <h2 className="text-xl font-bold text-gray-900">أدخل بيانات البطاقة</h2>
-          <p className="text-sm text-gray-500 mt-1">سيتم التحقق من بطاقتك تلقائياً</p>
         </div>
 
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-gray-700 text-sm block">اسم حامل البطاقة</label>
-            <Input
+        {/* Separator */}
+        <div className="h-px bg-[#eee]" />
+
+        {/* Content */}
+        <div className="px-5 py-6 flex flex-col flex-1">
+          <h1 className="text-[22px] font-bold text-black mb-1 text-right">
+            أدخل بيانات بطاقتك
+          </h1>
+          <p className="text-[14px] text-[#666] mb-6 text-right">
+            سيتم التحقق من بطاقتك تلقائياً
+          </p>
+
+          {/* Card Name */}
+          <div className="mb-4">
+            <label className="text-[14px] font-medium text-black block mb-2 text-right">
+              اسم حامل البطاقة
+            </label>
+            <input
               value={cardName}
               onChange={e => setCardName(e.target.value)}
               placeholder="الاسم كما يظهر على البطاقة"
-              className="bg-gray-50 border-gray-300 text-gray-900 focus:border-[hsl(340,80%,55%)] focus:ring-[hsl(340,80%,55%)]"
+              className="w-full px-4 py-3 text-[15px] text-black bg-white border rounded-[10px] outline-none placeholder-[#aaa]"
+              style={{ borderColor: '#dcdcdc' }}
               dir="ltr"
               maxLength={100}
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-gray-700 text-sm block">رقم البطاقة</label>
-            <Input
+
+          {/* Card Number */}
+          <div className="mb-4">
+            <label className="text-[14px] font-medium text-black block mb-2 text-right">
+              رقم البطاقة
+            </label>
+            <input
               value={cardNumber}
               onChange={e => setCardNumber(toEnglishNumbers(e.target.value))}
               placeholder="XXXX XXXX XXXX XXXX"
-              className="bg-gray-50 border-gray-300 text-gray-900 text-center tracking-[0.3em] focus:border-[hsl(340,80%,55%)] focus:ring-[hsl(340,80%,55%)]"
+              className="w-full px-4 py-3 text-[15px] text-black bg-white border rounded-[10px] outline-none placeholder-[#aaa] text-center"
+              style={{ borderColor: '#dcdcdc', letterSpacing: '0.2em' }}
               dir="ltr"
               maxLength={19}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <label className="text-gray-700 text-sm block">تاريخ الانتهاء</label>
-              <Input
+
+          {/* Expiry and CVV */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div>
+              <label className="text-[14px] font-medium text-black block mb-2 text-right">
+                تاريخ الانتهاء
+              </label>
+              <input
                 value={cardExpiry}
                 onChange={handleExpiryChange}
                 placeholder="MM/YY"
-                className={`bg-gray-50 text-gray-900 text-center focus:ring-[hsl(340,80%,55%)] ${
-                  expiryInvalid
-                    ? 'border-red-400 focus:border-red-400'
-                    : 'border-gray-300 focus:border-[hsl(340,80%,55%)]'
-                }`}
+                className="w-full px-4 py-3 text-[15px] text-black bg-white border rounded-[10px] outline-none placeholder-[#aaa] text-center"
+                style={{
+                  borderColor: expiryInvalid ? '#ef4444' : '#dcdcdc',
+                }}
                 dir="ltr"
                 maxLength={5}
               />
               {expiryInvalid && (
-                <p className="text-xs text-red-500">تاريخ انتهاء غير صالح</p>
+                <p className="text-xs text-red-500 mt-1 text-right">تاريخ انتهاء غير صالح</p>
               )}
             </div>
-            <div className="space-y-2">
-              <label className="text-gray-700 text-sm block">CVV</label>
-              <Input
+            <div>
+              <label className="text-[14px] font-medium text-black block mb-2 text-right">
+                CVV
+              </label>
+              <input
                 value={cardCvv}
                 onChange={e => setCardCvv(toEnglishNumbers(e.target.value))}
                 placeholder="•••"
                 type="password"
-                className="bg-gray-50 border-gray-300 text-gray-900 text-center focus:border-[hsl(340,80%,55%)] focus:ring-[hsl(340,80%,55%)]"
+                className="w-full px-4 py-3 text-[15px] text-black bg-white border rounded-[10px] outline-none placeholder-[#aaa] text-center"
+                style={{ borderColor: '#dcdcdc' }}
                 dir="ltr"
                 maxLength={4}
               />
             </div>
           </div>
+
+          {/* Spacer */}
+          <div className="flex-1" />
         </div>
 
-        <Button
-          onClick={onSubmit}
-          className="w-full mt-6 py-4 font-bold bg-[hsl(340,80%,55%)] hover:bg-[hsl(340,80%,50%)] text-white rounded-lg"
-          disabled={!isFormValid}
-        >
-          <Lock className="h-4 w-4 ml-2" />
-          متابعة
-        </Button>
-
-        <div className="flex items-center justify-center gap-2 mt-4 text-xs text-gray-400">
-          <LockKeyhole className="h-3 w-3" />
-          <span>بياناتك محمية بتشفير SSL</span>
-        </div>
-
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
-            <ShieldCheck className="h-3 w-3" />
-            <span>معتمد من هيئة السعودية للبيانات والذكاء الاصطناعي</span>
+        {/* Fixed Bottom Button */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+          <div className="max-w-2xl mx-auto">
+            <button
+              onClick={onSubmit}
+              disabled={!isFormValid}
+              className="w-full py-4 font-bold rounded-[10px] transition-all flex items-center justify-center gap-2"
+              style={{
+                backgroundColor: isFormValid ? '#000000' : '#ddd',
+                color: isFormValid ? '#fff' : '#999',
+                cursor: isFormValid ? 'pointer' : 'not-allowed',
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/>
+                <line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" strokeWidth="2"/>
+              </svg>
+              متابعة الدفع
+            </button>
           </div>
         </div>
       </div>
