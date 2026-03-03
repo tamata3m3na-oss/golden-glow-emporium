@@ -164,48 +164,25 @@ const VerifyPhone = ({
             تحقق من رقمك
           </h1>
 
-          {/* Phone Card */}
+          {/* Phone Card - with phone number and change link inside same card */}
           <div 
-            className="flex items-center gap-3 p-4 rounded-[10px] mb-4"
-            style={{ backgroundColor: '#fafafa', border: '1px solid #eee' }}
+            className="border border-gray-200 rounded-lg p-4 bg-white mb-4"
           >
-            {/* Phone Icon */}
-            <div 
-              className="w-10 h-10 flex items-center justify-center rounded-full"
-              style={{ backgroundColor: '#fafafa', border: '1px solid #eee' }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
-                <mask id="phone-mask" fill="#fff">
-                  <path d="M16.45 1.63H7.42c-1.06 0-1.92.86-1.92 1.92v16.92c0 1.06.86 1.92 1.92 1.92h9.03c1.06 0 1.92-.86 1.92-1.92V3.54c0-1.06-.86-1.91-1.92-1.91Z" />
-                </mask>
-                <path fill="#000" d="M13.6 5.31a.5.5 0 0 0 0-1zm-3.26-1a.5.5 0 0 0 0 1zm3.26.5v-.5h-3.26v1h3.26zm2.85-3.18v-1H7.42v2h9.03v-1m-9.03 0v-1A2.92 2.92 0 0 0 4.5 3.55h2a.92.92 0 0 1 .92-.92zM5.5 3.55h-1v16.92h2V3.55h-1Zm0 16.92h-1a2.92 2.92 0 0 0 2.92 2.92v-2a.92.92 0 0 1-.92-.92zm1.92 1.92v1h9.03v-2H7.42zm9.03 0v1a2.92 2.92 0 0 0 2.92-2.92h-2a.92.92 0 0 1-.92.92v1Zm1.92-1.92h1V3.54h-2v16.93h1m0-16.93h1c0-1.62-1.315-2.91-2.92-2.91v2c.515 0 .92.409.92.91h1" mask="url(#phone-mask)" />
-              </svg>
-            </div>
-            
-            {/* Phone Number - BLACK color */}
-            <div className="flex-1">
-              <span 
-                className="text-[16px] font-bold text-black"
-                dir="ltr"
-                style={{ unicodeBidi: 'bidi-override' }}
-              >
+            <div className="text-right">
+              <div className="text-black font-bold text-lg border-b border-black inline-block pb-1">
                 {displayPhone}
-              </span>
+              </div>
+              <div 
+                className="text-purple-600 text-sm mt-1 cursor-pointer hover:underline"
+                style={{ color: '#6C1DD6' }}
+                onClick={onBack}
+              >
+                تبي تغير الرقم؟
+              </div>
             </div>
           </div>
 
-          {/* Change phone link - MOVED BEFORE the message */}
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={onBack}
-              className="text-[13px] font-medium"
-              style={{ color: '#6C1DD6' }}
-            >
-              تبي تغير الرقم؟
-            </button>
-          </div>
-
-          {/* Verification message - MOVED AFTER the change link */}
+          {/* Verification message */}
           <p className="text-[12px] text-[#666] mb-6 text-right">
             لقد أرسلنا للتو رمز التحقق عبر الرسائل القصيرة
           </p>
@@ -243,8 +220,8 @@ const VerifyPhone = ({
             <p className="text-red-500 text-[13px] text-center mb-3">{codeError}</p>
           )}
 
-          {/* Timer / resend */}
-          <div className="mb-6 text-center">
+          {/* Timer / resend - right aligned with title */}
+          <div className="mb-6 flex justify-end">
             {resendTimer > 0 ? (
               <div
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-[20px] text-[13px]"

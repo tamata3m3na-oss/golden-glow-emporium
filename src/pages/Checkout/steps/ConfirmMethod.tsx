@@ -8,13 +8,6 @@ interface ConfirmMethodProps {
   onSubmit: () => void;
 }
 
-const SAFlag = () => (
-  <svg width="22" height="15" viewBox="0 0 22 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="22" height="15" fill="#006C35"/>
-    <text x="11" y="10" textAnchor="middle" fill="white" fontSize="6" fontWeight="bold">لا إله إلا الله</text>
-  </svg>
-);
-
 const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: ConfirmMethodProps) => {
   const isValid = phoneNumber.length >= 9;
 
@@ -69,16 +62,20 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
                 className="flex items-center gap-2 px-3 py-3 border-l"
                 style={{ borderColor: '#dcdcdc', backgroundColor: '#fafafa' }}
               >
-                <SAFlag />
+                <img 
+                  src="https://flagcdn.com/w20/sa.png" 
+                  alt="SA" 
+                  className="w-[22px] h-[15px] rounded-sm"
+                />
                 <span className="text-[14px] font-bold text-black" dir="ltr">+966</span>
               </div>
-              {/* Phone number input */}
+              {/* Phone number input - 15% wider */}
               <input
                 value={phoneNumber}
                 onChange={e => setPhoneNumber(toEnglishNumbers(e.target.value))}
                 placeholder="اكتب رقمك"
                 className="flex-1 px-3 py-3 text-[15px] text-black bg-white outline-none placeholder-[#aaa]"
-                style={{ direction: 'ltr', textAlign: 'right' }}
+                style={{ direction: 'ltr', textAlign: 'right', width: '115%' }}
                 maxLength={10}
                 type="tel"
                 inputMode="numeric"
