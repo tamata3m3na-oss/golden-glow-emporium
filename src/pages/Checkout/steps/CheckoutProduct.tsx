@@ -1,223 +1,171 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-interface CheckoutProductProps {
-  onConfirm: (phoneNumber: string) => void;
-  onBack: () => void;
+// SVG Components
+function SaFlag1() {
+  return (
+    <div
+      className="relative h-[15px] w-[22px] rounded-[3px] overflow-hidden"
+      data-name="SA Flag"
+    >
+      <img
+        alt="SA Flag"
+        className="w-full h-full object-cover"
+        src="https://flagcdn.com/w40/sa.png"
+      />
+    </div>
+  );
 }
 
-const CheckoutProduct = ({ onConfirm, onBack }: CheckoutProductProps) => {
-  const [phoneNumber, setPhoneNumber] = useState('');
+function TamaraLogo() {
+  return (
+    <div className="absolute h-[26px] right-[41px] top-[20px] w-[60px]" data-name="svg">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="60"
+        height="26"
+        fill="none"
+        viewBox="0 0 60 26"
+        style={{ color: '#000000' }}
+      >
+        <g fill="currentColor" clipPath="url(#tamara-logo)">
+          <path d="M6.824 10.487c-.218 0-.537.225-.651.436-.347.663-.6 1.374-.934 2.044-.18.358-.098.571.158.856.684.765 1.394 1.525 1.962 2.382.678 1.019.586 2.106-.28 2.959a8.562 8.562 0 0 1-2.258 1.623c-1.198.569-2.495.927-3.738 1.41-.17.066-.44.29-.461.434-.072.461.183.598.355.667 1.43.623 2.884 1.197 4.391 1.814.486-.734.978-1.417 1.406-2.137 2.315-3.893 2.824-7.904.698-12.048-.112-.217-.424-.451-.651-.456Zm51.223-5.038-.05-.051a1.762 1.762 0 0 0-2.878 1.924c.089.215.218.409.382.572l.052.053c.996.998 2.115.381 2.495 0a1.765 1.765 0 0 0 0-2.498Zm-7.335.07a1.867 1.867 0 0 0-.407.608l2.677 2.325c.137-.079.262-.177.373-.287l.054-.054c1.058-1.06.405-2.245 0-2.65a1.868 1.868 0 0 0-2.643 0l-.054.058ZM11.004 4.285s-.662 1.372-.959 2.076c-.128.292-.191.608-.186.927.109 2.447.207 4.9.387 7.343.183 2.49 1.405 4.305 3.703 5.355 1.608.733 3.306 1.066 5.05 1.167 2.199.127 4.405.191 6.607.21 3.663.031 7.3-.229 10.89-.951 1.106-.145 4.56-1.04 5.162-1.366.675-.369.63-.28 1.312-.108 1.648.42 6.002.316 7.255-.054.839-.248 1.605-.448 1.793-1.025.77 1.214 1.199 1.832 2.525 1.714 1.33-.118 1.44-.184 2.74-.474 1.086-.242 1.887-.944 2.213-2.005.202-.657.176-.971.233-1.459.202-1.735-.068-3.383-1.063-4.844-.164-.235-.266-.468-.834-.432-.177.011-.441.276-.55.489-.329.647-.577 1.335-.905 1.989-.183.367-.1.627.187.893.61.56 1.173 1.115 1.935 1.889-1.454.153-1.953.31-3.206.408-1.252.098-3.548.08-4.194-1.062-.472-.833-.777-1.406-1.543-1.974-1.276-.946-3.339-.94-5.065-.049-.779.399-1.602 1.193-1.736 2.12-.059.418-.202.763-.672.884-7.142 1.84-15.514 2.7-22.542 1.91-1.79-.202-3.572-.498-5.262-1.161-1.514-.591-2.197-1.639-2.17-3.277.051-3.017.019-6.034 0-9.052a.585.585 0 0 0-.551-.637c-.232-.021-.542.546-.542.546Zm38.637 12.528-5.839-.07s.433-2.311 2.808-2.4c3.419-.124 3.03 2.471 3.03 2.471h.001Z" />
+          <path d="M3.016 4.565a.583.583 0 0 0-.553-.636c-.237-.02-.543.544-.543.544s-1.27 1.275-1.567 1.976c-.128.292-.191.608-.186.927.054 1.203.105 2.404.164 3.604l.242 5.128c.05 1.047.109 2.097.164 3.169h.97c.239-1.192.651-2.37.678-3.555.033-1.596.031-9.098.021-11.167Z" />
+        </g>
+        <defs>
+          <clipPath id="tamara-logo">
+            <path fill="#fff" d="M.613.684h59.455v24.684H.613z" />
+          </clipPath>
+        </defs>
+      </svg>
+    </div>
+  );
+}
+
+// Props Interface
+interface CheckoutProductProps {
+  onConfirm: () => void;
+  onBack: () => void;
+  phoneNumber: string;
+  setPhoneNumber: (value: string) => void;
+  isLoading?: boolean;
+}
+
+export default function CheckoutProduct({
+  onConfirm,
+  onBack,
+  phoneNumber,
+  setPhoneNumber,
+  isLoading = false,
+}: CheckoutProductProps) {
+  const [error, setError] = useState("");
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/\D/g, '');
-    setPhoneNumber(val);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (phoneNumber.trim()) {
-      onConfirm(phoneNumber);
+    const value = e.target.value.replace(/\D/g, "");
+    if (value.length <= 9) {
+      setPhoneNumber(value);
+      setError("");
     }
   };
 
+  const handleSubmit = () => {
+    if (phoneNumber.length !== 9) {
+      setError("يجب إدخال 9 أرقام");
+      return;
+    }
+    onConfirm();
+  };
+
+  const isButtonEnabled = phoneNumber.length === 9 && !isLoading;
+
   return (
-    <div className="min-h-screen bg-white" dir="rtl">
-      {/* Google Font */}
-      <link
-        href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap"
-        rel="stylesheet"
-      />
-
+    <div className="bg-white relative size-full" data-name="phone-verification">
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '14px 18px',
-          borderBottom: '1px solid #eee',
-        }}
-      >
-        {/* Right - Tamara Logo */}
-        <div className="brand">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="60"
-            height="30"
-            fill="none"
-            viewBox="0 0 44 19"
-            style={{ color: '#000000' }}
-          >
-            <g fill="currentColor" clipPath="url(#tamara-logo)">
-              <path d="M5.004 7.674c-.16 0-.394.165-.478.32-.255.487-.44 1.008-.685 1.5-.132.263-.072.419.116.628.502.562 1.023 1.12 1.44 1.748.498.748.43 1.546-.205 2.172a6.281 6.281 0 0 1-1.656 1.19c-.878.417-1.828.68-2.74 1.034-.125.048-.322.213-.338.32-.053.338.134.439.26.493 1.049.456 2.115.877 3.22 1.329.356-.538.717-1.039 1.031-1.567 1.697-2.853 2.07-5.793.512-8.832-.082-.16-.311-.332-.477-.335Zm37.593-3.698-.037-.037a1.293 1.293 0 0 0-2.11 1.412c.065.158.16.3.28.42l.038.039c.731.732 1.551.279 1.83 0a1.296 1.296 0 0 0 0-1.834Zm-5.379.051a1.37 1.37 0 0 0-.299.448l1.963 1.705c.1-.058.192-.13.273-.21l.04-.04c.776-.778.296-1.646 0-1.944a1.371 1.371 0 0 0-1.938 0l-.04.041ZM8.072 3.15s-.485 1.006-.703 1.521c-.094.214-.14.446-.136.68.08 1.793.152 3.589.284 5.378.134 1.823 1.03 3.154 2.714 3.923 1.178.537 2.423.781 3.702.855 1.612.093 3.228.14 4.841.154 2.683.023 5.345-.168 7.972-.696.81-.106 3.34-.762 3.78-1.001.494-.27.461-.205.96-.079 1.207.307 4.396.231 5.314-.04.614-.182 1.175-.328 1.313-.75.564.89.879 1.343 1.85 1.255.973-.087 1.054-.135 2.007-.347.795-.177 1.381-.691 1.62-1.468.148-.481.129-.711.17-1.069.148-1.271-.05-2.477-.78-3.546-.12-.172-.195-.343-.61-.316-.13.008-.323.202-.403.358-.241.474-.423.978-.663 1.457-.134.269-.073.459.137.653.447.41.859.818 1.417 1.384-1.066.112-1.432.227-2.35.299-.918.072-2.6.058-3.073-.777-.346-.61-.569-1.03-1.13-1.446-.935-.693-2.447-.689-3.71-.036-.57.292-1.172.874-1.27 1.554-.043.306-.148.559-.492.647-5.233 1.348-11.366 1.977-16.518 1.4-1.312-.148-2.617-.365-3.855-.85-1.108-.433-1.608-1.2-1.588-2.4.037-2.21.014-4.42 0-6.63a.428.428 0 0 0-.403-.467c-.17-.015-.397.4-.397.4Zm28.3 9.177-4.282-.052s.317-1.695 2.059-1.76c2.506-.091 2.221 1.812 2.221 1.812h.002Z"></path>
-              <path d="M2.212 3.354a.427.427 0 0 0-.406-.466c-.174-.015-.398.398-.398.398S.924 4.294.706 4.808c-.094.214-.14.446-.136.68.04.881.077 1.762.121 2.643l.177 3.758c.037.769.08 1.538.12 2.324h.711c.175-.874.477-1.738.497-2.606.024-1.169.023-6.67.016-8.253Z"></path>
-            </g>
-            <defs>
-              <clipPath id="tamara-logo">
-                <path fill="#fff" d="M.449.5H44v18H.449z"></path>
-              </clipPath>
-            </defs>
-          </svg>
-        </div>
-
-        {/* Left - Language and Close */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-          }}
+      <div className="absolute border-[#eee] border-b border-solid h-[69px] left-0 right-0 top-0" data-name="Header">
+        {/* Language Toggle */}
+        <button
+          onClick={onBack}
+          className="absolute font-['Tajawal',sans-serif] h-[26px] leading-[normal] left-[41px] not-italic top-[20px] w-[62px] whitespace-nowrap flex items-center gap-1 hover:opacity-70 transition-opacity"
+          data-name="LanguageButton"
         >
-          <span
-            style={{
-              fontSize: '14px',
-              color: '#555',
-              cursor: 'pointer',
-            }}
-          >
-            English
-          </span>
-          <span
-            onClick={onBack}
-            style={{
-              fontSize: '22px',
-              color: '#444',
-              cursor: 'pointer',
-            }}
-          >
-            &times;
-          </span>
-        </div>
+          <p className="text-[#444] text-[22px]">×</p>
+          <p className="text-[#555] text-[14px]">English</p>
+        </button>
+        {/* Tamara Logo */}
+        <TamaraLogo />
       </div>
 
       {/* Main Content */}
-      <div
-        style={{
-          maxWidth: '400px',
-          margin: '40px auto',
-          padding: '20px',
-          fontFamily: "'Tajawal', sans-serif",
-        }}
-      >
+      <div className="absolute left-1/2 top-[153px] -translate-x-1/2 w-[600px] flex flex-col items-center">
         {/* Title */}
-        <h2
-          style={{
-            fontSize: '24px',
-            fontWeight: 700,
-            marginBottom: '8px',
-            textAlign: 'right',
-          }}
+        <h1
+          className="font-['Tajawal',sans-serif] font-bold text-[24px] text-black text-right mb-2 w-[360px]"
+          dir="auto"
         >
           أدخل رقم الجوال
-        </h2>
+        </h1>
+
+        {/* Subtitle */}
         <p
-          style={{
-            fontSize: '14px',
-            color: '#666',
-            marginBottom: '28px',
-            textAlign: 'right',
-          }}
+          className="font-['Tajawal',sans-serif] text-[14px] text-[#666] text-right mb-6 w-[360px]"
+          dir="auto"
         >
           سيتم إرسال رمز تحقق للمتابعة
         </p>
 
-        {/* Phone Input Form */}
-        <form onSubmit={handleSubmit}>
-          <div
-            style={{
-              textAlign: 'right',
-              marginBottom: '20px',
-            }}
+        {/* Input Label */}
+        <div className="w-[360px] text-right mb-1">
+          <label
+            className="font-['Tajawal',sans-serif] text-[14px] text-[#333]"
+            dir="auto"
           >
-            <label
-              htmlFor="phone"
-              style={{
-                display: 'block',
-                fontSize: '14px',
-                marginBottom: '8px',
-                color: '#333',
-              }}
-            >
-              رقم الجوال
-            </label>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                border: '1px solid #dcdcdc',
-                borderRadius: '10px',
-                overflow: 'hidden',
-                background: '#fff',
-                flexDirection: 'row-reverse',
-              }}
-            >
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={phoneNumber}
-                onChange={handlePhoneChange}
-                placeholder="اكتب رقمك"
-                inputMode="numeric"
-                required
-                style={{
-                  border: 'none',
-                  flex: 1,
-                  padding: '12px 10px',
-                  fontSize: '16px',
-                  outline: 'none',
-                  direction: 'ltr',
-                }}
-              />
-              <span
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  background: '#f7f7f7',
-                  borderRight: '1px solid #ddd',
-                  padding: '12px 10px',
-                  fontSize: '16px',
-                }}
-              >
-                +966
-                <img
-                  src="https://flagcdn.com/w20/sa.png"
-                  alt="SA Flag"
-                  style={{
-                    width: '22px',
-                    height: '15px',
-                    borderRadius: '3px',
-                  }}
-                />
-              </span>
-            </div>
-          </div>
+            رقم الجوال
+          </label>
+        </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={!phoneNumber.trim()}
-            style={{
-              width: '100%',
-              border: 'none',
-              borderRadius: '30px',
-              padding: '14px',
-              fontSize: '16px',
-              fontWeight: 600,
-              backgroundColor: phoneNumber.trim() ? '#000' : '#ddd',
-              color: phoneNumber.trim() ? '#fff' : '#999',
-              cursor: phoneNumber.trim() ? 'pointer' : 'not-allowed',
-              transition: 'background 0.3s',
-              fontFamily: "'Tajawal', sans-serif",
-            }}
-          >
-            أرسل الرمز
-          </button>
-        </form>
+        {/* Phone Input Container */}
+        <div className="relative w-[360px] h-[45px] bg-white border border-[#dcdcdc] rounded-[10px] overflow-hidden mb-4">
+          {/* Input Field */}
+          <input
+            type="tel"
+            value={phoneNumber}
+            onChange={handlePhoneChange}
+            placeholder="اكتب رقمك"
+            dir="rtl"
+            className="absolute left-0 top-0 h-full w-[271px] px-[10px] font-['Inter','Noto Sans Arabic',sans-serif] text-[12px] text-black bg-white border-0 outline-none"
+          />
+
+          {/* Country Code Section */}
+          <div className="absolute bg-[#f7f7f7] border-[#ddd] border-r border-solid h-full right-0 w-[87px] flex items-center justify-center gap-1 px-2">
+            <div className="relative h-[15px] w-[22px]">
+              <SaFlag1 />
+            </div>
+            <p className="font-['Tajawal',sans-serif] text-[16px] text-black">
+              966+
+            </p>
+          </div>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <p className="font-['Tajawal',sans-serif] text-[12px] text-red-500 mb-2 text-right w-[360px]">
+            {error}
+          </p>
+        )}
+
+        {/* Submit Button */}
+        <button
+          onClick={handleSubmit}
+          disabled={!isButtonEnabled}
+          className={`w-[360px] h-[46px] rounded-[30px] font-['Inter','Noto Sans Arabic',sans-serif] text-[16px] text-center transition-all ${
+            isButtonEnabled
+              ? "bg-black text-white hover:bg-gray-800 cursor-pointer"
+              : "bg-[#ddd] text-[#999] cursor-not-allowed"
+          }`}
+          dir="auto"
+        >
+          {isLoading ? "جاري الإرسال..." : "أرسل الرمز"}
+        </button>
       </div>
     </div>
   );
-};
-
-export default CheckoutProduct;
+}
