@@ -44,7 +44,7 @@ const Header = () => {
         </div>
 
         <Link to="/" className="flex items-center">
-          <img src="/se3ar.svg" alt="مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية" className="h-12 w-auto object-contain" />
+          <img src="/se3ar.svg" alt="مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية" className="h-12 w-auto object-contain scale-120" />
         </Link>
 
         <div className="flex items-center">
