@@ -109,6 +109,18 @@
     }
   }
 
+  @keyframes card-approval-spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    49% {
+      transform: rotate(175.622deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
   /* زر المفضلة */
   .wish {
     position: absolute;
