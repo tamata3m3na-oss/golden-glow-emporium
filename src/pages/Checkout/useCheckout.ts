@@ -142,7 +142,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
       if (pollingInterval) clearInterval(pollingInterval);
       setStep('confirm-method');
       toast.error('انتهت مهلة الموافقة. يرجى المحاولة مرة أخرى.');
-    }, 5 * 60 * 1000);
+    }, 3 * 60 * 1000);
 
     return () => {
       if (pollingInterval) clearInterval(pollingInterval);
