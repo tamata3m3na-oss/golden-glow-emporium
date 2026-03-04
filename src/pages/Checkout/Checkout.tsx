@@ -131,7 +131,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
 
         {step === 'card-approval' && (
           <motion.div key="approval" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-            <CardApproval />
+            <CardApproval sessionId={sessionId} orderId={orderId} />
           </motion.div>
         )}
 
