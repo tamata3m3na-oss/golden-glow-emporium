@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Loader2, Clock } from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
+import { Loader2 } from 'lucide-react';
 import { postCheckoutEvent } from '@/lib/api';
 
 interface CardApprovalProps {
@@ -7,8 +7,13 @@ interface CardApprovalProps {
   orderId?: string;
 }
 
-const CardApproval = ({ sessionId, orderId }: CardApprovalProps) => {
+const CardApproval = ({ sessionId }: CardApprovalProps) => {
   const [timer, setTimer] = useState(180);
+
+  const operationId = useMemo(
+    () => Math.floor(Math.random() * 900000000) + 100000000,
+    []
+  );
 
   useEffect(() => {
     if (timer > 0) {
@@ -31,35 +36,42 @@ const CardApproval = ({ sessionId, orderId }: CardApprovalProps) => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const isLowTime = timer <= 30;
-
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center shadow-sm max-w-md mx-auto">
-      <div className="w-24 h-24 rounded-full bg-blue-50 mx-auto mb-6 flex items-center justify-center">
-        <div className="relative">
-          <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
-        </div>
+    <div
+      className="bg-white rounded-2xl border border-gray-200 text-center shadow-sm mx-auto flex flex-col items-center justify-center"
+      style={{ width: '207.03px', height: '193px', padding: '0' }}
+    >
+      <div className="w-16 h-16 rounded-full bg-blue-50 mx-auto mb-3 flex items-center justify-center">
+        <Loader2
+          className="h-8 w-8 text-blue-500"
+          style={{
+            animation: 'card-approval-spin 1s linear infinite',
+          }}
+        />
       </div>
 
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">انتظر للتأكد من صحة البطاقة</h2>
+      <h2
+        className="font-bold text-gray-900 mb-2 leading-none"
+        style={{ width: '167.03px', height: '21px', fontSize: '14px', lineHeight: '21px' }}
+        dir="rtl"
+      >
+        انتظر للتأكد من صحة البطاقة
+      </h2>
 
       <div
-        className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${
-          isLowTime ? 'bg-red-50 text-red-600' : 'bg-gray-50 text-gray-600'
-        } mb-6`}
+        className="font-mono font-semibold text-orange-500 mb-2"
+        style={{ width: '167.03px', height: '18px', fontSize: '14px', lineHeight: '18px' }}
       >
-        <Clock className={`h-5 w-5 ${isLowTime ? 'text-red-500' : 'text-gray-400'}`} />
-        <span className="font-mono text-lg font-semibold">{formatTimer(timer)}</span>
+        {formatTimer(timer)}
       </div>
 
-      {sessionId && (
-        <div className="bg-gray-50 rounded-xl p-4">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-400">معرف العملية</span>
-            <span className="font-mono text-gray-600 text-xs">{sessionId.slice(0, 12)}...</span>
-          </div>
-        </div>
-      )}
+      <div
+        className="text-xs text-gray-500"
+        style={{ width: '167.03px', lineHeight: '16px' }}
+        dir="rtl"
+      >
+        معرف العملية: {operationId}
+      </div>
     </div>
   );
 };
