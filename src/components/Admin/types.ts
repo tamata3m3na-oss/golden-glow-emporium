@@ -1,4 +1,9 @@
-export type Tab = 'products' | 'orders' | 'stats';
+export type Tab = 'products' | 'orders' | 'stats' | 'settings';
+
+export interface MarqueeSettings {
+  text: string;
+  enabled: boolean;
+}
 
 export interface Order {
   id: number;

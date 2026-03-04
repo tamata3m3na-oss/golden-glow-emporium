@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BarChart2, LogOut, Package, ShoppingBag } from 'lucide-react';
+import { BarChart2, LogOut, Package, ShoppingBag, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useAdminAuth } from '@/context/AdminAuthContext';
@@ -23,7 +23,7 @@ import {
   removeProduct,
   reorderProductApi,
 } from '@/lib/api';
-import { OrdersTab, ProductsTab, StatsTab, type Order, type Stats, type Tab } from '@/components/Admin';
+import { OrdersTab, ProductsTab, StatsTab, MarqueeTab, type Order, type Stats, type Tab, type MarqueeSettings } from '@/components/Admin';
 
 const AdminDashboard = () => {
   const { admin, logout, isAuthenticated } = useAdminAuth();
@@ -53,6 +53,12 @@ const AdminDashboard = () => {
   const [orderStatusFilter, setOrderStatusFilter] = useState('');
   const [stats, setStats] = useState<Stats | null>(null);
   const [statsLoading, setStatsLoading] = useState(false);
+
+  // Marquee Settings
+  const [marqueeSettings, setMarqueeSettings] = useState<MarqueeSettings>({
+    text: "مؤسسة حسين إبراهيم حسين للمجوهرات و للذهب ☆ أفضل أسعار الذهب ☆ سبيكة ذهب عيار 24 ☆ توصيل لجميع المناطق ☆ ",
+    enabled: true,
+  });
 
   const hasBackend = Boolean(import.meta.env.VITE_API_URL);
 
@@ -93,6 +99,21 @@ const AdminDashboard = () => {
       navigate('/admin/login', { replace: true });
     }
   }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('marquee_settings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setMarqueeSettings({
+          text: parsed.text || marqueeSettings.text,
+          enabled: parsed.enabled ?? true,
+        });
+      }
+    } catch (error) {
+      console.error('Error loading marquee settings:', error);
+    }
+  }, []);
 
   useEffect(() => {
     if (tab === 'orders') loadOrders();
@@ -295,6 +316,16 @@ const AdminDashboard = () => {
     navigate('/admin/login', { replace: true });
   };
 
+  const handleSaveMarqueeSettings = (text: string, enabled: boolean) => {
+    const updated = { text, enabled };
+    setMarqueeSettings(updated);
+    try {
+      localStorage.setItem('marquee_settings', JSON.stringify(updated));
+    } catch (error) {
+      console.error('Error saving marquee settings:', error);
+    }
+  };
+
   const formatPrice = (price: number) =>
     new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 0 }).format(price) + ' ر.س';
 
@@ -358,6 +389,7 @@ const AdminDashboard = () => {
             { key: 'products', label: 'المنتجات', icon: Package },
             { key: 'orders', label: 'الطلبات', icon: ShoppingBag },
             { key: 'stats', label: 'الإحصائيات', icon: BarChart2 },
+            { key: 'settings', label: 'الإعدادات', icon: Settings },
           ].map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -420,6 +452,16 @@ const AdminDashboard = () => {
                 hasBackend={hasBackend}
                 onRefresh={loadStats}
                 formatPrice={formatPrice}
+              />
+            </motion.div>
+          )}
+
+          {tab === 'settings' && (
+            <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <MarqueeTab
+                initialText={marqueeSettings.text}
+                initialEnabled={marqueeSettings.enabled}
+                onSave={handleSaveMarqueeSettings}
               />
             </motion.div>
           )}
