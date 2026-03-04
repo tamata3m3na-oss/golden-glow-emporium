@@ -156,12 +156,9 @@ const AdminLogin = () => {
           </form>
         </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          البيانات الافتراضية: admin / admin123
-        </p>
       </motion.div>
     </div>
-  );
+    );
 };
 
 export default AdminLogin;
