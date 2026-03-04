@@ -180,6 +180,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
               activeInstallments={activeInstallments}
               activePerInstallment={activePerInstallment}
               formatPrice={formatPrice}
+              onClose={() => navigate(`/product/${product.id}`)}
             />
           </motion.div>
         )}
