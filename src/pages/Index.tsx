@@ -39,8 +39,9 @@ const HeroSlider = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1 }}
-            className="relative h-[280px]"
+            className="relative h-[200px]"
           >
+            {/* Note: Optimal banner image dimensions should be 490x200 (width x height) for best display. Current images (logo2.jpg) are 1080x636. */}
             <img
               src={heroImages[currentIndex].src}
               alt={heroImages[currentIndex].alt}
