@@ -3,8 +3,13 @@ const FloatingWhatsApp = () => (
     href="https://wa.me/966594241060"
     target="_blank"
     rel="noopener noreferrer"
-    className="fixed bottom-20 left-4 z-50 w-13 h-13 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
-    style={{ width: 52, height: 52, background: '#25D366' }}
+    className="fixed bottom-20 right-4 z-50 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+    style={{ 
+      width: 56, 
+      height: 56, 
+      background: '#25D366',
+      boxShadow: '0 4px 20px rgba(37, 211, 102, 0.4)'
+    }}
     aria-label="تواصل معنا على واتساب"
   >
     <svg width="28" height="28" viewBox="0 0 32 32" fill="white" xmlns="http://www.w3.org/2000/svg">
