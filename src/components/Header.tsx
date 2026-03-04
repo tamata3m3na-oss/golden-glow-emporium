@@ -35,41 +35,6 @@ const Header = () => {
     >
       <div className="container mx-auto px-4" style={{ height: '130px' }}>
         <div className="flex items-center justify-between h-full">
-          {/* Profile Icon - Left */}
-          <div className="flex items-center gap-2">
-            {user ? (
-              <Link to="/dashboard">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="text-[#D4AF37] hover:bg-[#D4AF37]/10"
-                >
-                  <User className="h-5 w-5" />
-                </Button>
-              </Link>
-            ) : (
-              <Link to="/login">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10"
-                >
-                  <User className="h-5 w-5" />
-                </Button>
-              </Link>
-            )}
-          </div>
-
-          {/* Logo - Center */}
-          <Link to="/" className="flex flex-col items-center gap-1">
-            <img
-              src="/se3ar.svg"
-              alt="مؤسسة حسين إبراهيم حسين للمجوهرات الذهبية"
-              className="w-[180px] h-auto object-contain"
-              style={{ maxHeight: '80px' }}
-            />
-          </Link>
-
           {/* Menu Icon - Right */}
           <div className="flex items-center">
             <Sheet open={open} onOpenChange={setOpen}>
@@ -140,6 +105,41 @@ const Header = () => {
                 </div>
               </SheetContent>
             </Sheet>
+          </div>
+
+          {/* Logo - Center */}
+          <Link to="/" className="flex flex-col items-center gap-1">
+            <img
+              src="/se3ar.svg"
+              alt="مؤسسة حسين إبراهيم Hussein Ibrahim Gold Jewelry"
+              className="w-[180px] h-auto object-contain"
+              style={{ maxHeight: '80px' }}
+            />
+          </Link>
+
+          {/* Profile Icon - Left */}
+          <div className="flex items-center gap-2">
+            {user ? (
+              <Link to="/dashboard">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-[#D4AF37] hover:bg-[#D4AF37]/10"
+                >
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10"
+                >
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
