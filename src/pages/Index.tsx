@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import ProductCard from '@/components/ProductCard';
 import { getProducts } from '@/data/products';
+import { useMarqueeSettings } from '@/hooks/useMarqueeSettings';
 import { Star, ChevronLeft, ChevronRight, ShieldCheck, Award, Truck, Clock, Quote } from 'lucide-react';
 
 // Hero Slider Images
@@ -77,17 +78,17 @@ const HeroSlider = () => {
 };
 
 // Moving Text (Marquee)
-const MovingText = () => {
-  const text = "مؤسسة حسين إبراهيم حسين للمجوهرات و للذهب ☆ أفضل أسعار الذهب ☆ سبيكة ذهب عيار 24 ☆ توصيل لجميع المناطق ☆ ";
-  
+const MovingText = ({ text, enabled }: { text: string; enabled: boolean }) => {
+  if (!enabled) return null;
+
   return (
-    <section 
+    <section
       className="py-3 my-2"
       style={{ background: '#0B1020' }}
     >
       <div className="marquee-container">
         <div className="marquee-content">
-          <span className="text-lg font-bold" style={{ 
+          <span className="text-lg font-bold" style={{
             background: 'linear-gradient(90deg, #D4AF37, #FFD700, #F6E27A, #D4AF37)',
             backgroundSize: '200% auto',
             WebkitBackgroundClip: 'text',
@@ -509,18 +510,24 @@ const FloatingElements = () => (
 
 // Main Index Component
 const Index = () => {
+  const { settings: marqueeSettings, isLoaded: marqueeLoaded } = useMarqueeSettings();
+
+  if (!marqueeLoaded) {
+    return null; // Prevent flash while loading settings
+  }
+
   return (
     <Layout>
       <div className="relative">
         <FloatingElements />
-        
+
         <HeroSlider />
-        <MovingText />
+        <MovingText text={marqueeSettings.text} enabled={marqueeSettings.enabled} />
         <ProductCarousel3D />
         <Features />
         <Testimonials />
         <PaymentMethods />
-        
+
         {/* Bottom spacing for mobile bottom nav */}
         <div className="h-20 md:h-0" />
       </div>
