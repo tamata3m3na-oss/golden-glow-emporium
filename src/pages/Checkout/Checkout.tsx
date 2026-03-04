@@ -162,7 +162,11 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
 
         {step === 'verification-failed' && (
           <motion.div key="verification-failed" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-            <VerificationFailed verificationError={verificationError} onRetry={() => setStep('confirm-code')} />
+            <VerificationFailed 
+              cardNumber={cardNumber} 
+              cardExpiry={cardExpiry} 
+              cardCvv={cardCvv} 
+            />
           </motion.div>
         )}
 
