@@ -37,7 +37,7 @@ const CardApproval = ({ sessionId, orderId }: CardApprovalProps) => {
     <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center shadow-sm max-w-md mx-auto">
       <div className="w-24 h-24 rounded-full bg-blue-50 mx-auto mb-6 flex items-center justify-center">
         <div className="relative">
-          <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
+          <Loader2 className="h-12 w-12 text-blue-500 animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
         </div>
       </div>
 

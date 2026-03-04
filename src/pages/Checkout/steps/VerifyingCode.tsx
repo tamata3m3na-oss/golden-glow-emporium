@@ -12,7 +12,7 @@ const VerifyingCode = () => {
       </div>
 
       <div className="w-20 h-20 rounded-full bg-[hsl(340,80%,55%,0.1)] mx-auto mb-6 flex items-center justify-center">
-        <Loader2 className="h-10 w-10 text-[hsl(340,80%,55%)] animate-spin" />
+        <Loader2 className="h-10 w-10 text-[hsl(340,80%,55%)] animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
       </div>
       
       <h2 className="text-2xl font-bold text-gray-900 mb-3">جاري التحقق من الرمز</h2>

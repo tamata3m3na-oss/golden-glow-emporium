@@ -28,7 +28,7 @@ const StatsTab = ({ stats, statsLoading, hasBackend, onRefresh, formatPrice }: S
         </div>
       ) : statsLoading ? (
         <div className="text-center py-20">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" style={{ animation: 'spin 1s linear infinite' }} />
         </div>
       ) : stats ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">

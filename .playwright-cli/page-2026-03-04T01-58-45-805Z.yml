@@ -1,0 +1,30 @@
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e7]
+      - heading "لوحة التحكم" [level=1] [ref=e10]
+      - paragraph [ref=e11]: تسجيل دخول المدير
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - text: اسم المستخدم
+        - generic [ref=e15]:
+          - img [ref=e16]
+          - textbox "admin" [ref=e19]
+      - generic [ref=e20]:
+        - text: كلمة المرور
+        - generic [ref=e21]:
+          - img [ref=e22]
+          - textbox "••••••••" [ref=e25]
+          - button [ref=e26] [cursor=pointer]:
+            - img [ref=e27]
+      - generic [ref=e30] [cursor=pointer]:
+        - checkbox "تذكرني" [ref=e31]
+        - generic [ref=e32]: تذكرني
+      - button "تسجيل الدخول" [ref=e33] [cursor=pointer]:
+        - generic [ref=e34]:
+          - img
+          - text: تسجيل الدخول
+    - paragraph [ref=e35]: "البيانات الافتراضية: admin / admin123"
