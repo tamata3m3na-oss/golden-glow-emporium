@@ -12,47 +12,61 @@ const footerLinks = [
 
 const Footer = () => {
   return (
-    <footer 
-      className="border-t" 
-      style={{ 
+    <footer
+      className="border-t"
+      style={{
         background: '#0B1020',
         borderColor: 'rgba(212, 175, 55, 0.2)'
       }}
     >
       <div className="max-w-lg mx-auto px-4 py-8">
         {/* Company Info Card with Gold Gradient */}
-        <div 
-          className="rounded-2xl p-6 mb-8"
-          style={{ 
+        <div
+          className="rounded-2xl p-6 mb-4"
+          style={{
             background: 'linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #F6E27A 100%)',
           }}
         >
-          <h3 className="text-xl font-bold text-[#0B1020] mb-2 text-center">
-            مؤسسة Hussein Ibrahim Gold
-          </h3>
-          <p className="text-sm text-[#0B1020]/80 text-center mb-4">
-            متجركم الأول للذهب والألماس في المملكة العربية السعودية
-          </p>
-          
-          {/* Links in Gold Card */}
-          <div className="flex flex-wrap justify-center gap-3 mb-4">
-            {footerLinks.slice(0, 4).map(link => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className="text-xs text-[#0B1020] hover:text-[#0B1020]/70 transition-colors px-2 py-1 rounded-lg bg-[#0B1020]/10"
-              >
-                {link.label}
-              </Link>
-            ))}
+          {/* Logo */}
+          <div className="flex justify-center mb-4">
+            <img
+              src="/se3ar.svg"
+              alt="مؤسسة حسين إبراهيم حسين"
+              className="h-20 w-auto object-contain"
+            />
           </div>
-          
-          <div className="flex flex-wrap justify-center gap-3">
-            {footerLinks.slice(4).map(link => (
+
+          {/* Company Name - repeated twice */}
+          <h3 className="text-lg font-bold text-[#0B1020] text-center mb-1">
+            مؤسسة حسين إبراهيم حسين للمجوهرات و للذهب
+          </h3>
+          <h3 className="text-lg font-bold text-[#0B1020] text-center mb-3">
+            مؤسسة حسين إبراهيم حسين للمجوهرات و للذهب
+          </h3>
+
+          {/* Description */}
+          <p className="text-sm text-[#0B1020]/80 text-center leading-relaxed">
+            متجر متخصص في قطع الذهب المميزة والنادرة
+          </p>
+          <p className="text-sm text-[#0B1020]/80 text-center leading-relaxed mt-1">
+            نسعى لإرضاء عملائنا ولتصبح الخيار الأول في عالم الذهب والمجوهرات.
+          </p>
+        </div>
+
+        {/* Important Links Section */}
+        <div className="mb-6">
+          <h4 className="text-lg font-bold text-[#E6ECF8] text-center mb-2">
+            روابط مهمة
+          </h4>
+          <div className="w-16 h-1 mx-auto rounded-full mb-4" style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #FFD700 100%)' }} />
+
+          {/* Links Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {footerLinks.map(link => (
               <Link
                 key={link.path}
                 to={link.path}
-                className="text-xs text-[#0B1020] hover:text-[#0B1020]/70 transition-colors px-2 py-1 rounded-lg bg-[#0B1020]/10"
+                className="text-sm text-[#E6ECF8] hover:text-[#D4AF37] transition-colors text-right py-2 px-3 rounded-lg hover:bg-[#D4AF37]/10"
               >
                 {link.label}
               </Link>
@@ -115,12 +129,12 @@ const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <div 
-          className="border-t pt-5" 
+        <div
+          className="border-t pt-5"
           style={{ borderColor: 'rgba(212, 175, 55, 0.2)' }}
         >
           <p className="text-xs text-[#E6ECF8]/60 text-center">
-            © {new Date().getFullYear()} مؤسسة Hussein Ibrahim Gold. جميع الحقوق محفوظة.
+            © {new Date().getFullYear()} مؤسسة حسين إبراهيم حسين. جميع الحقوق محفوظة.
           </p>
         </div>
       </div>
