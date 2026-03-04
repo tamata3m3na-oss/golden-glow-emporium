@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { postCheckoutEvent } from '@/lib/api';
 import type { InstallmentPackage } from '../types';
 import TamaraLogo from '@/components/TamaraLogo';
+import { toArabicNumbers } from '@/lib/utils';
 
 interface SelectPlanProps {
   productPrice: number;
@@ -96,6 +97,16 @@ const SelectPlan = ({
       : 'دفعات'
     : 'دفعات';
 
+  // تواريخ الدفع الثابتة
+  const PAYMENT_DATES = [
+    '٤ أبريل ٢٠٢٦',
+    '٤ مايو ٢٠٢٦',
+    '٤ يونيو ٢٠٢٦',
+    '٤ يوليو ٢٠٢٦',
+    '٤ أغسطس ٢٠٢٦',
+    '٤ سبتمبر ٢٠٢٦',
+  ];
+
   return (
     <div className="min-h-screen bg-white" dir="rtl">
       {/* Header */}
@@ -126,7 +137,7 @@ const SelectPlan = ({
         <div className="mb-8">
           <h1 className="text-[24px] font-bold text-black mb-2">اختر خطتك</h1>
           <p className="text-[14px] text-gray-600">
-            حدد طريقة دفعك لـ {formatPrice(productPrice)} ريال
+            حدد طريقة دفعك لـ {toArabicNumbers(formatPrice(productPrice))} ريال
           </p>
         </div>
 
@@ -136,16 +147,16 @@ const SelectPlan = ({
             {/* Header Row */}
             <div className="flex items-center justify-between mb-2">
               <span className="bg-[#ab8dff1a] text-[#5e47b7] px-2 py-1 rounded text-xs font-semibold">
-                {closestPackage.installmentsCount} دفعات
+                {toArabicNumbers(closestPackage.installmentsCount)} دفعات
               </span>
               <span className="text-black font-semibold text-base">
-                ادفع {formatPrice(closestPackage.perInstallment)} ريال اليوم
+                ادفع {toArabicNumbers(formatPrice(closestPackage.perInstallment))} ريال اليوم
               </span>
             </div>
 
             {/* Monthly Payment */}
             <div className="text-black font-semibold text-base mb-3">
-              بعدها {formatPrice(closestPackage.perInstallment)} ريال شهريًا
+              بعدها {toArabicNumbers(formatPrice(closestPackage.perInstallment))} ريال شهريًا
             </div>
 
             {/* Note */}
@@ -156,7 +167,7 @@ const SelectPlan = ({
             {/* Circle with number */}
             <div className="flex justify-center mb-4">
               <div className="w-10 h-10 bg-[#9c6af8] rounded-full flex items-center justify-center text-white font-bold text-lg">
-                {closestPackage.installmentsCount}
+                {toArabicNumbers(closestPackage.installmentsCount)}
               </div>
             </div>
 
@@ -172,18 +183,18 @@ const SelectPlan = ({
             {showDetails && (
               <div className="mt-4 pt-4 border-t border-purple-100 space-y-2">
                 <div className="flex items-center justify-between text-gray-700 text-sm">
-                  <span>اليوم</span>
-                  <span className="font-semibold">{formatPrice(closestPackage.perInstallment)} ريال</span>
+                  <span>اليوم - {PAYMENT_DATES[0]}</span>
+                  <span className="font-semibold">{toArabicNumbers(formatPrice(closestPackage.perInstallment))} ريال</span>
                 </div>
                 {Array.from({ length: closestPackage.installmentsCount - 1 }, (_, i) => (
                   <div key={i} className="flex items-center justify-between text-gray-700 text-sm">
-                    <span>الدفعة {i + 1}</span>
-                    <span className="font-semibold">{formatPrice(closestPackage.perInstallment)} ريال</span>
+                    <span>الدفعة {toArabicNumbers(i + 2)} - {PAYMENT_DATES[i + 1] || ''}</span>
+                    <span className="font-semibold">{toArabicNumbers(formatPrice(closestPackage.perInstallment))} ريال</span>
                   </div>
                 ))}
                 <div className="flex items-center justify-between text-black font-bold text-base pt-2 border-t border-purple-100 mt-2">
                   <span>الإجمالي</span>
-                  <span>{formatPrice(closestPackage.totalAmount)} ريال</span>
+                  <span>{toArabicNumbers(formatPrice(closestPackage.totalAmount))} ريال</span>
                 </div>
               </div>
             )}
