@@ -6,9 +6,9 @@
   :root {
     --background: 225 40% 8%;
     --foreground: 40 30% 92%;
-    --card: 225 35% 12%;
+    --card: 222 47% 11%;
     --card-foreground: 40 30% 92%;
-    --popover: 225 35% 12%;
+    --popover: 222 47% 11%;
     --popover-foreground: 40 30% 92%;
     --primary: 43 74% 49%;
     --primary-foreground: 225 40% 8%;
@@ -16,7 +16,7 @@
     --secondary-foreground: 40 30% 92%;
     --muted: 225 25% 20%;
     --muted-foreground: 220 15% 55%;
-    --accent: 35 80% 45%;
+    --accent: 43 74% 49%;
     --accent-foreground: 225 40% 8%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 40 30% 92%;
@@ -33,10 +33,16 @@
     --sidebar-border: 225 25% 18%;
     --sidebar-ring: 43 74% 49%;
 
+    /* New Colors as per requirements */
+    --bg: #0B1020;
+    --card-bg: #0F172A;
+    --nav-bg: rgba(13,22,46,.96);
+    --text: #E6ECF8;
+    
     --gold-light: 43 80% 60%;
     --gold-dark: 35 70% 35%;
-    --gold-gradient: linear-gradient(135deg, hsl(43 74% 49%), hsl(35 80% 45%), hsl(43 74% 55%));
-    --gold-text-gradient: linear-gradient(135deg, hsl(43 80% 60%), hsl(35 70% 45%), hsl(43 80% 65%));
+    --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #F6E27A 100%);
+    --gold-text-gradient: linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #F6E27A 100%);
     --shadow-gold: 0 4px 30px -5px hsl(43 74% 49% / 0.2);
     --shadow-gold-lg: 0 10px 50px -10px hsl(43 74% 49% / 0.3);
   }
@@ -94,6 +100,104 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Gold Theme Colors */
+  .theme-bg {
+    background: var(--bg);
+  }
+  .theme-card-bg {
+    background: var(--card-bg);
+  }
+  .theme-nav-bg {
+    background: var(--nav-bg);
+  }
+  .theme-text {
+    color: var(--text);
+  }
+
+  /* Moving Text (Marquee) */
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  .marquee-container {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .marquee-content {
+    display: inline-block;
+    animation: marquee 30s linear infinite;
+  }
+
+  /* Floating Background Elements */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 0.3;
+    }
+    50% {
+      transform: translateY(-30px) rotate(180deg);
+      opacity: 0.6;
+    }
+  }
+  .float-animation {
+    animation: float 8s ease-in-out infinite;
+  }
+  .float-animation-delayed {
+    animation: float 10s ease-in-out infinite;
+    animation-delay: 2s;
+  }
+  .float-animation-slow {
+    animation: float 12s ease-in-out infinite;
+    animation-delay: 4s;
+  }
+
+  /* Hero Slider Fade + Zoom */
+  @keyframes fadeZoom {
+    0% {
+      opacity: 0;
+      transform: scale(1.1);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .fade-zoom {
+    animation: fadeZoom 1s ease-out forwards;
+  }
+  .fade-zoom-out {
+    animation: fadeZoom 1s ease-out reverse forwards;
+  }
+
+  /* 3D Carousel Rotation */
+  @keyframes rotate3d {
+    0% {
+      transform: perspective(1000px) rotateY(0deg);
+    }
+    100% {
+      transform: perspective(1000px) rotateY(360deg);
+    }
+  }
+  
+  /* Testimonial Auto Slider */
+  @keyframes slideInUp {
+    0% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  .slide-in-up {
+    animation: slideInUp 0.5s ease-out forwards;
   }
 
   /* تأثير الذهب اللامع */

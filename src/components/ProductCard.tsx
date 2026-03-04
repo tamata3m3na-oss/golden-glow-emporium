@@ -40,20 +40,36 @@ const ProductCard = ({ product }: { product: Product }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="group relative bg-card rounded-xl border gold-border gold-border-hover overflow-hidden transition-all duration-300 hover:gold-shadow"
+      className="group relative rounded-xl border overflow-hidden transition-all duration-300 hover:shadow-lg"
+      style={{ 
+        background: '#0F172A',
+        borderColor: 'rgba(212, 175, 55, 0.3)'
+      }}
     >
-      <div className="h-1 gold-gradient" />
+      <div 
+        className="h-1"
+        style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #F6E27A 100%)' }}
+      />
 
       {/* Product Image */}
-      <div className="relative overflow-hidden bg-secondary h-56">
+      <div 
+        className="relative overflow-hidden"
+        style={{ 
+          background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+          height: '200px'
+        }}
+      >
         {/* Wish Button */}
         <button
           onClick={() => setIsWished(!isWished)}
-          className="wish"
+          className="absolute top-2 right-2 z-10 rounded-full p-2 transition-all hover:scale-110"
+          style={{ 
+            background: 'rgba(255, 255, 255, 0.9)',
+          }}
           aria-label="إضافة للمفضلة"
         >
           <Heart
-            className={`h-5 w-5 transition-colors ${isWished ? 'fill-red-500 text-red-500' : 'text-gray-500'}`}
+            className={`h-4 w-4 transition-colors ${isWished ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
           />
         </button>
 
@@ -61,33 +77,60 @@ const ProductCard = ({ product }: { product: Product }) => {
           <img
             src={product.imageUrl}
             alt={product.name}
-            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500 carousel-item-image"
+            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <div className="text-center">
-              <ImageIcon className="h-12 w-12 text-muted-foreground/30 mx-auto mb-2" />
-              <div className="w-16 h-16 rounded-full gold-gradient/20 border gold-border mx-auto flex items-center justify-center">
-                <span className="text-primary font-bold text-xl">{product.karat}K</span>
+              <ImageIcon className="h-12 w-12 text-[#D4AF37]/30 mx-auto mb-2" />
+              <div 
+                className="w-16 h-16 rounded-full border mx-auto flex items-center justify-center"
+                style={{ 
+                  background: 'rgba(212, 175, 55, 0.1)',
+                  borderColor: 'rgba(212, 175, 55, 0.3)'
+                }}
+              >
+                <span className="font-bold text-xl" style={{ color: '#D4AF37' }}>{product.karat}K</span>
               </div>
             </div>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-card/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div 
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{ 
+            background: 'linear-gradient(to top, rgba(15, 23, 42, 0.8) 0%, transparent 50%)' 
+          }}
+        />
       </div>
 
-      <div className="carousel-item-info">
-        <h3 className="carousel-item-name group-hover:text-primary transition-colors line-clamp-1">
+      <div className="p-4 text-center">
+        <h3 
+          className="font-bold mb-2 group-hover:text-[#D4AF37] transition-colors line-clamp-1"
+          style={{ color: '#E6ECF8' }}
+        >
           {product.name}
         </h3>
 
-        <div className="carousel-item-price">{formattedPrice}</div>
+        <div 
+          className="font-extrabold mb-4"
+          style={{ 
+            fontSize: '1.25rem',
+            color: '#D4AF37'
+          }}
+        >
+          {formattedPrice}
+        </div>
 
         <Link
           to={user ? `/checkout/${product.id}` : `/login?redirect=/checkout/${product.id}`}
           onClick={handleBuyNow}
-          className="block w-full text-center py-2.5 rounded-lg gold-shine text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity"
+          className="block w-full text-center py-2.5 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity"
+          style={{ 
+            background: 'linear-gradient(90deg, #d4af37, #f4e4ba, #d4af37)',
+            backgroundSize: '200% auto',
+            color: '#0B1020'
+          }}
         >
           اشترِ الآن
         </Link>
