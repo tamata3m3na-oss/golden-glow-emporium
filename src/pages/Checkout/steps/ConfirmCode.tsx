@@ -66,7 +66,7 @@ const ConfirmCode = ({ confirmCode, setConfirmCode, onSubmit, codeError, isLoadi
           >
             {isLoading ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin ml-2" />
+                <Loader2 className="h-4 w-4 animate-spin ml-2" style={{ animation: 'spin 1s linear infinite' }} />
                 جاري التحقق...
               </>
             ) : (

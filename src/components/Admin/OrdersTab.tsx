@@ -57,7 +57,7 @@ const OrdersTab = ({
         </div>
       ) : ordersLoading ? (
         <div className="text-center py-20">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" style={{ animation: 'spin 1s linear infinite' }} />
         </div>
       ) : orders.length === 0 ? (
         <div className="bg-card rounded-2xl border gold-border p-12 text-center">
