@@ -110,7 +110,7 @@ const Header = () => {
           {/* Logo - Center */}
           <Link to="/" className="flex flex-col items-center gap-1">
             <img
-              src="/se3ar.svg"
+              src="/se3ar.jpg"
               alt="مؤسسة حسين إبراهيم Hussein Ibrahim Gold Jewelry"
               className="w-[180px] h-auto object-contain"
               style={{ maxHeight: '80px' }}
