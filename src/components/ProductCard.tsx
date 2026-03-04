@@ -6,10 +6,12 @@ import { ImageIcon, Heart } from 'lucide-react';
 import type { Product } from '@/data/products';
 import { postCheckoutEvent } from '@/lib/api';
 import { getCheckoutSessionId } from '@/lib/checkoutSession';
+import InstallmentBadge, { getInstallmentPackage } from './InstallmentBadge';
 
 const ProductCard = ({ product }: { product: Product }) => {
   const { user } = useAuth();
   const [isWished, setIsWished] = useState(false);
+  const hasInstallments = getInstallmentPackage(product.price) !== null;
 
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'decimal',
@@ -105,16 +107,16 @@ const ProductCard = ({ product }: { product: Product }) => {
       </div>
 
       <div className="p-4 text-center">
-        <h3 
+        <h3
           className="font-bold mb-2 group-hover:text-[#D4AF37] transition-colors line-clamp-1"
           style={{ color: '#E6ECF8' }}
         >
           {product.name}
         </h3>
 
-        <div 
-          className="font-extrabold mb-4"
-          style={{ 
+        <div
+          className="font-extrabold mb-3"
+          style={{
             fontSize: '1.25rem',
             color: '#D4AF37'
           }}
@@ -122,11 +124,17 @@ const ProductCard = ({ product }: { product: Product }) => {
           {formattedPrice}
         </div>
 
+        {hasInstallments && (
+          <div className="mb-3 flex justify-center">
+            <InstallmentBadge price={product.price} variant="compact" />
+          </div>
+        )}
+
         <Link
           to={user ? `/checkout/${product.id}` : `/login?redirect=/checkout/${product.id}`}
           onClick={handleBuyNow}
           className="block w-full text-center py-2.5 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity"
-          style={{ 
+          style={{
             background: 'linear-gradient(90deg, #d4af37, #f4e4ba, #d4af37)',
             backgroundSize: '200% auto',
             color: '#0B1020'

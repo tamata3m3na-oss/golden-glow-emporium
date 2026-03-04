@@ -7,6 +7,8 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ShoppingBag, ChevronLeft, ChevronRight, ImageIcon } from 'lucide-react';
 import { postCheckoutEvent } from '@/lib/api';
 import { getCheckoutSessionId } from '@/lib/checkoutSession';
+import InstallmentBadge, { getInstallmentPackage, formatPriceArabic } from '@/components/InstallmentBadge';
+import { toArabicNumbers } from '@/lib/utils';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -15,6 +17,7 @@ const ProductDetail = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeImg, setActiveImg] = useState(0);
+  const hasInstallments = product ? getInstallmentPackage(product.price) !== null : false;
 
   if (!product) {
     return (
@@ -149,9 +152,15 @@ const ProductDetail = () => {
               <h1 className="text-2xl font-extrabold text-foreground mb-3">{product.name}</h1>
               <p className="text-muted-foreground mb-6 leading-relaxed">{product.description}</p>
 
-              <div className="mb-6">
+              <div className="mb-4">
                 <span className="text-4xl font-extrabold gold-text">{formattedPrice}</span>
               </div>
+
+              {hasInstallments && (
+                <div className="mb-6">
+                  <InstallmentBadge price={product.price} variant="full" showDetails />
+                </div>
+              )}
 
               <div className="mt-auto">
                 {user ? (

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { toEnglishNumbers, formatPrice } from '@/lib/utils';
+import { toEnglishNumbers, formatPrice, toArabicNumbers } from '@/lib/utils';
 import TamaraLogo from '@/components/TamaraLogo';
 
 interface CardInfoProps {
@@ -107,17 +107,25 @@ const CardInfo = ({
   const monthlyAmountUSD = selectedPlan ? Math.round((selectedPlan.perInstallment / exchangeRate) / 10) * 10 : 0;
   const totalAmountUSD = selectedPlan ? Math.round((selectedPlan.totalAmount / exchangeRate) / 10) * 10 : 0;
 
-  // Generate installment items
+  // تواريخ الدفع الثابتة
+  const PAYMENT_DATES = [
+    '٤ أبريل ٢٠٢٦',
+    '٤ مايو ٢٠٢٦',
+    '٤ يونيو ٢٠٢٦',
+    '٤ يوليو ٢٠٢٦',
+    '٤ أغسطس ٢٠٢٦',
+    '٤ سبتمبر ٢٠٢٦',
+  ];
+
+  // Generate installment items with fixed dates
   const generateInstallments = () => {
     if (!selectedPlan) return [];
     const items = [];
-    for (let i = 1; i <= selectedPlan.installmentsCount; i++) {
-      const date = new Date();
-      date.setMonth(date.getMonth() + i);
+    for (let i = 0; i < selectedPlan.installmentsCount; i++) {
       items.push({
-        number: i,
+        number: i + 1,
         amount: selectedPlan.perInstallment,
-        date: date.toLocaleDateString('ar-SA', { month: 'long', year: 'numeric' })
+        date: PAYMENT_DATES[i] || `الدفعة ${toArabicNumbers(i + 1)}`
       });
     }
     return items;
