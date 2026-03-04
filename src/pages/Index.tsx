@@ -138,7 +138,7 @@ const ProductCarousel3D = () => {
         viewport={{ once: true }}
         className="text-center mb-6 px-4"
       >
-        <h2 className="text-2xl font-extrabold gold-text mb-1">مجموعتنا الذهبية</h2>
+        <h2 className="text-2xl font-extrabold gold-text mb-1">سبائك الذهب المتاحة</h2>
         <div className="w-16 h-0.5 gold-gradient mx-auto rounded-full" />
       </motion.div>
 
