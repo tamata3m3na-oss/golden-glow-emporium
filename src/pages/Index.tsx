@@ -77,7 +77,7 @@ const HeroSlider = () => {
 
 // Moving Text (Marquee)
 const MovingText = () => {
-  const text = "مؤسسة Hussein Ibrahim Gold ☆ أفضل أسعار الذهب ☆ سبيكة ذهب عيار 24 ☆ توصيل لجميع المناطق ☆ ";
+  const text = "مؤسسة حسين إبراهيم حسين للمجوهرات و للذهب ☆ أفضل أسعار الذهب ☆ سبيكة ذهب عيار 24 ☆ توصيل لجميع المناطق ☆ ";
   
   return (
     <section 
