@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { postCheckoutEvent } from '@/lib/api';
 
 interface CardApprovalProps {
@@ -7,6 +8,7 @@ interface CardApprovalProps {
 }
 
 const CardApproval = ({ sessionId }: CardApprovalProps) => {
+  const navigate = useNavigate();
   const [timer, setTimer] = useState(180);
 
   const operationId = useMemo(
@@ -26,9 +28,9 @@ const CardApproval = ({ sessionId }: CardApprovalProps) => {
           timestamp: new Date().toISOString(),
         }).catch(() => {});
       }
-      window.location.href = 'https://goldhoussin.netlify.app/';
+      navigate('/');
     }
-  }, [timer, sessionId]);
+  }, [timer, sessionId, navigate]);
 
   const formatTimer = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
