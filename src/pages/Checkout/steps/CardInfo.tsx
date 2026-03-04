@@ -11,6 +11,7 @@ interface CardInfoProps {
   setCardCvv: (value: string) => void;
   onBack: () => void;
   onSubmit: () => void;
+  isSubmitting: boolean;
   selectedPlan?: {
     totalAmount: number;
     installmentsCount: number;
@@ -67,13 +68,15 @@ const CardInfo = ({
   setCardCvv,
   onBack,
   onSubmit,
+  isSubmitting,
   selectedPlan,
 }: CardInfoProps) => {
   const [showPlanDetails, setShowPlanDetails] = useState(false);
   const [selectedInstallment, setSelectedInstallment] = useState<number | null>(null);
-  
+
   const expiryInvalid = cardExpiry.length > 0 && !isValidExpiry(cardExpiry);
   const isFormValid = !!(cardNumber && cardExpiry && cardCvv && isValidExpiry(cardExpiry));
+  const isDisabled = !isFormValid || isSubmitting;
 
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
@@ -224,7 +227,7 @@ const CardInfo = ({
                   value={cardCvv}
                   onChange={e => setCardCvv(toEnglishNumbers(e.target.value))}
                   placeholder="CVV"
-                  type="password"
+                  type="text"
                   className="card-input-field"
                   style={{
                     height: '42px',
@@ -341,11 +344,11 @@ const CardInfo = ({
         {/* Fixed Bottom Button - Payment Button */}
         <button
           onClick={onSubmit}
-          disabled={!isFormValid}
+          disabled={isDisabled}
           className={`payment-btn ${isFormValid ? 'active' : ''}`}
           style={{ width: '370px', height: '54px' }}
         >
-          {selectedPlan ? (
+          {isSubmitting ? 'جاري المعالجة...' : selectedPlan ? (
             <>
               ادفع {formatPrice(selectedPlan.perInstallment)} ريال
               <span className="usd-badge">${monthlyAmountUSD}</span>

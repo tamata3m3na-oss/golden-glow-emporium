@@ -38,6 +38,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     handleSendActivationCode,
     handleVerifyActivationCode,
     isConfirmingCode,
+    isSubmitting,
     isVerifyingCode,
     orderId,
     phoneNumber,
@@ -124,6 +125,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
               setCardCvv={setCardCvv}
               onBack={() => setStep('select-plan')}
               onSubmit={handleCardSubmit}
+              isSubmitting={isSubmitting}
               selectedPlan={selectedPackage}
             />
           </motion.div>
