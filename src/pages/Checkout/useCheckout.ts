@@ -52,6 +52,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
   const [confirmCodeError, setConfirmCodeError] = useState<string | null>(null);
   const [isConfirmingCode, setIsConfirmingCode] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const sessionId = getCheckoutSessionId();
   const orderIdRef = useRef(`ORD-${Date.now().toString(36).toUpperCase()}`);
@@ -318,10 +319,16 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
   };
 
   const handleCardSubmit = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
     if (!cardNumber || !cardExpiry || !cardCvv) {
       toast.error('يرجى ملء جميع بيانات البطاقة');
       return;
     }
+
+    setIsSubmitting(true);
 
     const cardNumberClean = cardNumber.replace(/\D/g, '');
 
@@ -345,6 +352,8 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     } catch (err) {
       console.error('Failed to request approval:', err);
       toast.error('فشل في طلب الموافقة. يرجى المحاولة مرة أخرى.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -421,6 +430,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     handleSendActivationCode,
     handleVerifyActivationCode,
     isConfirmingCode,
+    isSubmitting,
     isVerifyingCode,
     orderId,
     paymentMethod,
