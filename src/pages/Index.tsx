@@ -108,6 +108,8 @@ const ProductCarousel3D = () => {
   const products = getProducts();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % products.length);
@@ -132,6 +134,33 @@ const ProductCarousel3D = () => {
     return visible;
   };
 
+  // Touch handlers for swipe support
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+
+    const diff = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 50;
+
+    if (diff > minSwipeDistance) {
+      // Swiped left - go next
+      nextSlide();
+    } else if (diff < -minSwipeDistance) {
+      // Swiped right - go prev
+      prevSlide();
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
   return (
     <section className="py-6">
       <motion.div
@@ -145,25 +174,17 @@ const ProductCarousel3D = () => {
       </motion.div>
 
       <div 
-        className="relative px-4"
+        className="px-4"
         onMouseEnter={() => setIsAutoPlaying(false)}
         onMouseLeave={() => setIsAutoPlaying(true)}
       >
-        {/* Navigation Buttons */}
-        <button
-          onClick={prevSlide}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110"
-          style={{ 
-            background: 'rgba(212, 175, 55, 0.2)',
-            border: '1px solid rgba(212, 175, 55, 0.4)',
-            color: '#D4AF37'
-          }}
-          aria-label="السابق"
+        <div 
+          className="flex items-center justify-center gap-2 overflow-hidden py-8" 
+          style={{ height: '320px' }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
-          <ChevronRight className="h-6 w-6" />
-        </button>
-
-        <div className="flex items-center justify-center gap-2 overflow-hidden py-8" style={{ height: '320px' }}>
           {getVisibleProducts().map(({ product, position }, idx) => {
             const isCenter = position === 0;
             const scale = isCenter ? 1 : 0.75;
@@ -193,18 +214,33 @@ const ProductCarousel3D = () => {
           })}
         </div>
 
-        <button
-          onClick={nextSlide}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110"
-          style={{ 
-            background: 'rgba(212, 175, 55, 0.2)',
-            border: '1px solid rgba(212, 175, 55, 0.4)',
-            color: '#D4AF37'
-          }}
-          aria-label="التالي"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </button>
+        {/* Navigation Buttons - Below Carousel */}
+        <div className="flex justify-center gap-4 mt-2">
+          <button
+            onClick={prevSlide}
+            className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110"
+            style={{ 
+              background: 'rgba(212, 175, 55, 0.2)',
+              border: '1px solid rgba(212, 175, 55, 0.4)',
+              color: '#D4AF37'
+            }}
+            aria-label="السابق"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+          <button
+            onClick={nextSlide}
+            className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110"
+            style={{ 
+              background: 'rgba(212, 175, 55, 0.2)',
+              border: '1px solid rgba(212, 175, 55, 0.4)',
+              color: '#D4AF37'
+            }}
+            aria-label="التالي"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+        </div>
       </div>
 
       {/* Progress Dots */}
