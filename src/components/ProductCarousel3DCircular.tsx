@@ -8,15 +8,14 @@ import { getCheckoutSessionId } from '@/lib/checkoutSession';
 
 const CARD_WIDTH = 220;
 const CARD_HEIGHT = 320;
-const TRANSLATE_Z = 300;
-const ROTATION_STEP = 45;
 
 interface CarouselCardProps {
   product: Product;
   isCenter: boolean;
+  style?: React.CSSProperties;
 }
 
-const CarouselCard = ({ product, isCenter }: CarouselCardProps) => {
+const CarouselCard = ({ product, isCenter, style }: CarouselCardProps) => {
   const { user } = useAuth();
 
   const formattedPrice = new Intl.NumberFormat('en-US', {
@@ -50,6 +49,7 @@ const CarouselCard = ({ product, isCenter }: CarouselCardProps) => {
         boxShadow: isCenter
           ? '0 0 40px rgba(212, 175, 55, 0.35), 0 8px 30px rgba(0,0,0,0.5)'
           : '0 4px 20px rgba(0,0,0,0.3)',
+        ...style,
       }}
     >
       <div
@@ -130,7 +130,6 @@ const ProductCarousel3DCircular = () => {
   const count = products.length;
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [rotation, setRotation] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -140,17 +139,12 @@ const ProductCarousel3DCircular = () => {
   const goToSlide = useCallback((index: number) => {
     if (isAnimating || count === 0) return;
     setIsAnimating(true);
-
-    const diff = index - currentIndex;
-    const newRotation = rotation - diff * ROTATION_STEP;
-
-    setRotation(newRotation);
     setCurrentIndex(index);
 
     setTimeout(() => {
       setIsAnimating(false);
     }, 500);
-  }, [isAnimating, count, currentIndex, rotation]);
+  }, [isAnimating, count]);
 
   const nextSlide = useCallback(() => {
     if (isAnimating || count === 0) return;
@@ -203,48 +197,63 @@ const ProductCarousel3DCircular = () => {
   const getCardStyle = (index: number): React.CSSProperties => {
     const diff = index - currentIndex;
     const normalizedDiff = ((diff % count) + count) % count;
-    
-    let angle: number;
-    let opacity: number;
-    let scale: number;
-    let zIndex: number;
+
+    // Show 3 cards: left, center, right
+    let style: React.CSSProperties;
+    let isCenter = false;
+    const scale = 1;
 
     if (normalizedDiff === 0) {
-      angle = 0;
-      opacity = 1;
-      scale = 1.05;
-      zIndex = 100;
+      // Center card - front and clear
+      isCenter = true;
+      style = {
+        position: 'absolute',
+        top: 0,
+        left: '50%',
+        transform: 'translateX(-50%) rotateY(0deg) scale(1)',
+        opacity: 1,
+        zIndex: 30,
+        transition: 'all 0.5s ease-out',
+      };
     } else if (normalizedDiff === 1 || normalizedDiff === -(count - 1)) {
-      angle = ROTATION_STEP;
-      opacity = 0.6;
-      scale = 0.9;
-      zIndex = 50;
+      // Right card - tilted to the right
+      isCenter = false;
+      style = {
+        position: 'absolute',
+        top: 0,
+        left: '50%',
+        transform: 'translateX(-50%) translateX(140px) rotateY(25deg) scale(0.85)',
+        opacity: 0.8,
+        zIndex: 20,
+        transition: 'all 0.5s ease-out',
+      };
     } else if (normalizedDiff === count - 1 || normalizedDiff === -1) {
-      angle = -ROTATION_STEP;
-      opacity = 0.6;
-      scale = 0.9;
-      zIndex = 50;
+      // Left card - tilted to the left
+      isCenter = false;
+      style = {
+        position: 'absolute',
+        top: 0,
+        left: '50%',
+        transform: 'translateX(-50%) translateX(-140px) rotateY(-25deg) scale(0.85)',
+        opacity: 0.8,
+        zIndex: 20,
+        transition: 'all 0.5s ease-out',
+      };
     } else {
-      angle = normalizedDiff < count / 2 ? ROTATION_STEP * 2 : -ROTATION_STEP * 2;
-      opacity = 0;
-      scale = 0.8;
-      zIndex = 0;
+      // Hidden cards
+      style = {
+        position: 'absolute',
+        top: 0,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        opacity: 0,
+        zIndex: 10,
+        pointerEvents: 'none',
+        transition: 'all 0.5s ease-out',
+      };
     }
 
-    return {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: `${CARD_WIDTH}px`,
-      height: `${CARD_HEIGHT}px`,
-      transform: `rotateY(${angle}deg) translateZ(${TRANSLATE_Z}px)`,
-      opacity,
-      transformOrigin: 'center center',
-      backfaceVisibility: 'hidden',
-      WebkitBackfaceVisibility: 'hidden',
-      pointerEvents: normalizedDiff === 0 ? 'auto' : 'none',
-      zIndex,
-    };
+    return { ...style, scale };
   };
 
   return (
@@ -264,7 +273,7 @@ const ProductCarousel3DCircular = () => {
         className="relative select-none"
         style={{
           height: `${CARD_HEIGHT + 60}px`,
-          perspective: '1000px',
+          perspective: '1200px',
         }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -276,33 +285,26 @@ const ProductCarousel3DCircular = () => {
           <div
             className="relative flex items-center justify-center"
             style={{
-              width: `${CARD_WIDTH}px`,
+              width: `${CARD_WIDTH + 280}px`,
               height: `${CARD_HEIGHT}px`,
               transformStyle: 'preserve-3d',
-              transform: `rotateY(${rotation}deg)`,
-              transition: 'transform 0.5s ease-out',
             }}
           >
             {products.map((product, index) => {
-              const isCenter = index === currentIndex;
-              const style = getCardStyle(index);
+              const cardStyle = getCardStyle(index);
+              const isCenter = cardStyle.zIndex === 30;
 
-              if (style.opacity === 0) return null;
+              if (cardStyle.opacity === 0) return null;
+
+              const { scale, ...styleWithoutScale } = cardStyle;
 
               return (
                 <div
                   key={product.id}
                   aria-hidden={!isCenter}
-                  style={style}
+                  style={styleWithoutScale}
                 >
-                  <div
-                    style={{
-                      transform: `scale(${style.scale})`,
-                      transition: 'transform 0.5s ease-out',
-                    }}
-                  >
-                    <CarouselCard product={product} isCenter={isCenter} />
-                  </div>
+                  <CarouselCard product={product} isCenter={isCenter} style={{ transform: `scale(${scale})` }} />
                 </div>
               );
             })}
@@ -312,29 +314,27 @@ const ProductCarousel3DCircular = () => {
         <button
           onClick={prevSlide}
           disabled={isAnimating}
-          className="absolute left-3 top-1/2 -translate-y-1/2 z-50 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-40"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-40 shadow-lg"
           style={{
-            background: 'rgba(212, 175, 55, 0.18)',
-            border: '1px solid rgba(212, 175, 55, 0.4)',
-            color: '#D4AF37',
+            background: 'linear-gradient(135deg, #F6E27A 0%, #FFD700 40%, #D4AF37 100%)',
+            color: '#0B1020',
           }}
           aria-label="السابق"
         >
-          <ChevronRight className="h-5 w-5" />
+          <ChevronRight className="h-6 w-6" />
         </button>
 
         <button
           onClick={nextSlide}
           disabled={isAnimating}
-          className="absolute right-3 top-1/2 -translate-y-1/2 z-50 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-40"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-40 shadow-lg"
           style={{
-            background: 'rgba(212, 175, 55, 0.18)',
-            border: '1px solid rgba(212, 175, 55, 0.4)',
-            color: '#D4AF37',
+            background: 'linear-gradient(135deg, #F6E27A 0%, #FFD700 40%, #D4AF37 100%)',
+            color: '#0B1020',
           }}
           aria-label="التالي"
         >
-          <ChevronLeft className="h-5 w-5" />
+          <ChevronLeft className="h-6 w-6" />
         </button>
       </div>
 
