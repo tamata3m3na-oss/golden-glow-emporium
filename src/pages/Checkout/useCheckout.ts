@@ -38,7 +38,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
   const [couponApplied, setCouponApplied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('tamara');
   const [selectedPackage, setSelectedPackage] = useState<InstallmentPackage | null>(null);
-  const [step, setStep] = useState<Step>('confirm-method');
+  const [step, setStep] = useState<Step>('payment-method-selection');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
