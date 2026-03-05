@@ -458,7 +458,7 @@ const Testimonials = () => {
               <StarDisplay />
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-start">
               <button
                 type="submit"
                 disabled={isSubmitting || reviewRating === 0 || !reviewComment.trim()}

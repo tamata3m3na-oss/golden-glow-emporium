@@ -39,10 +39,10 @@ const Header = () => {
           <div className="flex items-center">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[36px] h-[36px]"
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[48px] h-[48px]"
                 >
                   {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </Button>
@@ -121,20 +121,20 @@ const Header = () => {
           <div className="flex items-center gap-2">
             {user ? (
               <Link to="/dashboard">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[36px] h-[36px]"
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[48px] h-[48px]"
                 >
                   <User className="h-6 w-6" />
                 </Button>
               </Link>
             ) : (
               <Link to="/login">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[36px] h-[36px]"
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[48px] h-[48px]"
                 >
                   <User className="h-6 w-6" />
                 </Button>
