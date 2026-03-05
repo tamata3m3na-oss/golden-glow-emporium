@@ -78,7 +78,7 @@ const ProductDetail = () => {
             {/* Images */}
             <div>
               {/* Main Image */}
-              <div className="relative bg-secondary rounded-2xl overflow-hidden mb-3 aspect-square">
+              <div className="relative bg-secondary rounded-2xl overflow-hidden mb-3 aspect-square md:h-[400px]">
                 {allImages.length > 0 ? (
                   <>
                     <motion.img
@@ -136,21 +136,21 @@ const ProductDetail = () => {
             </div>
 
             {/* Details */}
-            <div className="bg-card rounded-2xl border gold-border p-6 gold-shadow flex flex-col">
+            <div className="bg-card rounded-2xl border gold-border p-4 md:p-6 gold-shadow flex flex-col">
               <div className="h-1 gold-gradient rounded-full mb-5" />
 
               <div className="flex items-center gap-3 mb-4">
-                <span className="px-3 py-1 text-xs rounded-full gold-gradient text-primary-foreground font-semibold">
+                <span className="px-3 py-1 text-[10px] md:text-xs rounded-full gold-gradient text-primary-foreground font-semibold">
                   عيار {product.karat}
                 </span>
-                <span className="text-sm text-muted-foreground">{product.weight} جرام</span>
+                <span className="text-xs md:text-sm text-muted-foreground">{product.weight} جرام</span>
               </div>
 
-              <h1 className="text-2xl font-extrabold text-foreground mb-3">{product.name}</h1>
-              <p className="text-muted-foreground mb-6 leading-relaxed">{product.description}</p>
+              <h1 className="text-lg md:text-2xl font-extrabold text-foreground mb-3">{product.name}</h1>
+              <p className="text-sm md:text-base text-muted-foreground mb-6 leading-relaxed">{product.description}</p>
 
               <div className="mb-4">
-                <span className="text-4xl font-extrabold gold-text">{formattedPrice}</span>
+                <span className="text-2xl md:text-4xl font-extrabold gold-text">{formattedPrice}</span>
               </div>
 
               <div className="mt-auto">

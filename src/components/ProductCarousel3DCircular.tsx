@@ -222,7 +222,7 @@ const ProductCarousel3DCircular = () => {
         position: 'absolute',
         top: 0,
         left: '50%',
-        transform: 'translateX(-50%) translateX(140px) rotateY(25deg) scale(0.85)',
+        transform: 'translateX(-50%) translateX(160px) rotateY(25deg) scale(0.85)',
         opacity: 0.8,
         zIndex: 20,
         transition: 'all 0.5s ease-out',
@@ -234,7 +234,7 @@ const ProductCarousel3DCircular = () => {
         position: 'absolute',
         top: 0,
         left: '50%',
-        transform: 'translateX(-50%) translateX(-140px) rotateY(-25deg) scale(0.85)',
+        transform: 'translateX(-50%) translateX(-160px) rotateY(-25deg) scale(0.85)',
         opacity: 0.8,
         zIndex: 20,
         transition: 'all 0.5s ease-out',
@@ -285,7 +285,7 @@ const ProductCarousel3DCircular = () => {
           <div
             className="relative flex items-center justify-center"
             style={{
-              width: `${CARD_WIDTH + 280}px`,
+              width: `${CARD_WIDTH + 320}px`,
               height: `${CARD_HEIGHT}px`,
               transformStyle: 'preserve-3d',
             }}
