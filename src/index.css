@@ -184,6 +184,26 @@
       transform: perspective(1000px) rotateY(360deg);
     }
   }
+
+  /* True 3D Circular Carousel */
+  .carousel-3d-scene {
+    perspective: 1100px;
+    perspective-origin: center center;
+  }
+
+  .carousel-3d-track {
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  .carousel-3d-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: transform, opacity;
+  }
   
   /* Testimonial Auto Slider */
   @keyframes slideInUp {
