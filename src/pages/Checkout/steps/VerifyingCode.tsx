@@ -26,7 +26,7 @@ const VerifyingCode = ({ operationId, amount }: VerifyingCodeProps) => {
 
       {/* Status Box */}
       <div className="bg-gray-100 rounded-lg px-4 py-3 mb-4 w-full max-w-sm">
-        <p className="text-sm">
+        <p className="text-sm text-black">
           <span className="font-bold">الحالة:</span>{' '}
           في انتظار الموافقة
         </p>
@@ -36,12 +36,12 @@ const VerifyingCode = ({ operationId, amount }: VerifyingCodeProps) => {
       <div className="mb-4" />
 
       {/* Gray Rectangle with Operation ID and Amount */}
-      <div className="bg-gray-100 rounded-lg px-4 py-3 mb-4 w-full max-w-sm">
+      <div className="bg-gray-100 rounded-lg px-4 py-3 mb-4 w-full max-w-sm border-r-4 border-blue-500">
         <p className="text-sm mb-2">
           <span className="font-bold text-black">معرف العملية:</span>{' '}
-          {operationId}
+          <span className="text-black">{operationId}</span>
         </p>
-        <p className="text-sm text-blue-500">
+        <p className="text-sm text-blue-700">
           المبلغ: {amount} ريال
         </p>
       </div>
