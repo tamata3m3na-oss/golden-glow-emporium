@@ -125,12 +125,6 @@ const ProductCard = ({ product }: { product: Product }) => {
           {formattedPrice}
         </div>
 
-        {hasInstallments && (
-          <div className="mb-2 flex justify-center">
-            <InstallmentBadge price={product.price} variant="compact" />
-          </div>
-        )}
-
         <Link
           to={user ? `/checkout/${product.id}` : `/login?redirect=/checkout/${product.id}`}
           onClick={handleBuyNow}
