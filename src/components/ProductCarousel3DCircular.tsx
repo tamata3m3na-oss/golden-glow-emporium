@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { motion, useAnimation, useMotionValue } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -7,18 +6,17 @@ import { getProducts, type Product } from '@/data/products';
 import { postCheckoutEvent } from '@/lib/api';
 import { getCheckoutSessionId } from '@/lib/checkoutSession';
 
-const CARD_WIDTH = 200;
-const CARD_HEIGHT = 300;
-const RADIUS = 320;
-const VISIBLE_RANGE = 2;
+const CARD_WIDTH = 220;
+const CARD_HEIGHT = 320;
+const TRANSLATE_Z = 300;
+const ROTATION_STEP = 45;
 
-const CarouselCard = ({
-  product,
-  isCenter,
-}: {
+interface CarouselCardProps {
   product: Product;
   isCenter: boolean;
-}) => {
+}
+
+const CarouselCard = ({ product, isCenter }: CarouselCardProps) => {
   const { user } = useAuth();
 
   const formattedPrice = new Intl.NumberFormat('en-US', {
@@ -43,7 +41,7 @@ const CarouselCard = ({
 
   return (
     <div
-      className="relative rounded-xl border overflow-hidden flex-shrink-0 transition-shadow duration-500"
+      className="relative rounded-xl border overflow-hidden flex-shrink-0"
       style={{
         width: `${CARD_WIDTH}px`,
         height: `${CARD_HEIGHT}px`,
@@ -52,7 +50,6 @@ const CarouselCard = ({
         boxShadow: isCenter
           ? '0 0 40px rgba(212, 175, 55, 0.35), 0 8px 30px rgba(0,0,0,0.5)'
           : '0 4px 20px rgba(0,0,0,0.3)',
-        willChange: 'transform',
       }}
     >
       <div
@@ -133,97 +130,69 @@ const ProductCarousel3DCircular = () => {
   const count = products.length;
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [rotation, setRotation] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
+  const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartTime = useRef<number | null>(null);
-  const dragStartX = useRef<number | null>(null);
-  const dragCurrentX = useRef<number>(0);
-  const isDragging = useRef(false);
 
-  const rotationY = useMotionValue(0);
-  const controls = useAnimation();
+  const goToSlide = useCallback((index: number) => {
+    if (isAnimating || count === 0) return;
+    setIsAnimating(true);
 
-  const angleStep = count > 0 ? 360 / count : 0;
+    const diff = index - currentIndex;
+    const newRotation = rotation - diff * ROTATION_STEP;
+
+    setRotation(newRotation);
+    setCurrentIndex(index);
+
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 500);
+  }, [isAnimating, count, currentIndex, rotation]);
 
   const nextSlide = useCallback(() => {
     if (isAnimating || count === 0) return;
-    setIsAnimating(true);
-    const next = (currentIndex + 1) % count;
-    const target = rotationY.get() - angleStep;
-    controls
-      .start({
-        rotateY: target,
-        transition: { type: 'spring', stiffness: 60, damping: 18, mass: 0.8 },
-      })
-      .then(() => {
-        rotationY.set(target);
-        setCurrentIndex(next);
-        setIsAnimating(false);
-      });
-  }, [isAnimating, count, currentIndex, angleStep, rotationY, controls]);
+    const nextIndex = (currentIndex + 1) % count;
+    goToSlide(nextIndex);
+  }, [isAnimating, count, currentIndex, goToSlide]);
 
   const prevSlide = useCallback(() => {
     if (isAnimating || count === 0) return;
-    setIsAnimating(true);
-    const prev = (currentIndex - 1 + count) % count;
-    const target = rotationY.get() + angleStep;
-    controls
-      .start({
-        rotateY: target,
-        transition: { type: 'spring', stiffness: 60, damping: 18, mass: 0.8 },
-      })
-      .then(() => {
-        rotationY.set(target);
-        setCurrentIndex(prev);
-        setIsAnimating(false);
-      });
-  }, [isAnimating, count, currentIndex, angleStep, rotationY, controls]);
+    const prevIndex = (currentIndex - 1 + count) % count;
+    goToSlide(prevIndex);
+  }, [isAnimating, count, currentIndex, goToSlide]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartTime.current = Date.now();
-    dragStartX.current = e.touches[0].clientX;
-    isDragging.current = true;
-    controls.stop();
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging.current || dragStartX.current === null) return;
-    const dx = e.touches[0].clientX - dragStartX.current;
-    dragCurrentX.current = dx;
-    const dragAngle = (dx / window.innerWidth) * 180;
-    rotationY.set(rotationY.get() + dragAngle / 60);
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!isDragging.current || touchStartX.current === null) return;
-    isDragging.current = false;
+    if (touchStartX.current === null || touchStartTime.current === null) return;
 
-    const dx = (e.changedTouches[0]?.clientX ?? touchStartX.current) - touchStartX.current;
-    const dt = Date.now() - (touchStartTime.current ?? Date.now());
+    const touchEndX = e.changedTouches[0].clientX;
+    const dx = touchEndX - touchStartX.current;
+    const dt = Date.now() - touchStartTime.current;
     const velocity = Math.abs(dx) / dt;
 
-    if (Math.abs(dx) > 40 || velocity > 0.4) {
-      if (dx < 0) nextSlide();
-      else prevSlide();
-    } else {
-      controls.start({
-        rotateY: -currentIndex * angleStep,
-        transition: { type: 'spring', stiffness: 80, damping: 20 },
-      });
+    if (Math.abs(dx) > 50 || velocity > 0.3) {
+      if (dx < 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
     }
 
     touchStartX.current = null;
     touchStartTime.current = null;
-    dragStartX.current = null;
-    dragCurrentX.current = 0;
   };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') nextSlide();
-      if (e.key === 'ArrowRight') prevSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'ArrowRight') nextSlide();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -231,23 +200,50 @@ const ProductCarousel3DCircular = () => {
 
   if (count === 0) return null;
 
-  const getCardStyle = (index: number) => {
-    const rawDiff = index - currentIndex;
-    const diff = ((rawDiff + count / 2 + count) % count) - count / 2;
-    const cardAngle = diff * angleStep;
-    const radians = (cardAngle * Math.PI) / 180;
-    const z = Math.cos(radians) * RADIUS - RADIUS;
-    const opacity = Math.abs(diff) <= VISIBLE_RANGE ? Math.max(0.15, 1 - Math.abs(diff) * 0.35) : 0;
-    const scale = Math.abs(diff) === 0 ? 1 : Math.max(0.65, 1 - Math.abs(diff) * 0.18);
-    const visible = Math.abs(diff) <= VISIBLE_RANGE;
+  const getCardStyle = (index: number): React.CSSProperties => {
+    const diff = index - currentIndex;
+    const normalizedDiff = ((diff % count) + count) % count;
+    
+    let angle: number;
+    let opacity: number;
+    let scale: number;
+    let zIndex: number;
+
+    if (normalizedDiff === 0) {
+      angle = 0;
+      opacity = 1;
+      scale = 1.05;
+      zIndex = 100;
+    } else if (normalizedDiff === 1 || normalizedDiff === -(count - 1)) {
+      angle = ROTATION_STEP;
+      opacity = 0.6;
+      scale = 0.9;
+      zIndex = 50;
+    } else if (normalizedDiff === count - 1 || normalizedDiff === -1) {
+      angle = -ROTATION_STEP;
+      opacity = 0.6;
+      scale = 0.9;
+      zIndex = 50;
+    } else {
+      angle = normalizedDiff < count / 2 ? ROTATION_STEP * 2 : -ROTATION_STEP * 2;
+      opacity = 0;
+      scale = 0.8;
+      zIndex = 0;
+    }
 
     return {
-      angle: cardAngle,
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: `${CARD_WIDTH}px`,
+      height: `${CARD_HEIGHT}px`,
+      transform: `rotateY(${angle}deg) translateZ(${TRANSLATE_Z}px)`,
       opacity,
-      scale,
-      visible,
-      zIndex: Math.round(100 - Math.abs(diff) * 20),
-      z,
+      transformOrigin: 'center center',
+      backfaceVisibility: 'hidden',
+      WebkitBackfaceVisibility: 'hidden',
+      pointerEvents: normalizedDiff === 0 ? 'auto' : 'none',
+      zIndex,
     };
   };
 
@@ -264,56 +260,53 @@ const ProductCarousel3DCircular = () => {
       </div>
 
       <div
+        ref={containerRef}
         className="relative select-none"
-        style={{ height: `${CARD_HEIGHT + 40}px` }}
+        style={{
+          height: `${CARD_HEIGHT + 60}px`,
+          perspective: '1000px',
+        }}
         onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         <div
           className="absolute inset-0 flex items-center justify-center"
-          style={{ perspective: '1100px', perspectiveOrigin: 'center center' }}
+          style={{ perspectiveOrigin: 'center center' }}
         >
-          <motion.div
-            animate={controls}
+          <div
+            className="relative flex items-center justify-center"
             style={{
-              rotateY,
-              transformStyle: 'preserve-3d',
-              position: 'relative',
               width: `${CARD_WIDTH}px`,
               height: `${CARD_HEIGHT}px`,
+              transformStyle: 'preserve-3d',
+              transform: `rotateY(${rotation}deg)`,
+              transition: 'transform 0.5s ease-out',
             }}
           >
             {products.map((product, index) => {
-              const { angle, opacity, scale, visible, zIndex } = getCardStyle(index);
-              if (!visible) return null;
-
               const isCenter = index === currentIndex;
+              const style = getCardStyle(index);
+
+              if (style.opacity === 0) return null;
 
               return (
                 <div
                   key={product.id}
                   aria-hidden={!isCenter}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    transform: `rotateY(${angle}deg) translateZ(${RADIUS}px)`,
-                    opacity,
-                    scale,
-                    zIndex,
-                    transformOrigin: 'center center',
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                    pointerEvents: isCenter ? 'auto' : 'none',
-                    transition: 'opacity 0.4s ease, scale 0.4s ease',
-                  }}
+                  style={style}
                 >
-                  <CarouselCard product={product} isCenter={isCenter} />
+                  <div
+                    style={{
+                      transform: `scale(${style.scale})`,
+                      transition: 'transform 0.5s ease-out',
+                    }}
+                  >
+                    <CarouselCard product={product} isCenter={isCenter} />
+                  </div>
                 </div>
               );
             })}
-          </motion.div>
+          </div>
         </div>
 
         <button
@@ -349,25 +342,8 @@ const ProductCarousel3DCircular = () => {
         {products.map((_, i) => (
           <button
             key={i}
-            onClick={() => {
-              if (isAnimating) return;
-              const diff = i - currentIndex;
-              const normalized = ((diff % count) + count) % count;
-              const direction = normalized <= count / 2 ? 'next' : 'prev';
-              setIsAnimating(true);
-              const steps = direction === 'next' ? normalized : count - normalized;
-              const target = rotationY.get() + (direction === 'next' ? -steps * angleStep : steps * angleStep);
-              controls
-                .start({
-                  rotateY: target,
-                  transition: { type: 'spring', stiffness: 50, damping: 16, mass: 0.8 },
-                })
-                .then(() => {
-                  rotationY.set(target);
-                  setCurrentIndex(i);
-                  setIsAnimating(false);
-                });
-            }}
+            onClick={() => goToSlide(i)}
+            disabled={isAnimating}
             className={`h-2 rounded-full transition-all duration-300 ${
               i === currentIndex ? 'w-8 gold-gradient' : 'w-2 bg-[#D4AF37]/30 hover:bg-[#D4AF37]/50'
             }`}
