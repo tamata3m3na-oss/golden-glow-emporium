@@ -180,7 +180,7 @@ const ProductCarousel3D = () => {
       >
         <div 
           className="flex items-center justify-center gap-2 overflow-hidden py-8" 
-          style={{ height: '320px' }}
+          style={{ height: '360px' }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -202,9 +202,9 @@ const ProductCarousel3D = () => {
                   zIndex
                 }}
                 transition={{ duration: 0.5, delay: idx * 0.05 }}
-                className="absolute w-[280px]"
+                className="absolute w-[265px]"
                 style={{ 
-                  transform: `translateX(${position * 80}px) scale(${scale})`,
+                  transform: `translateX(${position * 75}px) scale(${scale})`,
                   transition: 'all 0.5s ease'
                 }}
               >

@@ -45,7 +45,8 @@ const ProductCard = ({ product }: { product: Product }) => {
       className="group relative rounded-xl border overflow-hidden transition-all duration-300 hover:shadow-lg"
       style={{ 
         background: '#0F172A',
-        borderColor: 'rgba(212, 175, 55, 0.3)'
+        borderColor: 'rgba(212, 175, 55, 0.3)',
+        width: '265px'
       }}
     >
       <div 
@@ -58,7 +59,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         className="relative overflow-hidden"
         style={{ 
           background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
-          height: '200px'
+          height: '140px'
         }}
       >
         {/* Wish Button */}
@@ -106,18 +107,18 @@ const ProductCard = ({ product }: { product: Product }) => {
         />
       </div>
 
-      <div className="p-4 text-center">
+      <div className="p-3 text-center">
         <h3
-          className="font-bold mb-2 group-hover:text-[#D4AF37] transition-colors line-clamp-1"
+          className="font-bold mb-1 group-hover:text-[#D4AF37] transition-colors line-clamp-1"
           style={{ color: '#E6ECF8' }}
         >
           {product.name}
         </h3>
 
         <div
-          className="font-extrabold mb-3"
+          className="font-extrabold mb-2"
           style={{
-            fontSize: '1.25rem',
+            fontSize: '1.125rem',
             color: '#D4AF37'
           }}
         >
@@ -125,7 +126,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
 
         {hasInstallments && (
-          <div className="mb-3 flex justify-center">
+          <div className="mb-2 flex justify-center">
             <InstallmentBadge price={product.price} variant="compact" />
           </div>
         )}
