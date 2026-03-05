@@ -182,6 +182,12 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
               codeError={confirmCodeError}
               isLoading={isConfirmingCode}
               onClearError={() => setConfirmCodeError(null)}
+              productName={product.name}
+              activeTotalAmount={activeTotalAmount}
+              activeInstallments={activeInstallments}
+              activePerInstallment={activePerInstallment}
+              phoneNumber={phoneNumber}
+              orderId={orderId}
             />
           </motion.div>
         )}
