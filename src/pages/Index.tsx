@@ -359,9 +359,9 @@ const StarRating = ({ count }: { count: number }) => (
 
 const Testimonials = () => {
   const [currentReview, setCurrentReview] = useState(0);
-  const [reviewName, setReviewName] = useState('');
   const [reviewComment, setReviewComment] = useState('');
   const [reviewRating, setReviewRating] = useState(0);
+  const [showRatingOptions, setShowRatingOptions] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -374,31 +374,46 @@ const Testimonials = () => {
 
   const handleReviewSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!reviewName.trim() || !reviewComment.trim() || reviewRating === 0) return;
-    
+    if (!reviewComment.trim() || reviewRating === 0) return;
+
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
       setShowSuccess(true);
-      setReviewName('');
       setReviewComment('');
       setReviewRating(0);
       setTimeout(() => setShowSuccess(false), 3000);
     }, 1500);
   };
 
-  const StarSelector = ({ rating, setRating }: { rating: number; setRating: (r: number) => void }) => (
-    <div className="flex gap-1">
+  const ratingOptions = [
+    { value: 5, label: '5 نجوم' },
+    { value: 4, label: '4 نجوم' },
+    { value: 3, label: '3 نجوم' },
+    { value: 2, label: '2 نجوم' },
+    { value: 1, label: '1 نجمة' },
+  ];
+
+  const handleStarClick = () => {
+    setShowRatingOptions(true);
+  };
+
+  const handleRatingSelect = (rating: number) => {
+    setReviewRating(rating);
+    setShowRatingOptions(false);
+  };
+
+  const StarDisplay = () => (
+    <div className="flex gap-1 justify-center">
       {Array.from({ length: 5 }).map((_, i) => (
         <button
           key={i}
           type="button"
-          onClick={() => setRating(i + 1)}
+          onClick={handleStarClick}
           className="p-1 transition-transform hover:scale-110"
-          aria-label={`تقييم ${i + 1} نجوم`}
         >
           <Star
-            className={`h-6 w-6 ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-[#E6ECF8]/30'}`}
+            className={`h-6 w-6 ${i < reviewRating ? 'text-yellow-400 fill-yellow-400' : 'text-white'}`}
           />
         </button>
       ))}
@@ -406,7 +421,7 @@ const Testimonials = () => {
   );
 
   return (
-    <section 
+    <section
       className="px-4 py-8 border-t"
       style={{ borderColor: 'rgba(212, 175, 55, 0.2)' }}
     >
@@ -417,18 +432,18 @@ const Testimonials = () => {
       </div>
 
       {/* Fake Review Form */}
-      <div 
+      <div
         className="max-w-md mx-auto mb-8 rounded-xl p-5"
-        style={{ 
+        style={{
           background: '#0F172A',
           border: '1px solid rgba(212, 175, 55, 0.2)'
         }}
       >
         <h3 className="text-lg font-bold text-[#E6ECF8] mb-4 text-center">أضف تقييمك</h3>
-        
+
         {showSuccess ? (
           <div className="text-center py-6">
-            <div 
+            <div
               className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3"
               style={{ background: 'rgba(34, 197, 94, 0.2)' }}
             >
@@ -439,39 +454,15 @@ const Testimonials = () => {
           </div>
         ) : (
           <form onSubmit={handleReviewSubmit} className="space-y-4">
+            {/* Comment field first */}
             <div>
-              <label className="block text-sm text-[#E6ECF8]/70 mb-2">التقييم</label>
-              <div className="flex justify-center">
-                <StarSelector rating={reviewRating} setRating={setReviewRating} />
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm text-[#E6ECF8]/70 mb-2">الاسم</label>
-              <input
-                type="text"
-                value={reviewName}
-                onChange={(e) => setReviewName(e.target.value)}
-                placeholder="أدخل اسمك"
-                className="w-full px-4 py-2.5 rounded-lg text-sm text-right placeholder:text-[#E6ECF8]/30"
-                style={{ 
-                  background: 'rgba(15, 23, 42, 0.8)',
-                  border: '1px solid rgba(212, 175, 55, 0.3)',
-                  color: '#E6ECF8'
-                }}
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm text-[#E6ECF8]/70 mb-2">التعليق</label>
               <textarea
                 value={reviewComment}
                 onChange={(e) => setReviewComment(e.target.value)}
-                placeholder="اكتب تجربتك معنا..."
+                placeholder="اكتب رأيك هنا"
                 rows={3}
                 className="w-full px-4 py-2.5 rounded-lg text-sm text-right placeholder:text-[#E6ECF8]/30 resize-none"
-                style={{ 
+                style={{
                   background: 'rgba(15, 23, 42, 0.8)',
                   border: '1px solid rgba(212, 175, 55, 0.3)',
                   color: '#E6ECF8'
@@ -479,10 +470,35 @@ const Testimonials = () => {
                 required
               />
             </div>
-            
+
+            {/* Rating stars */}
+            <div>
+              <StarDisplay />
+              {showRatingOptions && (
+                <div
+                  className="mt-2 rounded-lg p-2"
+                  style={{
+                    background: 'rgba(15, 23, 42, 0.9)',
+                    border: '1px solid rgba(212, 175, 55, 0.3)'
+                  }}
+                >
+                  {ratingOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => handleRatingSelect(option.value)}
+                      className="w-full text-right px-3 py-2 text-sm text-[#E6ECF8] hover:bg-[#D4AF37]/20 rounded transition-colors"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button
               type="submit"
-              disabled={isSubmitting || reviewRating === 0 || !reviewName.trim() || !reviewComment.trim()}
+              disabled={isSubmitting || reviewRating === 0 || !reviewComment.trim()}
               className="w-full py-3 rounded-lg font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: 'linear-gradient(90deg, #d4af37, #f4e4ba, #d4af37)',
@@ -490,7 +506,7 @@ const Testimonials = () => {
                 color: '#0B1020'
               }}
             >
-              {isSubmitting ? 'جاري الإرسال...' : 'حفظ التقييم'}
+              {isSubmitting ? 'جاري الإرسال...' : 'حفظ التعليق'}
             </button>
           </form>
         )}
@@ -675,8 +691,8 @@ const Index = () => {
         <FloatingElements />
 
         <HeroSlider />
-        <MovingText text={marqueeSettings.text} enabled={marqueeSettings.enabled} />
         <ProductCarousel3D />
+        <MovingText text={marqueeSettings.text} enabled={marqueeSettings.enabled} />
         <Features />
         <Testimonials />
         <PaymentMethods />
