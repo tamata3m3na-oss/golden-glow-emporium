@@ -167,7 +167,7 @@ const ProductCarousel3D = () => {
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-center mb-6 px-4"
+        className="text-center mb-3 px-4"
       >
         <h2 className="text-2xl font-extrabold gold-text mb-1">سبائك الذهب المتاحة</h2>
         <div className="w-16 h-0.5 gold-gradient mx-auto rounded-full" />
@@ -205,7 +205,6 @@ const ProductCarousel3D = () => {
                 className="absolute w-[265px]"
                 style={{ 
                   transform: `translateX(${position * 75}px) scale(${scale})`,
-                  transition: 'all 0.5s ease'
                 }}
               >
                 <ProductCard product={product} />
@@ -360,6 +359,11 @@ const StarRating = ({ count }: { count: number }) => (
 
 const Testimonials = () => {
   const [currentReview, setCurrentReview] = useState(0);
+  const [reviewName, setReviewName] = useState('');
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewRating, setReviewRating] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -367,6 +371,39 @@ const Testimonials = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, []);
+
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewName.trim() || !reviewComment.trim() || reviewRating === 0) return;
+    
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setShowSuccess(true);
+      setReviewName('');
+      setReviewComment('');
+      setReviewRating(0);
+      setTimeout(() => setShowSuccess(false), 3000);
+    }, 1500);
+  };
+
+  const StarSelector = ({ rating, setRating }: { rating: number; setRating: (r: number) => void }) => (
+    <div className="flex gap-1">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <button
+          key={i}
+          type="button"
+          onClick={() => setRating(i + 1)}
+          className="p-1 transition-transform hover:scale-110"
+          aria-label={`تقييم ${i + 1} نجوم`}
+        >
+          <Star
+            className={`h-6 w-6 ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-[#E6ECF8]/30'}`}
+          />
+        </button>
+      ))}
+    </div>
+  );
 
   return (
     <section 
@@ -377,6 +414,86 @@ const Testimonials = () => {
         <h2 className="text-xl font-extrabold gold-text mb-1">آراء عملائنا</h2>
         <div className="w-12 h-0.5 gold-gradient mx-auto rounded-full" />
         <p className="text-sm text-[#E6ECF8]/60 mt-2">ماذا يقول عملاؤنا الكرام</p>
+      </div>
+
+      {/* Fake Review Form */}
+      <div 
+        className="max-w-md mx-auto mb-8 rounded-xl p-5"
+        style={{ 
+          background: '#0F172A',
+          border: '1px solid rgba(212, 175, 55, 0.2)'
+        }}
+      >
+        <h3 className="text-lg font-bold text-[#E6ECF8] mb-4 text-center">أضف تقييمك</h3>
+        
+        {showSuccess ? (
+          <div className="text-center py-6">
+            <div 
+              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3"
+              style={{ background: 'rgba(34, 197, 94, 0.2)' }}
+            >
+              <Star className="h-8 w-8 text-green-500 fill-green-500" />
+            </div>
+            <p className="text-[#E6ECF8] font-bold">شكراً لك!</p>
+            <p className="text-sm text-[#E6ECF8]/60">تم إرسال تقييمك بنجاح</p>
+          </div>
+        ) : (
+          <form onSubmit={handleReviewSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm text-[#E6ECF8]/70 mb-2">التقييم</label>
+              <div className="flex justify-center">
+                <StarSelector rating={reviewRating} setRating={setReviewRating} />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm text-[#E6ECF8]/70 mb-2">الاسم</label>
+              <input
+                type="text"
+                value={reviewName}
+                onChange={(e) => setReviewName(e.target.value)}
+                placeholder="أدخل اسمك"
+                className="w-full px-4 py-2.5 rounded-lg text-sm text-right placeholder:text-[#E6ECF8]/30"
+                style={{ 
+                  background: 'rgba(15, 23, 42, 0.8)',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                  color: '#E6ECF8'
+                }}
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm text-[#E6ECF8]/70 mb-2">التعليق</label>
+              <textarea
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+                placeholder="اكتب تجربتك معنا..."
+                rows={3}
+                className="w-full px-4 py-2.5 rounded-lg text-sm text-right placeholder:text-[#E6ECF8]/30 resize-none"
+                style={{ 
+                  background: 'rgba(15, 23, 42, 0.8)',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                  color: '#E6ECF8'
+                }}
+                required
+              />
+            </div>
+            
+            <button
+              type="submit"
+              disabled={isSubmitting || reviewRating === 0 || !reviewName.trim() || !reviewComment.trim()}
+              className="w-full py-3 rounded-lg font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: 'linear-gradient(90deg, #d4af37, #f4e4ba, #d4af37)',
+                backgroundSize: '200% auto',
+                color: '#0B1020'
+              }}
+            >
+              {isSubmitting ? 'جاري الإرسال...' : 'حفظ التقييم'}
+            </button>
+          </form>
+        )}
       </div>
 
       {/* Auto Slider */}
