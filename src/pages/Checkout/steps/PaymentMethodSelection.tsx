@@ -80,7 +80,7 @@ const PaymentMethodSelection = ({
           <div className="flex items-center gap-3">
             <div className="w-[97px] h-[80px] border border-gray-200 rounded flex items-center justify-center overflow-hidden">
               <img
-                src="/se3ar.svg"
+                src="/se3ar.png"
                 alt="شعار المتجر"
                 className="w-full h-full object-contain"
               />

@@ -36,7 +36,7 @@ interface CheckoutUser {
 export const useCheckout = (product: Product, user: CheckoutUser) => {
   const [coupon, setCoupon] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('tamara');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<InstallmentPackage | null>(null);
   const [step, setStep] = useState<Step>('payment-method-selection');
   const [phoneNumber, setPhoneNumber] = useState('');
