@@ -1,3 +1,5 @@
+export type PaymentProvider = 'tamara' | 'tabby' | 'both';
+
 export interface Product {
   id: number;
   name: string;
@@ -9,6 +11,7 @@ export interface Product {
   images?: string | null;
   order?: number;
   isDefault?: boolean;
+  paymentProvider?: PaymentProvider;
 }
 
 const newImageUrl = "https://raw.githubusercontent.com/tamata3m3na-oss/golden-glow-emporium/main/src/assets/gold-photo.png";
@@ -24,6 +27,7 @@ export const defaultProducts: Product[] = [
     imageUrl: newImageUrl,
     isDefault: true,
     order: 1,
+    paymentProvider: 'tamara',
   },
   {
     id: 2,
@@ -35,6 +39,7 @@ export const defaultProducts: Product[] = [
     imageUrl: newImageUrl,
     isDefault: true,
     order: 2,
+    paymentProvider: 'tamara',
   },
   {
     id: 3,
@@ -46,6 +51,7 @@ export const defaultProducts: Product[] = [
     imageUrl: newImageUrl,
     isDefault: true,
     order: 3,
+    paymentProvider: 'tamara',
   },
   {
     id: 4,
@@ -57,6 +63,7 @@ export const defaultProducts: Product[] = [
     imageUrl: newImageUrl,
     isDefault: true,
     order: 4,
+    paymentProvider: 'tamara',
   },
   {
     id: 5,
@@ -68,6 +75,7 @@ export const defaultProducts: Product[] = [
     imageUrl: newImageUrl,
     isDefault: true,
     order: 5,
+    paymentProvider: 'tamara',
   },
   {
     id: 6,
@@ -79,6 +87,7 @@ export const defaultProducts: Product[] = [
     imageUrl: newImageUrl,
     isDefault: true,
     order: 6,
+    paymentProvider: 'tamara',
   },
   {
     id: 7,
@@ -90,6 +99,7 @@ export const defaultProducts: Product[] = [
     imageUrl: newImageUrl,
     isDefault: true,
     order: 7,
+    paymentProvider: 'tamara',
   },
   {
     id: 8,
@@ -101,6 +111,7 @@ export const defaultProducts: Product[] = [
     imageUrl: newImageUrl,
     isDefault: true,
     order: 8,
+    paymentProvider: 'tamara',
   },
   {
     id: 9,
@@ -112,6 +123,31 @@ export const defaultProducts: Product[] = [
     imageUrl: newImageUrl,
     isDefault: true,
     order: 9,
+    paymentProvider: 'tamara',
+  },
+  {
+    id: 10,
+    name: "سبيكة ذهب - خطة 12 قسط",
+    price: 6000,
+    weight: "12 قسط",
+    karat: "24",
+    description: "قسط شهري 500 ريال × 12 شهر - العمولة: 400 ريال",
+    imageUrl: newImageUrl,
+    isDefault: true,
+    order: 10,
+    paymentProvider: 'tabby',
+  },
+  {
+    id: 11,
+    name: "سبيكة ذهب - خطة 12 قسط",
+    price: 18000,
+    weight: "12 قسط",
+    karat: "24",
+    description: "قسط شهري 1,500 ريال × 12 شهر - العمولة: 900 ريال",
+    imageUrl: newImageUrl,
+    isDefault: true,
+    order: 11,
+    paymentProvider: 'tabby',
   },
 ];
 

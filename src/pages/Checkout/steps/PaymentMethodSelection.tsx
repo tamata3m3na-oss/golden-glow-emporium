@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { PaymentMethod } from '../types';
 import type { Product } from '@/data/products';
 
@@ -17,6 +17,20 @@ interface PaymentMethodSelectionProps {
   onContinue: () => void;
   formatPrice: (price: number) => string;
 }
+
+const getPaymentProvider = (product: Product): 'tamara' | 'tabby' | 'both' => {
+  return product.paymentProvider || 'both';
+};
+
+const isTamaraEnabled = (product: Product): boolean => {
+  const provider = getPaymentProvider(product);
+  return provider === 'tamara' || provider === 'both';
+};
+
+const isTabbyEnabled = (product: Product): boolean => {
+  const provider = getPaymentProvider(product);
+  return provider === 'tabby' || provider === 'both';
+};
 
 const ALL_PACKAGES = [
   { totalAmount: 4140, installmentsCount: 4, perInstallment: 1035, commission: 210 },
@@ -54,6 +68,27 @@ const PaymentMethodSelection = ({
   formatPrice,
 }: PaymentMethodSelectionProps) => {
   const [showOrderDetails, setShowOrderDetails] = useState(false);
+
+  const tamaraEnabled = isTamaraEnabled(product);
+  const tabbyEnabled = isTabbyEnabled(product);
+
+  useEffect(() => {
+    if (!tamaraEnabled && !tabbyEnabled) return;
+
+    if (selectedMethod === 'tamara' && !tamaraEnabled) {
+      if (tabbyEnabled) {
+        onSelectMethod('tabby');
+      } else {
+        onSelectMethod(null);
+      }
+    } else if (selectedMethod === 'tabby' && !tabbyEnabled) {
+      if (tamaraEnabled) {
+        onSelectMethod('tamara');
+      } else {
+        onSelectMethod(null);
+      }
+    }
+  }, [product.id, tamaraEnabled, tabbyEnabled, selectedMethod, onSelectMethod]);
 
   const closestPackage = useMemo(() => {
     const sorted = [...ALL_PACKAGES].sort((a, b) => {
@@ -174,12 +209,14 @@ const PaymentMethodSelection = ({
             {/* Payment Method Buttons */}
             <div className="flex gap-3 mb-4">
               <button
-                onClick={() => onSelectMethod('tamara')}
+                onClick={() => tamaraEnabled && onSelectMethod('tamara')}
+                disabled={!tamaraEnabled}
                 className={`flex-1 h-[50px] flex items-center justify-center border-2 rounded-lg transition-all ${
                   selectedMethod === 'tamara'
                     ? 'border-black bg-white'
                     : 'border-gray-300 bg-white'
-                }`}
+                } ${!tamaraEnabled ? 'opacity-50 cursor-not-allowed bg-gray-100' : 'cursor-pointer'}`}
+                title={!tamaraEnabled ? 'غير متاح لهذا المنتج' : ''}
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -194,17 +231,19 @@ const PaymentMethodSelection = ({
                   <img
                     src="https://checkout.tamara.center/a.jpg"
                     alt="Tamara"
-                    className="h-6"
+                    className={`h-6 ${!tamaraEnabled ? 'grayscale' : ''}`}
                   />
                 </div>
               </button>
               <button
-                onClick={() => onSelectMethod('tabby')}
+                onClick={() => tabbyEnabled && onSelectMethod('tabby')}
+                disabled={!tabbyEnabled}
                 className={`flex-1 h-[50px] flex items-center justify-center border-2 rounded-lg transition-all ${
                   selectedMethod === 'tabby'
                     ? 'border-black bg-white'
                     : 'border-gray-300 bg-white'
-                }`}
+                } ${!tabbyEnabled ? 'opacity-50 cursor-not-allowed bg-gray-100' : 'cursor-pointer'}`}
+                title={!tabbyEnabled ? 'غير متاح لهذا المنتج' : ''}
               >
                 <div className="flex items-center gap-3">
                   <div
@@ -219,11 +258,22 @@ const PaymentMethodSelection = ({
                   <img
                     src="https://checkout.tamara.center/b.jpg"
                     alt="Tabby"
-                    className="h-6"
+                    className={`h-6 ${!tabbyEnabled ? 'grayscale' : ''}`}
                   />
                 </div>
               </button>
             </div>
+
+            {/* Payment Method Note */}
+            {(!tamaraEnabled || !tabbyEnabled) && (
+              <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-[13px] text-amber-800 text-center">
+                  {!tamaraEnabled
+                    ? 'هذا المنتج متاح للدفع عبر تابي فقط'
+                    : 'هذا المنتج متاح للدفع عبر تمارا فقط'}
+                </p>
+              </div>
+            )}
 
             {/* Tamara Details */}
             {selectedMethod === 'tamara' && closestPackage && (

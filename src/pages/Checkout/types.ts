@@ -1,5 +1,7 @@
 export type PaymentMethod = 'tamara' | 'tabby' | null;
 
+export type PaymentProvider = 'tamara' | 'tabby' | 'both';
+
 export type Step =
   | 'payment-method-selection'
   | 'confirm-method'
