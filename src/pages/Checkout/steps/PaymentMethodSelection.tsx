@@ -87,8 +87,8 @@ const PaymentMethodSelection = ({
             </div>
           </div>
           <div className="text-right">
-            <p className="text-[14px] font-medium text-black">{userName}</p>
-            <p className="text-[12px] text-[#777]">سلة المشتريات / إتمام الطلب</p>
+            <p className="text-[16px] font-medium text-black">{userName}</p>
+            <p className="text-[13px] text-[#777]">سلة المشتريات / <span className="font-bold text-[16px]">إتمام الطلب</span></p>
           </div>
         </div>
 
