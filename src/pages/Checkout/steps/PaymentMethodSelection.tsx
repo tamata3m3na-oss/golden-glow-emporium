@@ -80,7 +80,7 @@ const PaymentMethodSelection = ({
           <div className="flex items-center gap-3">
             <div className="w-[97px] h-[80px] border border-gray-200 rounded flex items-center justify-center overflow-hidden">
               <img
-                src="/se3ar.jpg"
+                src="/se3ar.svg"
                 alt="شعار المتجر"
                 className="w-full h-full object-contain"
               />
@@ -233,10 +233,10 @@ const PaymentMethodSelection = ({
                 </p>
                 <p className="text-[14px] text-black mb-3">✓ ادفع قيمة طلبك كاملة</p>
                 <hr className="border-gray-200 my-3" />
-                <p className="text-[13px] font-semibold text-[#777] mb-2">خدمات مطابقة للشريعة الإسلامية</p>
-                <p className="text-[12px] font-semibold text-[#777] mb-2">حلال</p>
-                <p className="text-[12px] font-semibold text-[#777] mb-2">سجلك الائتماني قد يؤثر على خطط الدفع</p>
-                <p className="text-[12px] font-semibold text-[#777]">خدمات تمارا متاحة للعملاء الأكبر من 18 سنة</p>
+                <p className="text-[13px] text-black mb-2" style={{ fontWeight: 720 }}>خدمات مطابقة للشريعة الإسلامية</p>
+                <p className="text-[12px] text-black mb-2" style={{ fontWeight: 720 }}>حلال</p>
+                <p className="text-[12px] text-black mb-2" style={{ fontWeight: 720 }}>سجلك الائتماني قد يؤثر على خطط الدفع</p>
+                <p className="text-[12px] text-black" style={{ fontWeight: 720 }}>خدمات تمارا متاحة للعملاء الأكبر من 18 سنة</p>
               </div>
             )}
           </div>
