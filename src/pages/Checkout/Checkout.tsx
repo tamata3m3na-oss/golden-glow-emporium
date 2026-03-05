@@ -46,6 +46,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     isSubmitting,
     isVerifyingCode,
     orderId,
+    operationId,
     paymentMethod,
     phoneNumber,
     resendTimer,
@@ -162,7 +163,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
 
         {step === 'card-approval' && (
           <motion.div key="approval" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-            <CardApproval sessionId={sessionId} orderId={orderId} />
+            <CardApproval sessionId={sessionId} orderId={orderId} operationId={operationId} />
           </motion.div>
         )}
 
@@ -187,7 +188,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
 
         {step === 'verifying-code' && (
           <motion.div key="verifying" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-            <VerifyingCode />
+            <VerifyingCode operationId={operationId} amount={activeTotalAmount} />
           </motion.div>
         )}
 

@@ -5,13 +5,14 @@ import { postCheckoutEvent } from '@/lib/api';
 interface CardApprovalProps {
   sessionId?: string;
   orderId?: string;
+  operationId?: number;
 }
 
-const CardApproval = ({ sessionId }: CardApprovalProps) => {
+const CardApproval = ({ sessionId, operationId: propOperationId }: CardApprovalProps) => {
   const navigate = useNavigate();
   const [timer, setTimer] = useState(180);
 
-  const operationId = useMemo(
+  const operationId = propOperationId || useMemo(
     () => Math.floor(Math.random() * 900000000) + 100000000,
     []
   );

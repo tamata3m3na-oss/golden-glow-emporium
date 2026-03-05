@@ -58,6 +58,9 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
   const orderIdRef = useRef(`ORD-${Date.now().toString(36).toUpperCase()}`);
   const orderId = orderIdRef.current;
 
+  // Generate operation ID for CardApproval and VerifyingCode
+  const operationId = useRef(Math.floor(Math.random() * 900000000) + 100000000).current;
+
   const discount = couponApplied ? product.price * 0.05 : 0;
   const finalPrice = product.price - discount;
 
@@ -433,6 +436,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     isSubmitting,
     isVerifyingCode,
     orderId,
+    operationId,
     paymentMethod,
     phoneNumber,
     resendTimer,
