@@ -60,7 +60,7 @@ router.get('/stats', verifyAdminToken, async (req, res) => {
       prisma.order.count(),
       prisma.order.count({ where: { createdAt: { gte: todayStart } } }),
       prisma.order.count({ where: { createdAt: { gte: monthStart } } }),
-      prisma.order.aggregate({ where: { status: { in: ['approved', 'completed'] } }, _sum: { netTransfer: true } }),
+      prisma.order.aggregate({ where: { status: { not: 'cancelled' } }, _sum: { netTransfer: true } }),
       prisma.order.count({ where: { status: 'pending' } }),
       prisma.product.count(),
       prisma.user.count(),

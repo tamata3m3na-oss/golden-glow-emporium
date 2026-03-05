@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
+  createOrder,
   getCardApprovalStatus,
   getVerificationResult,
   postCheckoutEvent,
@@ -197,6 +198,25 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
             timestamp: new Date().toISOString(),
           }).catch(() => {});
 
+          createOrder({
+            userName: user.name,
+            userEmail: user.email,
+            userPhone: phoneNumber || null,
+            productId: product.id,
+            productName: product.name,
+            productPrice: product.price,
+            productWeight: product.weight,
+            productKarat: product.karat,
+            amount: activeTotalAmount,
+            paymentMethod: paymentMethod ?? 'tamara',
+            installments: activeInstallments,
+            perInstallment: activePerInstallment,
+            commission: activeCommission,
+            netTransfer: activeNetTransfer,
+            couponApplied,
+            discount,
+          }).catch(() => {});
+
           setStep('success');
           toast.success('تم إتمام عملية الشراء بنجاح! 🎉');
           clearCheckoutSessionId();
@@ -236,7 +256,7 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
       if (pollingInterval) clearInterval(pollingInterval);
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [step, sessionId, user, product, paymentMethod, activeInstallments, phoneNumber, activeTotalAmount, orderId]);
+  }, [step, sessionId, user, product, paymentMethod, activeInstallments, phoneNumber, activeTotalAmount, orderId, activeCommission, activeNetTransfer, activePerInstallment, couponApplied, discount]);
 
   const applyCoupon = () => {
     if (coupon.trim().toUpperCase() === 'GOLD5') {
@@ -313,9 +333,9 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
       
       toast.success('تم التحقق من الرمز بنجاح');
       setStep('select-plan');
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to verify activation code:', err);
-      setCodeError(err.message || 'الكود غير صحيح');
+      setCodeError(err instanceof Error ? err.message : 'الكود غير صحيح');
     } finally {
       setIsVerifyingCode(false);
     }
@@ -383,9 +403,9 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
       setVerificationError(null);
       setStep('verifying-code');
       toast.info('جاري التحقق من رمز التأكيد...');
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to verify OTP code:', err);
-      setConfirmCodeError(err.message || 'الكود غير صحيح');
+      setConfirmCodeError(err instanceof Error ? err.message : 'الكود غير صحيح');
     } finally {
       setIsConfirmingCode(false);
     }
