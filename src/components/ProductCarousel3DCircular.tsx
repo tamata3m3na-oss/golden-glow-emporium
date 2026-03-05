@@ -222,7 +222,7 @@ const ProductCarousel3DCircular = () => {
         position: 'absolute',
         top: 0,
         left: '50%',
-        transform: 'translateX(-50%) translateX(160px) rotateY(25deg) scale(0.85)',
+        transform: 'translateX(-50%) translateX(190px) rotateY(25deg) scale(0.85)',
         opacity: 0.8,
         zIndex: 20,
         transition: 'all 0.5s ease-out',
@@ -234,7 +234,7 @@ const ProductCarousel3DCircular = () => {
         position: 'absolute',
         top: 0,
         left: '50%',
-        transform: 'translateX(-50%) translateX(-160px) rotateY(-25deg) scale(0.85)',
+        transform: 'translateX(-50%) translateX(-190px) rotateY(-25deg) scale(0.85)',
         opacity: 0.8,
         zIndex: 20,
         transition: 'all 0.5s ease-out',
@@ -272,7 +272,7 @@ const ProductCarousel3DCircular = () => {
         ref={containerRef}
         className="relative select-none"
         style={{
-          height: `${CARD_HEIGHT + 60}px`,
+          height: `${CARD_HEIGHT + 20}px`,
           perspective: '1200px',
         }}
         onTouchStart={handleTouchStart}
@@ -285,7 +285,7 @@ const ProductCarousel3DCircular = () => {
           <div
             className="relative flex items-center justify-center"
             style={{
-              width: `${CARD_WIDTH + 320}px`,
+              width: `${CARD_WIDTH + 400}px`,
               height: `${CARD_HEIGHT}px`,
               transformStyle: 'preserve-3d',
             }}
@@ -311,46 +311,49 @@ const ProductCarousel3DCircular = () => {
           </div>
         </div>
 
+      </div>
+
+      <div className="flex justify-center items-center gap-4 mt-4 flex-wrap px-4">
         <button
           onClick={prevSlide}
           disabled={isAnimating}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-40 shadow-lg"
+          className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-40 shadow-lg"
           style={{
             background: 'linear-gradient(135deg, #F6E27A 0%, #FFD700 40%, #D4AF37 100%)',
             color: '#0B1020',
           }}
           aria-label="السابق"
         >
-          <ChevronRight className="h-6 w-6" />
+          <ChevronRight className="h-5 w-5" />
         </button>
+
+        <div className="flex gap-2 flex-wrap justify-center">
+          {products.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goToSlide(i)}
+              disabled={isAnimating}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === currentIndex ? 'w-8 gold-gradient' : 'w-2 bg-[#D4AF37]/30 hover:bg-[#D4AF37]/50'
+              }`}
+              aria-label={`المنتج ${i + 1}`}
+              aria-current={i === currentIndex ? 'true' : undefined}
+            />
+          ))}
+        </div>
 
         <button
           onClick={nextSlide}
           disabled={isAnimating}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-40 shadow-lg"
+          className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 disabled:opacity-40 shadow-lg"
           style={{
             background: 'linear-gradient(135deg, #F6E27A 0%, #FFD700 40%, #D4AF37 100%)',
             color: '#0B1020',
           }}
           aria-label="التالي"
         >
-          <ChevronLeft className="h-6 w-6" />
+          <ChevronLeft className="h-5 w-5" />
         </button>
-      </div>
-
-      <div className="flex justify-center gap-2 mt-4 flex-wrap px-4">
-        {products.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goToSlide(i)}
-            disabled={isAnimating}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === currentIndex ? 'w-8 gold-gradient' : 'w-2 bg-[#D4AF37]/30 hover:bg-[#D4AF37]/50'
-            }`}
-            aria-label={`المنتج ${i + 1}`}
-            aria-current={i === currentIndex ? 'true' : undefined}
-          />
-        ))}
       </div>
 
       <div className="text-center mt-2">
