@@ -32,6 +32,10 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     codeError,
     confirmCode,
     confirmCodeError,
+    coupon,
+    couponApplied,
+    discount,
+    finalPrice,
     formatPrice,
     formatTimer,
     handleCardSubmit,
@@ -52,6 +56,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     setCodeError,
     setConfirmCode,
     setConfirmCodeError,
+    setCoupon,
     setPaymentMethod,
     setPhoneNumber,
     setSelectedPackage,
@@ -65,6 +70,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     activeTotalAmount,
     sessionId,
     selectedPackage,
+    applyCoupon,
   } = useCheckout(product, user);
 
   return (
@@ -73,10 +79,18 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
         {step === 'payment-method-selection' && (
           <motion.div key="payment-method-selection" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
             <PaymentMethodSelection
+              product={product}
+              coupon={coupon}
+              couponApplied={couponApplied}
+              discount={discount}
+              finalPrice={finalPrice}
               selectedMethod={paymentMethod}
               onSelectMethod={setPaymentMethod}
+              setCoupon={setCoupon}
+              applyCoupon={applyCoupon}
               onBack={() => navigate(`/product/${product.id}`)}
               onContinue={() => setStep('confirm-method')}
+              formatPrice={formatPrice}
             />
           </motion.div>
         )}
