@@ -2,10 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/Layout';
-import ProductCard from '@/components/ProductCard';
-import { getProducts } from '@/data/products';
+import ProductCarousel3DCircular from '@/components/ProductCarousel3DCircular';
 import { useMarqueeSettings } from '@/hooks/useMarqueeSettings';
-import { Star, ChevronLeft, ChevronRight, ShieldCheck, Award, Truck, Clock, Quote } from 'lucide-react';
+import { Star, ShieldCheck, Award, Truck, Clock, Quote } from 'lucide-react';
 
 // Hero Slider Images
 const heroImages = [
@@ -103,163 +102,8 @@ const MovingText = ({ text, enabled }: { text: string; enabled: boolean }) => {
   );
 };
 
-// 3D Carousel Component
-const ProductCarousel3D = () => {
-  const products = getProducts();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const touchStartX = useRef<number | null>(null);
-  const touchEndX = useRef<number | null>(null);
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % products.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + products.length) % products.length);
-  };
-
-  useEffect(() => {
-    if (!isAutoPlaying) return;
-    const timer = setInterval(nextSlide, 4000);
-    return () => clearInterval(timer);
-  }, [isAutoPlaying]);
-
-  const getVisibleProducts = () => {
-    const visible = [];
-    for (let i = -2; i <= 2; i++) {
-      const index = (currentIndex + i + products.length) % products.length;
-      visible.push({ product: products[index], position: i });
-    }
-    return visible;
-  };
-
-  // Touch handlers for swipe support
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (touchStartX.current === null || touchEndX.current === null) return;
-
-    const diff = touchStartX.current - touchEndX.current;
-    const minSwipeDistance = 50;
-
-    if (diff > minSwipeDistance) {
-      // Swiped left - go next
-      nextSlide();
-    } else if (diff < -minSwipeDistance) {
-      // Swiped right - go prev
-      prevSlide();
-    }
-
-    touchStartX.current = null;
-    touchEndX.current = null;
-  };
-
-  return (
-    <section className="py-6">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-3 px-4"
-      >
-        <h2 className="text-2xl font-extrabold gold-text mb-1">سبائك الذهب المتاحة</h2>
-        <div className="w-16 h-0.5 gold-gradient mx-auto rounded-full" />
-      </motion.div>
-
-      <div 
-        className="px-4"
-        onMouseEnter={() => setIsAutoPlaying(false)}
-        onMouseLeave={() => setIsAutoPlaying(true)}
-      >
-        <div 
-          className="flex items-center justify-center gap-2 overflow-hidden py-8" 
-          style={{ height: '360px' }}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {getVisibleProducts().map(({ product, position }, idx) => {
-            const isCenter = position === 0;
-            const scale = isCenter ? 1 : 0.75;
-            const opacity = isCenter ? 1 : 0.4;
-            const zIndex = isCenter ? 10 : 5 - Math.abs(position);
-            
-            return (
-              <motion.div
-                key={`${product.id}-${position}`}
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ 
-                  opacity, 
-                  x: 0,
-                  scale,
-                  zIndex
-                }}
-                transition={{ duration: 0.5, delay: idx * 0.05 }}
-                className="absolute w-[265px]"
-                style={{ 
-                  transform: `translateX(${position * 75}px) scale(${scale})`,
-                }}
-              >
-                <ProductCard product={product} />
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Navigation Buttons - Below Carousel */}
-        <div className="flex justify-center gap-4 mt-2">
-          <button
-            onClick={prevSlide}
-            className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110"
-            style={{ 
-              background: 'rgba(212, 175, 55, 0.2)',
-              border: '1px solid rgba(212, 175, 55, 0.4)',
-              color: '#D4AF37'
-            }}
-            aria-label="السابق"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </button>
-          <button
-            onClick={nextSlide}
-            className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110"
-            style={{ 
-              background: 'rgba(212, 175, 55, 0.2)',
-              border: '1px solid rgba(212, 175, 55, 0.4)',
-              color: '#D4AF37'
-            }}
-            aria-label="التالي"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
-        </div>
-      </div>
-
-      {/* Progress Dots */}
-      <div className="flex justify-center gap-2 mt-4">
-        {products.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrentIndex(i)}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              i === currentIndex 
-                ? 'w-8 gold-gradient' 
-                : 'bg-[#D4AF37]/30'
-            }`}
-            aria-label={`المنتج ${i + 1}`}
-          />
-        ))}
-      </div>
-    </section>
-  );
-};
+// 3D Circular Carousel Component - Google Earth style rotation
+// Uses the ProductCarousel3DCircular component for 3D circular carousel
 
 // Features Section
 const features = [
@@ -655,7 +499,7 @@ const Index = () => {
         <FloatingElements />
 
         <HeroSlider />
-        <ProductCarousel3D />
+        <ProductCarousel3DCircular />
         <MovingText text={marqueeSettings.text} enabled={marqueeSettings.enabled} />
         <Features />
         <Testimonials />
