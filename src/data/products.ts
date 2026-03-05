@@ -113,6 +113,28 @@ export const defaultProducts: Product[] = [
     isDefault: true,
     order: 9,
   },
+  {
+    id: 10,
+    name: "سبيكة ذهب 12 جرام عيار 24",
+    price: 6000,
+    weight: "12",
+    karat: "24",
+    description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 12 جرام",
+    imageUrl: newImageUrl,
+    isDefault: true,
+    order: 10,
+  },
+  {
+    id: 11,
+    name: "سبيكة ذهب 36 جرام عيار 24",
+    price: 18000,
+    weight: "36",
+    karat: "24",
+    description: "سبيكة ذهب خالص عيار 24 قيراط بوزن 36 جرام",
+    imageUrl: newImageUrl,
+    isDefault: true,
+    order: 11,
+  },
 ];
 
 export const getProducts = (): Product[] => {

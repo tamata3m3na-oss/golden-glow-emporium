@@ -73,12 +73,6 @@ const PaymentMethodSelection = ({
   const isTamaraDisabled = isTabbyOnly;
   const isTabbyDisabled = isTamaraOnly;
 
-  const warningMessage = useMemo(() => {
-    if (isTamaraOnly) return 'هذا المنتج متاح فقط مع تمارا';
-    if (isTabbyOnly) return 'هذا المنتج متاح فقط مع تابي';
-    return null;
-  }, [isTamaraOnly, isTabbyOnly]);
-
   const formatPricePlain = (price: number) => {
     return new Intl.NumberFormat('en-US').format(price);
   };
@@ -186,22 +180,8 @@ const PaymentMethodSelection = ({
             </div>
             <p className="text-[14px] text-black mb-3 mr-7">اختر طريقة الدفع</p>
 
-            {/* Warning Message */}
-            {warningMessage && (
-              <div
-                className="mb-3 px-4 py-2 rounded-lg text-[13px] font-medium text-center"
-                style={{
-                  backgroundColor: '#fff8e1',
-                  border: '1px solid #f9c73a',
-                  color: '#7c6200',
-                }}
-              >
-                ⚠️ {warningMessage}
-              </div>
-            )}
-
             {/* Payment Method Buttons */}
-            <div className="flex gap-3 mb-4">
+            <div className="flex gap-3">
               <button
                 onClick={() => !isTamaraDisabled && onSelectMethod('tamara')}
                 disabled={isTamaraDisabled}
