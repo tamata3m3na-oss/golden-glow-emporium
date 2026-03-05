@@ -30,7 +30,7 @@ const Footer = () => {
           {/* Logo */}
           <div className="flex justify-center mb-4">
             <img
-              src="/se3ar.jpg"
+              src="/se3ar.png"
               alt="مؤسسة حسين إبراهيم حسين"
               className="h-20 w-auto object-contain"
             />
