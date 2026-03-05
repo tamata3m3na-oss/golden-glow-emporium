@@ -84,7 +84,7 @@ const ConfirmCode = ({
         <div className="h-px bg-gray-300 mx-5 my-2" />
 
         {/* English Language Button */}
-        <div className="flex justify-center my-3">
+        <div className="flex justify-end px-5 my-3">
           <button
             onClick={() => {}}
             className="text-[14px] font-medium text-blue-600 hover:text-blue-700 transition-colors"
@@ -104,7 +104,7 @@ const ConfirmCode = ({
           <div className="mb-4" />
 
           {/* Gray Instruction Text */}
-          <div className="text-center mb-2">
+          <div className="text-right mb-2">
             <p className="text-[14px] text-gray-600 mb-2">
               يرجى إدخال رمز التحقق المرسل إلى الرقم المسجل
             </p>
@@ -121,7 +121,7 @@ const ConfirmCode = ({
             </div>
 
             {/* Amount */}
-            <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2">
               <span className="text-[14px] font-semibold text-gray-800">
                 المبلغ: {formatPrice(activeTotalAmount)} SAR
               </span>
@@ -131,7 +131,7 @@ const ConfirmCode = ({
             </div>
 
             {/* Time */}
-            <div className="text-[12px] text-gray-600 text-center">
+            <div className="text-[12px] text-gray-600 text-right">
               الوقت: {formattedDateTime}
             </div>
           </div>
@@ -180,7 +180,7 @@ const ConfirmCode = ({
         </button>
 
         {/* Resend Code - Centered Text Only */}
-        <div className="text-center py-4">
+        <div className="text-center pt-8 pb-4">
           <button
             onClick={() => {}}
             className="text-[14px] font-medium text-blue-600 hover:text-blue-700 transition-colors"
