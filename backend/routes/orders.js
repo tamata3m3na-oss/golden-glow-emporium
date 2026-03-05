@@ -9,7 +9,8 @@ const telegramService = require('../services/telegram');
 router.post('/', async (req, res) => {
   const {
     userName, userEmail, userPhone,
-    productId, amount, paymentMethod,
+    productId, productName, productPrice, productWeight, productKarat,
+    amount, paymentMethod,
     installments, perInstallment, commission,
     netTransfer, couponApplied, discount,
   } = req.body;
@@ -28,8 +29,23 @@ router.post('/', async (req, res) => {
       user = await prisma.user.update({ where: { id: user.id }, data: { phone: userPhone } });
     }
 
-    const product = await prisma.product.findUnique({ where: { id: parseInt(productId) } });
-    if (!product) return res.status(404).json({ error: 'المنتج غير موجود' });
+    const parsedProductId = parseInt(productId);
+    let product = await prisma.product.findUnique({ where: { id: parsedProductId } });
+
+    if (!product) {
+      product = await prisma.product.upsert({
+        where: { id: parsedProductId },
+        update: {},
+        create: {
+          id: parsedProductId,
+          name: productName || `منتج #${parsedProductId}`,
+          price: parseFloat(productPrice) || parseFloat(amount),
+          weight: parseInt(productWeight) || 1,
+          karat: parseInt(productKarat) || 24,
+          isDefault: true,
+        },
+      });
+    }
 
     const order = await prisma.order.create({
       data: {
@@ -44,7 +60,7 @@ router.post('/', async (req, res) => {
         couponApplied: Boolean(couponApplied),
         discount: parseFloat(discount) || 0,
         status: 'pending',
-        paymentStatus: 'pending',
+        paymentStatus: 'paid',
       },
       include: { user: true, product: true },
     });

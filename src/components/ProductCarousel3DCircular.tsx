@@ -1,67 +1,133 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import ProductCard from '@/components/ProductCard';
+import { useState, useRef, useCallback } from 'react';
+import { ChevronLeft, ChevronRight, ImageIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import { getProducts, type Product } from '@/data/products';
+import { postCheckoutEvent } from '@/lib/api';
+import { getCheckoutSessionId } from '@/lib/checkoutSession';
 
-// Google Earth-style 3D Circular Carousel
-// Products are arranged in a circular/cylindrical formation around a center point
-// Navigation rotates the entire carousel around the Y-axis
+const CARD_WIDTH = 222;
+const CARD_HEIGHT = 331;
+
+const CarouselCard = ({ product }: { product: Product }) => {
+  const { user } = useAuth();
+
+  const formattedPrice = new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(product.price) + ' ر.س';
+
+  const handleBuyNow = () => {
+    const sessionId = getCheckoutSessionId();
+    postCheckoutEvent({
+      sessionId,
+      eventType: 'product_selected',
+      userName: user?.name,
+      userEmail: user?.email,
+      productId: product.id,
+      productName: product.name,
+      productPrice: product.price,
+      timestamp: new Date().toISOString(),
+    }).catch(() => {});
+  };
+
+  return (
+    <div
+      className="relative rounded-xl border overflow-hidden flex-shrink-0"
+      style={{
+        width: `${CARD_WIDTH}px`,
+        height: `${CARD_HEIGHT}px`,
+        background: '#0F172A',
+        borderColor: 'rgba(212, 175, 55, 0.3)',
+      }}
+    >
+      <div
+        className="h-1"
+        style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #F6E27A 100%)' }}
+      />
+
+      <div
+        className="relative overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+          height: `${CARD_HEIGHT - 120}px`,
+        }}
+      >
+        {product.imageUrl ? (
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="w-full h-full object-contain p-4"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="text-center">
+              <ImageIcon className="h-12 w-12 text-[#D4AF37]/30 mx-auto mb-2" />
+              <div
+                className="w-16 h-16 rounded-full border mx-auto flex items-center justify-center"
+                style={{
+                  background: 'rgba(212, 175, 55, 0.1)',
+                  borderColor: 'rgba(212, 175, 55, 0.3)',
+                }}
+              >
+                <span className="font-bold text-xl" style={{ color: '#D4AF37' }}>{product.karat}K</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="p-3 text-center">
+        <h3
+          className="font-bold mb-1 line-clamp-1 text-sm"
+          style={{ color: '#E6ECF8' }}
+        >
+          {product.name}
+        </h3>
+
+        <div
+          className="font-extrabold mb-2"
+          style={{ fontSize: '1rem', color: '#D4AF37' }}
+        >
+          {formattedPrice}
+        </div>
+
+        <Link
+          to={user ? `/checkout/${product.id}` : `/login?redirect=/checkout/${product.id}`}
+          onClick={handleBuyNow}
+          className="block w-full text-center py-2 rounded-lg font-bold text-sm transition-opacity hover:opacity-90"
+          style={{
+            background: 'linear-gradient(135deg, #F6E27A 0%, #FFD700 40%, #D4AF37 100%)',
+            color: '#0B1020',
+          }}
+        >
+          اشترِ الآن
+        </Link>
+      </div>
+    </div>
+  );
+};
 
 const ProductCarousel3DCircular = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const products = getProducts();
+  const count = products.length;
+
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [rotation, setRotation] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
-  // Load products
-  useEffect(() => {
-    const loadedProducts = getProducts();
-    setProducts(loadedProducts);
-  }, []);
-
-  // Calculate rotation angle based on product count
-  const anglePerProduct = products.length > 0 ? 360 / products.length : 0;
-
-  // Navigate to next product (rotate counter-clockwise)
   const nextSlide = useCallback(() => {
-    if (products.length === 0) return;
-    setCurrentIndex((prev) => {
-      const newIndex = (prev + 1) % products.length;
-      return newIndex;
-    });
-    setRotation((prev) => prev - anglePerProduct);
-  }, [products.length, anglePerProduct]);
+    if (count === 0) return;
+    setCurrentIndex((prev) => (prev + 1) % count);
+  }, [count]);
 
-  // Navigate to previous product (rotate clockwise)
   const prevSlide = useCallback(() => {
-    if (products.length === 0) return;
-    setCurrentIndex((prev) => {
-      const newIndex = (prev - 1 + products.length) % products.length;
-      return newIndex;
-    });
-    setRotation((prev) => prev + anglePerProduct);
-  }, [products.length, anglePerProduct]);
+    if (count === 0) return;
+    setCurrentIndex((prev) => (prev - 1 + count) % count);
+  }, [count]);
 
-  // Go to specific slide
-  const goToSlide = useCallback((index: number) => {
-    if (products.length === 0) return;
-    const diff = index - currentIndex;
-    setCurrentIndex(index);
-    setRotation((prev) => prev - diff * anglePerProduct);
-  }, [products.length, currentIndex, anglePerProduct]);
-
-  // Auto-play
-  useEffect(() => {
-    if (!isAutoPlaying || products.length === 0) return;
-    const timer = setInterval(nextSlide, 4000);
-    return () => clearInterval(timer);
-  }, [isAutoPlaying, nextSlide, products.length]);
-
-  // Touch handlers for swipe support
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
   };
@@ -72,140 +138,56 @@ const ProductCarousel3DCircular = () => {
 
   const handleTouchEnd = () => {
     if (touchStartX.current === null || touchEndX.current === null) return;
-
     const diff = touchStartX.current - touchEndX.current;
-    const minSwipeDistance = 50;
-
-    if (diff > minSwipeDistance) {
-      nextSlide();
-    } else if (diff < -minSwipeDistance) {
-      prevSlide();
-    }
-
+    if (diff > 50) nextSlide();
+    else if (diff < -50) prevSlide();
     touchStartX.current = null;
     touchEndX.current = null;
   };
 
-  // Calculate 3D position for each product
-  const getProductStyle = (index: number): React.CSSProperties => {
-    if (products.length === 0) return {};
-    
-    // Calculate the angle for this product relative to current rotation
-    const baseAngle = index * anglePerProduct;
-    const currentAngle = baseAngle + rotation;
-    const radian = (currentAngle * Math.PI) / 180;
-    
-    // Radius of the circular arrangement
-    const radius = 320;
-    
-    // Calculate position in 3D space
-    const x = Math.sin(radian) * radius;
-    const z = Math.cos(radian) * radius - radius; // Offset so center is at z=0
-    
-    // Calculate scale and opacity based on z position (depth)
-    const normalizedZ = (z + radius) / (2 * radius); // 0 to 1
-    const scale = 0.6 + normalizedZ * 0.4; // Scale from 0.6 to 1.0
-    const opacity = 0.3 + normalizedZ * 0.7; // Opacity from 0.3 to 1.0
-    
-    // Calculate rotation Y to face outward from center
-    const rotateY = -currentAngle;
-    
-    return {
-      transform: `translateX(${x}px) translateZ(${z}px) rotateY(${rotateY}deg) scale(${scale})`,
-      opacity,
-      zIndex: Math.round(normalizedZ * 100),
-    };
+  if (count === 0) return null;
+
+  const getVisibleProducts = (): Product[] => {
+    const prev = (currentIndex - 1 + count) % count;
+    const curr = currentIndex;
+    const next = (currentIndex + 1) % count;
+    return [products[prev], products[curr], products[next]];
   };
 
-  if (products.length === 0) {
-    return null;
-  }
+  const visibleProducts = getVisibleProducts();
 
   return (
     <section className="py-6">
-      {/* Title */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-3 px-4"
-      >
+      <div className="text-center mb-3 px-4">
         <h2 className="text-2xl font-extrabold gold-text mb-1">سبائك الذهب المتاحة</h2>
         <div className="w-16 h-0.5 gold-gradient mx-auto rounded-full" />
-      </motion.div>
+      </div>
 
-      {/* 3D Carousel Container */}
-      <div 
-        className="px-4"
-        onMouseEnter={() => setIsAutoPlaying(false)}
-        onMouseLeave={() => setIsAutoPlaying(true)}
-      >
-        {/* 3D Scene */}
-        <div 
-          ref={containerRef}
-          className="relative flex items-center justify-center overflow-hidden py-8"
-          style={{ 
-            height: '400px',
-            perspective: '1000px',
-          }}
+      <div className="px-4">
+        <div
+          className="relative overflow-hidden"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          {/* 3D Carousel Track */}
-          <div 
-            className="relative flex items-center justify-center"
-            style={{
-              transformStyle: 'preserve-3d',
-              transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
-            }}
+          <div
+            className="flex justify-center gap-3 items-stretch"
+            style={{ minHeight: `${CARD_HEIGHT}px` }}
           >
-            <AnimatePresence mode="popLayout">
-              {products.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={getProductStyle(index)}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ 
-                    duration: 0.8, 
-                    ease: [0.4, 0, 0.2, 1],
-                    layout: { duration: 0.8 }
-                  }}
-                  className="absolute w-[265px]"
-                  style={{
-                    transformStyle: 'preserve-3d',
-                    backfaceVisibility: 'hidden',
-                  }}
-                >
-                  <ProductCard product={product} />
-                </motion.div>
-              ))}
-            </AnimatePresence>
+            {visibleProducts.map((product, i) => (
+              <CarouselCard key={`${product.id}-${i}`} product={product} />
+            ))}
           </div>
-
-          {/* Center glow effect */}
-          <div 
-            className="absolute pointer-events-none"
-            style={{
-              width: '300px',
-              height: '300px',
-              background: 'radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0) 70%)',
-              transform: 'translateZ(-100px)',
-            }}
-          />
         </div>
 
-        {/* Navigation Buttons - Below Carousel */}
-        <div className="flex justify-center gap-4 mt-2">
+        <div className="flex justify-center gap-4 mt-4">
           <button
             onClick={prevSlide}
             className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110"
-            style={{ 
+            style={{
               background: 'rgba(212, 175, 55, 0.2)',
               border: '1px solid rgba(212, 175, 55, 0.4)',
-              color: '#D4AF37'
+              color: '#D4AF37',
             }}
             aria-label="السابق"
           >
@@ -214,10 +196,10 @@ const ProductCarousel3DCircular = () => {
           <button
             onClick={nextSlide}
             className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110"
-            style={{ 
+            style={{
               background: 'rgba(212, 175, 55, 0.2)',
               border: '1px solid rgba(212, 175, 55, 0.4)',
-              color: '#D4AF37'
+              color: '#D4AF37',
             }}
             aria-label="التالي"
           >
@@ -226,15 +208,14 @@ const ProductCarousel3DCircular = () => {
         </div>
       </div>
 
-      {/* Progress Dots */}
       <div className="flex justify-center gap-2 mt-4 flex-wrap px-4">
         {products.map((_, i) => (
           <button
             key={i}
-            onClick={() => goToSlide(i)}
+            onClick={() => setCurrentIndex(i)}
             className={`h-2 rounded-full transition-all duration-300 ${
-              i === currentIndex 
-                ? 'w-8 gold-gradient' 
+              i === currentIndex
+                ? 'w-8 gold-gradient'
                 : 'w-2 bg-[#D4AF37]/30 hover:bg-[#D4AF37]/50'
             }`}
             aria-label={`المنتج ${i + 1}`}
@@ -242,10 +223,9 @@ const ProductCarousel3DCircular = () => {
         ))}
       </div>
 
-      {/* Current Product Indicator */}
       <div className="text-center mt-3">
         <span className="text-sm text-[#E6ECF8]/60">
-          {currentIndex + 1} / {products.length}
+          {currentIndex + 1} / {count}
         </span>
       </div>
     </section>
