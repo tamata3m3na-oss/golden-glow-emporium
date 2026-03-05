@@ -80,6 +80,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
           <motion.div key="payment-method-selection" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
             <PaymentMethodSelection
               product={product}
+              userName={user.name}
               coupon={coupon}
               couponApplied={couponApplied}
               discount={discount}
