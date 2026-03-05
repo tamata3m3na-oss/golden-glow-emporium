@@ -84,7 +84,7 @@ const ConfirmCode = ({
         <div className="h-px bg-gray-300 mx-5 my-2" />
 
         {/* English Language Button */}
-        <div className="flex justify-end px-5 my-3">
+        <div className="flex justify-start px-5 my-3">
           <button
             onClick={() => {}}
             className="text-[14px] font-medium text-blue-600 hover:text-blue-700 transition-colors"
