@@ -361,7 +361,6 @@ const Testimonials = () => {
   const [currentReview, setCurrentReview] = useState(0);
   const [reviewComment, setReviewComment] = useState('');
   const [reviewRating, setReviewRating] = useState(0);
-  const [showRatingOptions, setShowRatingOptions] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -386,30 +385,13 @@ const Testimonials = () => {
     }, 1500);
   };
 
-  const ratingOptions = [
-    { value: 5, label: '5 نجوم' },
-    { value: 4, label: '4 نجوم' },
-    { value: 3, label: '3 نجوم' },
-    { value: 2, label: '2 نجوم' },
-    { value: 1, label: '1 نجمة' },
-  ];
-
-  const handleStarClick = () => {
-    setShowRatingOptions(true);
-  };
-
-  const handleRatingSelect = (rating: number) => {
-    setReviewRating(rating);
-    setShowRatingOptions(false);
-  };
-
   const StarDisplay = () => (
     <div className="flex gap-1 justify-center">
       {Array.from({ length: 5 }).map((_, i) => (
         <button
           key={i}
           type="button"
-          onClick={handleStarClick}
+          onClick={() => setReviewRating(i + 1)}
           className="p-1 transition-transform hover:scale-110"
         >
           <Star
@@ -474,40 +456,22 @@ const Testimonials = () => {
             {/* Rating stars */}
             <div>
               <StarDisplay />
-              {showRatingOptions && (
-                <div
-                  className="mt-2 rounded-lg p-2"
-                  style={{
-                    background: 'rgba(15, 23, 42, 0.9)',
-                    border: '1px solid rgba(212, 175, 55, 0.3)'
-                  }}
-                >
-                  {ratingOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => handleRatingSelect(option.value)}
-                      className="w-full text-right px-3 py-2 text-sm text-[#E6ECF8] hover:bg-[#D4AF37]/20 rounded transition-colors"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting || reviewRating === 0 || !reviewComment.trim()}
-              className="w-full py-3 rounded-lg font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                background: 'linear-gradient(90deg, #d4af37, #f4e4ba, #d4af37)',
-                backgroundSize: '200% auto',
-                color: '#0B1020'
-              }}
-            >
-              {isSubmitting ? 'جاري الإرسال...' : 'حفظ التعليق'}
-            </button>
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={isSubmitting || reviewRating === 0 || !reviewComment.trim()}
+                className="px-4 py-1.5 rounded-lg font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  background: 'linear-gradient(90deg, #d4af37, #f4e4ba, #d4af37)',
+                  backgroundSize: '200% auto',
+                  color: '#0B1020'
+                }}
+              >
+                {isSubmitting ? 'جاري الإرسال...' : 'حفظ التعليق'}
+              </button>
+            </div>
           </form>
         )}
       </div>
