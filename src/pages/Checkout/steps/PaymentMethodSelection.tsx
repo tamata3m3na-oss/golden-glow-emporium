@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import TamaraLogo from '@/components/TamaraLogo';
 import type { PaymentMethod } from '../types';
 import type { Product } from '@/data/products';
 
@@ -39,13 +38,6 @@ const WalletIcon = () => (
   </svg>
 );
 
-const TabbyLogo = () => (
-  <svg width="70" height="24" viewBox="0 0 70 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12.5 4C9.46 4 7 6.46 7 9.5c0 3.04 2.46 5.5 5.5 5.5 3.04 0 5.5-2.46 5.5-5.5C18 6.46 15.54 4 12.5 4zm0 9c-1.93 0-3.5-1.57-3.5-3.5S10.57 6 12.5 6 16 7.57 16 9.5 14.43 13 12.5 13z" fill="#000"/>
-    <path d="M24 4h2v10h-2zM24 2h2v2h-2zM30 4h-2v2h-2v2h2v4c0 1.1.9 2 2 2h2v-2h-2V8h2V6h-2V4zM38 4c-2.21 0-4 1.79-4 4v6h2V8c0-1.1.9-2 2-2h2V4h-2zM46 4h-6v2h2v8h2V6h2V4zM54 4h-2v10h2c2.21 0 4-1.79 4-4V8c0-2.21-1.79-4-4-4zm2 6c0 1.1-.9 2-2 2h-2V6h2c1.1 0 2 .9 2 2v2zM62 4h-2v10h2V4zM62 2h-2v2h2V2zM68 4h-2v2h-2v2h2v4c0 1.1.9 2 2 2h2v-2h-2V8h2V6h-2V4z" fill="#000"/>
-  </svg>
-);
-
 const PaymentMethodSelection = ({
   product,
   userName,
@@ -78,11 +70,11 @@ const PaymentMethodSelection = ({
 
   return (
     <div
-      className="min-h-screen bg-[#f8f9fa]"
+      className="min-h-screen bg-[#ffffff]"
       dir="rtl"
       style={{ fontFamily: "'Tajawal', sans-serif" }}
     >
-      <div className="max-w-[430px] mx-auto w-full min-h-screen flex flex-col bg-[#f8f9fa]">
+      <div className="max-w-[430px] mx-auto w-full min-h-screen flex flex-col bg-[#ffffff]">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 bg-white">
           <div className="flex items-center gap-3">
@@ -106,30 +98,32 @@ const PaymentMethodSelection = ({
         {/* Content */}
         <div className="flex-1 px-4 py-4">
           {/* Order Total Section */}
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[14px] text-black">إجمالي الطلب</span>
-            <div className="flex items-center gap-4">
-              <span className="text-[14px] text-red-500 cursor-pointer">لديك كوبون تخفيض ؟</span>
+          <div className="mb-2">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[14px] text-black">إجمالي الطلب</span>
               <span className="text-[16px] font-bold text-black">
                 {formatPricePlain(finalPrice)} ريال
               </span>
             </div>
+            <div className="text-center">
+              <span className="text-[14px] text-red-500">لديك كوبون تخفيض ؟</span>
+            </div>
           </div>
 
           {/* Coupon Section */}
-          <div className="flex gap-2 mb-4" style={{ width: '440px', maxWidth: '100%' }}>
+          <div className="flex gap-0 mb-4 rounded-lg overflow-hidden" style={{ width: '440px', maxWidth: '100%' }}>
             <input
               type="text"
               value={coupon}
               onChange={(e) => setCoupon(e.target.value)}
               placeholder="أدخل رمز الكوبون"
               disabled={couponApplied}
-              className="flex-1 h-[40px] px-3 text-[14px] border border-[#ddd] rounded bg-white text-black placeholder-[#999] outline-none focus:border-black transition-colors text-right"
+              className="flex-1 h-[40px] px-3 text-[14px] border-0 bg-white text-black placeholder-[#999] outline-none focus:border-black transition-colors text-right"
             />
             <button
               onClick={applyCoupon}
               disabled={couponApplied || !coupon.trim()}
-              className="h-[40px] px-5 text-[14px] font-medium rounded transition-colors whitespace-nowrap"
+              className="h-[40px] px-5 text-[14px] font-medium rounded-r-lg transition-colors whitespace-nowrap"
               style={{
                 backgroundColor: couponApplied ? '#22c55e' : '#000000',
                 color: '#fff',
@@ -143,14 +137,20 @@ const PaymentMethodSelection = ({
           {/* Order Details Toggle Button */}
           <button
             onClick={() => setShowOrderDetails(!showOrderDetails)}
-            className="w-full py-3 px-4 bg-white border border-gray-300 rounded text-black text-[14px] font-medium flex items-center justify-center gap-2 mb-0"
+            className="py-2 px-4 border rounded text-black text-[12px] font-medium flex items-center justify-center gap-2 mb-2"
+            style={{
+              borderColor: showOrderDetails ? '#87CEEB' : '#d1d5db',
+              backgroundColor: showOrderDetails ? '#E0F2FE' : '#ffffff',
+              borderRadius: '8px',
+              width: 'auto',
+            }}
           >
             {showOrderDetails ? 'إخفاء التفاصيل' : 'تفاصيل الطلب'}
           </button>
 
           {/* Order Details Content */}
           {showOrderDetails && (
-            <div className="bg-white border border-t-0 border-gray-300 rounded-b px-4 py-3 -mt-1 mb-2">
+            <div className="px-4 py-3 mb-2">
               <div className="flex items-center justify-between">
                 <span className="text-[14px] text-black">{product.name}</span>
                 <span className="text-[14px] text-black">1 × {formatPricePlain(product.price)}.00 ريال</span>
@@ -173,38 +173,67 @@ const PaymentMethodSelection = ({
             <div className="flex gap-3 mb-4">
               <button
                 onClick={() => onSelectMethod('tamara')}
-                className={`flex-1 h-[50px] flex items-center justify-center border-2 rounded transition-all ${
+                className={`flex-1 h-[50px] flex items-center justify-center border-2 rounded-lg transition-all ${
                   selectedMethod === 'tamara'
                     ? 'border-black bg-white'
                     : 'border-gray-300 bg-white'
                 }`}
               >
-                <TamaraLogo />
+                <div className="flex items-center gap-3">
+                  <img
+                    src="https://checkout.tamara.center/a.jpg"
+                    alt="Tamara"
+                    className="h-6"
+                  />
+                  <div
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      selectedMethod === 'tamara' ? 'border-black bg-black' : 'border-gray-300'
+                    }`}
+                  >
+                    {selectedMethod === 'tamara' && (
+                      <div className="w-2 h-2 rounded-full bg-white" />
+                    )}
+                  </div>
+                </div>
               </button>
               <button
                 onClick={() => onSelectMethod('tabby')}
-                className={`flex-1 h-[50px] flex items-center justify-center border-2 rounded transition-all ${
+                className={`flex-1 h-[50px] flex items-center justify-center border-2 rounded-lg transition-all ${
                   selectedMethod === 'tabby'
                     ? 'border-black bg-white'
                     : 'border-gray-300 bg-white'
                 }`}
               >
-                <TabbyLogo />
+                <div className="flex items-center gap-3">
+                  <img
+                    src="https://checkout.tamara.center/b.jpg"
+                    alt="Tabby"
+                    className="h-6"
+                  />
+                  <div
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      selectedMethod === 'tabby' ? 'border-black bg-black' : 'border-gray-300'
+                    }`}
+                  >
+                    {selectedMethod === 'tabby' && (
+                      <div className="w-2 h-2 rounded-full bg-white" />
+                    )}
+                  </div>
+                </div>
               </button>
             </div>
 
             {/* Tamara Details */}
             {selectedMethod === 'tamara' && closestPackage && (
-              <div className="bg-white border border-gray-200 rounded p-4 mb-4">
+              <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
                 <p className="text-[14px] text-black mb-3">
-                  قسّم فاتورتك حتى {closestPackage.installmentsCount} دفعات بدون فوائد!
+                  ✓ قسّم فاتورتك حتى 24 دفعات بدون فوائد!
                 </p>
-                <p className="text-[14px] text-black mb-3">ادفع قيمة طلبك كاملة</p>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[13px] text-[#777]">خدمات مطابقة للشريعة الإسلامية</span>
-                  <span className="text-[12px] bg-green-100 text-green-700 px-2 py-0.5 rounded">حلال</span>
-                </div>
-                <p className="text-[12px] text-[#777] mb-1">سجلك الائتماني قد يؤثر على خطط الدفع</p>
+                <p className="text-[14px] text-black mb-3">✓ ادفع قيمة طلبك كاملة</p>
+                <hr className="border-gray-200 my-3" />
+                <p className="text-[13px] text-[#777] mb-2">خدمات مطابقة للشريعة الإسلامية</p>
+                <p className="text-[12px] text-[#777] mb-2">حلال</p>
+                <p className="text-[12px] text-[#777] mb-2">سجلك الائتماني قد يؤثر على خطط الدفع</p>
                 <p className="text-[12px] text-[#777]">خدمات تمارا متاحة للعملاء الأكبر من 18 سنة</p>
               </div>
             )}
@@ -212,7 +241,7 @@ const PaymentMethodSelection = ({
         </div>
 
         {/* Confirm Payment Button - Fixed at bottom */}
-        <div className="px-4 pb-4 pt-2 bg-[#f8f9fa]">
+        <div className="px-4 pb-4 pt-2 bg-[#ffffff]">
           <button
             onClick={onContinue}
             disabled={!selectedMethod}
@@ -228,7 +257,7 @@ const PaymentMethodSelection = ({
         </div>
 
         {/* Footer */}
-        <div className="px-4 pb-6 pt-2 text-center bg-[#f8f9fa]">
+        <div className="px-4 pb-6 pt-2 text-center bg-[#ffffff]">
           <p className="text-[12px] text-[#777] mb-1">مع كل طلب لك نصيب من الخير</p>
           <p className="text-[11px] text-[#777]">سنتبرع بجزء من قيمة طلبك لجمعية ركن الحوار</p>
         </div>
