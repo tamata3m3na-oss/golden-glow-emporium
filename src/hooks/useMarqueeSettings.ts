@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { MarqueeSettings } from '@/components/Admin';
 
-const DEFAULT_TEXT = "مؤسسة حسين إبراهيم حسين للمجوهرات و للذهب ☆ أفضل أسعار الذهب ☆ سبيكة ذهب عيار 24 ☆ توصيل لجميع المناطق ☆ ";
+const DEFAULT_TEXT = "مؤسسة حسين إبراهيم حسين للمجوهرات و للذهب ☆ أفضل أسعار الذهب ☆ سبيكة ذهب عيار 24 ☆ توصيل لجميع المناطق ☆ مؤسسة حسين إبراهيم حسين للمجوهرات و للذهب ☆ أفضل أسعار الذهب ☆ سبيكة ذهب عيار 24 ☆ توصيل لجميع المناطق ☆";
 const STORAGE_KEY = 'marquee_settings';
 
 export const useMarqueeSettings = () => {
