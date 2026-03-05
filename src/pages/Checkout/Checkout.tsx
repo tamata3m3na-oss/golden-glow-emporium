@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { getProducts, type Product } from '@/data/products';
 import { useCheckout } from './useCheckout';
+import PaymentMethodSelection from './steps/PaymentMethodSelection';
 import ConfirmMethod from './steps/ConfirmMethod';
 import VerifyPhone from './steps/VerifyPhone';
 import SelectPlan from './steps/SelectPlan';
@@ -41,6 +42,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     isSubmitting,
     isVerifyingCode,
     orderId,
+    paymentMethod,
     phoneNumber,
     resendTimer,
     setAgreedTerms,
@@ -50,6 +52,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     setCodeError,
     setConfirmCode,
     setConfirmCodeError,
+    setPaymentMethod,
     setPhoneNumber,
     setSelectedPackage,
     setStep,
@@ -67,6 +70,17 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <AnimatePresence mode="wait">
+        {step === 'payment-method-selection' && (
+          <motion.div key="payment-method-selection" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+            <PaymentMethodSelection
+              selectedMethod={paymentMethod}
+              onSelectMethod={setPaymentMethod}
+              onBack={() => navigate(`/product/${product.id}`)}
+              onContinue={() => setStep('confirm-method')}
+            />
+          </motion.div>
+        )}
+
         {step === 'confirm-method' && (
           <motion.div key="confirm-method" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
             <ConfirmMethod
