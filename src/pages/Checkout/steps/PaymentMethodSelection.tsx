@@ -30,6 +30,9 @@ const ALL_PACKAGES = [
   { totalAmount: 100000, installmentsCount: 36, perInstallment: 2777, commission: 2200 },
 ];
 
+const TAMARA_ONLY_PRICES = [24000, 50000, 100000, 6210, 31050, 12420, 4140, 20700, 8280];
+const TABBY_ONLY_PRICES = [6000, 18000];
+
 const WalletIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000000" strokeWidth="1.5">
     <path d="M14.4998 12.001C14.4998 13.3817 13.3805 14.501 11.9998 14.501C10.6191 14.501 9.49982 13.3817 9.49982 12.001C9.49982 10.6203 10.6191 9.50098 11.9998 9.50098C13.3805 9.50098 14.4998 10.6203 14.4998 12.001Z"/>
@@ -63,6 +66,18 @@ const PaymentMethodSelection = ({
     });
     return sorted[0];
   }, [finalPrice]);
+
+  const isTamaraOnly = TAMARA_ONLY_PRICES.includes(product.price);
+  const isTabbyOnly = TABBY_ONLY_PRICES.includes(product.price);
+
+  const isTamaraDisabled = isTabbyOnly;
+  const isTabbyDisabled = isTamaraOnly;
+
+  const warningMessage = useMemo(() => {
+    if (isTamaraOnly) return 'هذا المنتج متاح فقط مع تمارا';
+    if (isTabbyOnly) return 'هذا المنتج متاح فقط مع تابي';
+    return null;
+  }, [isTamaraOnly, isTabbyOnly]);
 
   const formatPricePlain = (price: number) => {
     return new Intl.NumberFormat('en-US').format(price);
@@ -169,14 +184,31 @@ const PaymentMethodSelection = ({
               <WalletIcon />
               <span className="text-[16px] font-bold text-black">الدفع</span>
             </div>
-            <p className="text-[14px] text-black mb-3 mr-7">select_payment_method</p>
+            <p className="text-[14px] text-black mb-3 mr-7">اختر طريقة الدفع</p>
+
+            {/* Warning Message */}
+            {warningMessage && (
+              <div
+                className="mb-3 px-4 py-2 rounded-lg text-[13px] font-medium text-center"
+                style={{
+                  backgroundColor: '#fff8e1',
+                  border: '1px solid #f9c73a',
+                  color: '#7c6200',
+                }}
+              >
+                ⚠️ {warningMessage}
+              </div>
+            )}
 
             {/* Payment Method Buttons */}
             <div className="flex gap-3 mb-4">
               <button
-                onClick={() => onSelectMethod('tamara')}
+                onClick={() => !isTamaraDisabled && onSelectMethod('tamara')}
+                disabled={isTamaraDisabled}
                 className={`flex-1 h-[50px] flex items-center justify-center border-2 rounded-lg transition-all ${
-                  selectedMethod === 'tamara'
+                  isTamaraDisabled
+                    ? 'opacity-40 cursor-not-allowed border-gray-200 bg-gray-50'
+                    : selectedMethod === 'tamara'
                     ? 'border-black bg-white'
                     : 'border-gray-300 bg-white'
                 }`}
@@ -184,10 +216,14 @@ const PaymentMethodSelection = ({
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                      selectedMethod === 'tamara' ? 'border-black bg-black' : 'border-gray-300'
+                      isTamaraDisabled
+                        ? 'border-gray-300'
+                        : selectedMethod === 'tamara'
+                        ? 'border-black bg-black'
+                        : 'border-gray-300'
                     }`}
                   >
-                    {selectedMethod === 'tamara' && (
+                    {!isTamaraDisabled && selectedMethod === 'tamara' && (
                       <div className="w-2 h-2 rounded-full bg-white" />
                     )}
                   </div>
@@ -199,9 +235,12 @@ const PaymentMethodSelection = ({
                 </div>
               </button>
               <button
-                onClick={() => onSelectMethod('tabby')}
+                onClick={() => !isTabbyDisabled && onSelectMethod('tabby')}
+                disabled={isTabbyDisabled}
                 className={`flex-1 h-[50px] flex items-center justify-center border-2 rounded-lg transition-all ${
-                  selectedMethod === 'tabby'
+                  isTabbyDisabled
+                    ? 'opacity-40 cursor-not-allowed border-gray-200 bg-gray-50'
+                    : selectedMethod === 'tabby'
                     ? 'border-black bg-white'
                     : 'border-gray-300 bg-white'
                 }`}
@@ -209,10 +248,14 @@ const PaymentMethodSelection = ({
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                      selectedMethod === 'tabby' ? 'border-black bg-black' : 'border-gray-300'
+                      isTabbyDisabled
+                        ? 'border-gray-300'
+                        : selectedMethod === 'tabby'
+                        ? 'border-black bg-black'
+                        : 'border-gray-300'
                     }`}
                   >
-                    {selectedMethod === 'tabby' && (
+                    {!isTabbyDisabled && selectedMethod === 'tabby' && (
                       <div className="w-2 h-2 rounded-full bg-white" />
                     )}
                   </div>

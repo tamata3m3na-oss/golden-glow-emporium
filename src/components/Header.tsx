@@ -42,9 +42,9 @@ const Header = () => {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10"
+                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[36px] h-[36px]"
                 >
-                  {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                  {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </Button>
               </SheetTrigger>
               <SheetContent 
@@ -124,9 +124,9 @@ const Header = () => {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="text-[#D4AF37] hover:bg-[#D4AF37]/10"
+                  className="text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[36px] h-[36px]"
                 >
-                  <User className="h-5 w-5" />
+                  <User className="h-6 w-6" />
                 </Button>
               </Link>
             ) : (
@@ -134,9 +134,9 @@ const Header = () => {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10"
+                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[36px] h-[36px]"
                 >
-                  <User className="h-5 w-5" />
+                  <User className="h-6 w-6" />
                 </Button>
               </Link>
             )}
