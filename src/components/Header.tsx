@@ -44,7 +44,7 @@ const Header = () => {
                   size="icon"
                   className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[48px] h-[48px]"
                 >
-                  {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                  {open ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
                 </Button>
               </SheetTrigger>
               <SheetContent 
