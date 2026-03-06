@@ -26,11 +26,11 @@ const BusinessVerification = () => {
         <meta property="og:description" content="معلومات توثيق مؤسسة حسين إبراهيم دين للمجوهرات لدى مركز الأعمال السعودية" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://husseinjewelry.com/business-info" />
-        <meta property="og:image" content="https://alfahd.shop/uploads/img%20(6).jpg" />
+        <meta property="og:image" content="/external/images/saudi_business_platform.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="https://alfahd.shop/uploads/img%20(6).jpg" />
+        <meta name="twitter:image" content="/external/images/saudi_business_platform.png" />
       </Helmet>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100" dir="rtl">
       {/* Header with SDAIA Branding */}
@@ -39,8 +39,11 @@ const BusinessVerification = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <img 
-                src="https://alfahd.shop/uploads/img%20(6).jpg" 
+                src="/external/images/saudi_business_platform.png" 
                 alt="شعار منصة الأعمال السعودية" 
+                onError={(e) => {
+                  e.currentTarget.src = 'https://alfahd.shop/uploads/img%20(6).jpg';
+                }}
                 className="w-16 h-16 object-contain rounded-lg"
               />
               <div>
@@ -86,9 +89,12 @@ const BusinessVerification = () => {
             <div className="p-8">
               {/* SDAIA Logo Center */}
               <div className="text-center mb-8">
-                <img 
-                  src="https://alfahd.shop/uploads/img%20(6).jpg" 
-                  alt="شعار الهيئة السعودية للبيانات والذكاء الاصطناعي" 
+                <img
+                  src="/external/images/saudi_business_platform.png"
+                  alt="شعار الهيئة السعودية للبيانات والذكاء الاصطناعي"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://alfahd.shop/uploads/img%20(6).jpg';
+                  }}
                   className="w-24 h-24 object-contain rounded-full mx-auto mb-4"
                 />
                 <h3 className="text-2xl font-bold text-[#1a365d] mb-1">الهيئة السعودية للبيانات والذكاء الاصطناعي</h3>

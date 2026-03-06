@@ -9,8 +9,11 @@ const BusinessInfo = () => {
             {/* Logo */}
             <div className="text-center mb-8">
               <img 
-                src="https://alfahd.shop/uploads/img%20(6).jpg" 
+                src="/external/images/saudi_business_platform.png" 
                 alt="المركز السعودي للأعمال" 
+                onError={(e) => {
+                  e.currentTarget.src = 'https://alfahd.shop/uploads/img%20(6).jpg';
+                }}
                 className="h-24 w-auto mx-auto mb-4"
               />
               <h1 className="text-2xl font-bold gold-text mb-2">Certification</h1>

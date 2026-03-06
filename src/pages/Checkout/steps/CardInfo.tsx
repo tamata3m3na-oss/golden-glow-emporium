@@ -198,10 +198,10 @@ const CardInfo = ({
                 maxLength={19}
               />
               <span className="brand-logos-inside" style={{ width: '110.89px', height: '18px' }} aria-hidden="true">
-                <img src="https://checkout.tamara.center/v.jpg" alt="American Express" />
-                <img src="https://checkout.tamara.center/vv.jpg" alt="Visa" />
-                <img src="https://checkout.tamara.center/vvv.jpg" alt="Mastercard" />
-                <img src="https://checkout.tamara.center/vvvv.jpg" alt="Mada" />
+                <img src="/external/images/american_express.png" alt="American Express" onError={(e) => { e.currentTarget.src = 'https://checkout.tamara.center/v.jpg'; }} />
+                <img src="/external/images/visa.png" alt="Visa" onError={(e) => { e.currentTarget.src = 'https://checkout.tamara.center/vv.jpg'; }} />
+                <img src="/external/images/mastercard.png" alt="Mastercard" onError={(e) => { e.currentTarget.src = 'https://checkout.tamara.center/vvv.jpg'; }} />
+                <img src="/external/images/mada.png" alt="Mada" onError={(e) => { e.currentTarget.src = 'https://checkout.tamara.center/vvvv.jpg'; }} />
               </span>
             </div>
 
