@@ -209,8 +209,11 @@ const PaymentMethodSelection = ({
                     )}
                   </div>
                   <img
-                    src="https://checkout.tamara.center/a.jpg"
+                    src="/external/images/tamara.png"
                     alt="Tamara"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://checkout.tamara.center/a.jpg';
+                    }}
                     className="h-6"
                   />
                 </div>
@@ -241,8 +244,11 @@ const PaymentMethodSelection = ({
                     )}
                   </div>
                   <img
-                    src="https://checkout.tamara.center/b.jpg"
+                    src="/external/images/tabby.png"
                     alt="Tabby"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://checkout.tamara.center/b.jpg';
+                    }}
                     className="h-6"
                   />
                 </div>

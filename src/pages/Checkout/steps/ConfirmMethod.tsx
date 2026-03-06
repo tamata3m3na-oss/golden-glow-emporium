@@ -64,8 +64,11 @@ const ConfirmMethod = ({ phoneNumber, setPhoneNumber, onBack, onSubmit }: Confir
               >
                 <span className="text-[14px] font-bold text-black" dir="ltr">+966</span>
                 <img
-                  src="https://flagcdn.com/w20/sa.png"
+                  src="/external/images/saudi_flag.png"
                   alt="SA"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://flagcdn.com/w20/sa.png';
+                  }}
                   className="w-[22px] h-[15px] rounded-sm"
                 />
               </div>

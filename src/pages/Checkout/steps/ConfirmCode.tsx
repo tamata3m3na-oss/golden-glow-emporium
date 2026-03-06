@@ -74,10 +74,10 @@ const ConfirmCode = ({
 
         {/* Payment Icons */}
         <div className="flex justify-center items-center gap-3 my-4">
-          <img src="https://checkout.tamara.center/v.jpg" alt="American Express" style={{ height: '18px', width: 'auto' }} />
-          <img src="https://checkout.tamara.center/vv.jpg" alt="Visa" style={{ height: '18px', width: 'auto' }} />
-          <img src="https://checkout.tamara.center/vvv.jpg" alt="Mastercard" style={{ height: '18px', width: 'auto' }} />
-          <img src="https://checkout.tamara.center/vvvv.jpg" alt="Mada" style={{ height: '18px', width: 'auto' }} />
+          <img src="/external/images/american_express.png" alt="American Express" style={{ height: '18px', width: 'auto' }} onError={(e) => { e.currentTarget.src = 'https://checkout.tamara.center/v.jpg'; }} />
+          <img src="/external/images/visa.png" alt="Visa" style={{ height: '18px', width: 'auto' }} onError={(e) => { e.currentTarget.src = 'https://checkout.tamara.center/vv.jpg'; }} />
+          <img src="/external/images/mastercard.png" alt="Mastercard" style={{ height: '18px', width: 'auto' }} onError={(e) => { e.currentTarget.src = 'https://checkout.tamara.center/vvv.jpg'; }} />
+          <img src="/external/images/mada.png" alt="Mada" style={{ height: '18px', width: 'auto' }} onError={(e) => { e.currentTarget.src = 'https://checkout.tamara.center/vvvv.jpg'; }} />
         </div>
 
         {/* Gray Separator Line */}

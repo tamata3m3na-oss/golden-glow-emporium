@@ -84,8 +84,11 @@ const Footer = () => {
             style={{ background: '#0F172A' }}
           >
             <img
-              src="https://altmiz.shop/uploads/acac.png"
+              src="/external/images/commercial_reg.png"
               alt="ضريبة القيمة المضافة"
+              onError={(e) => {
+                e.currentTarget.src = 'https://altmiz.shop/uploads/acac.png';
+              }}
               className="h-14 w-auto object-contain"
             />
           </a>
@@ -101,8 +104,11 @@ const Footer = () => {
             style={{ background: '#0F172A' }}
           >
             <img
-              src="https://altmiz.shop/uploads/acac.png"
+              src="/external/images/commercial_reg.png"
               alt="السجل التجاري"
+              onError={(e) => {
+                e.currentTarget.src = 'https://altmiz.shop/uploads/acac.png';
+              }}
               className="h-10 w-auto object-contain"
             />
             <div>
@@ -117,8 +123,11 @@ const Footer = () => {
             style={{ background: '#0F172A' }}
           >
             <img
-              src="https://alfahd.shop/uploads/img%20(6).jpg"
+              src="/external/images/saudi_business_platform.png"
               alt="منصة الأعمال السعودية"
+              onError={(e) => {
+                e.currentTarget.src = 'https://alfahd.shop/uploads/img%20(6).jpg';
+              }}
               className="h-10 w-auto object-contain"
             />
             <div>
