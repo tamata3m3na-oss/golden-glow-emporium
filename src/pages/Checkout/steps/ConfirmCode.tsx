@@ -170,7 +170,7 @@ const ConfirmCode = ({
           onClick={onSubmit}
           disabled={!confirmCode || confirmCode.length < 4 || isLoading}
           className={`payment-btn ${confirmCode && confirmCode.length >= 4 ? 'active' : ''}`}
-          style={{ width: '370px', height: '54px' }}
+          style={{ width: '100%', maxWidth: '370px', height: '54px', margin: '0 auto' }}
         >
           {isLoading ? (
             'جاري التحقق...'
