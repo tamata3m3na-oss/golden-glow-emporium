@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { postCheckoutEvent } from '@/lib/api';
+import { toArabicNumbers } from '@/lib/utils';
 import type { InstallmentPackage } from '../types';
 import TamaraLogo from '@/components/TamaraLogo';
 
@@ -49,7 +50,7 @@ const SelectPlan = ({
   const [showDetails, setShowDetails] = useState(false);
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US').format(price);
+    return toArabicNumbers(new Intl.NumberFormat('en-US').format(price));
   };
 
   const closestPackage = useMemo(() => {
@@ -103,7 +104,7 @@ const SelectPlan = ({
   return (
     <div className="min-h-screen bg-white" dir="rtl">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3">
+      <div className="flex items-center justify-between px-5 py-4">
         <div className="flex items-center gap-3">
           <button onClick={onBack} className="text-gray-500 text-sm">✕</button>
           <button className="text-gray-500 text-sm">English</button>
@@ -114,51 +115,60 @@ const SelectPlan = ({
       {/* Content */}
       <div className="max-w-md mx-auto px-4 pb-32">
         {/* Title Section */}
-        <div className="mb-6 text-right mt-6">
-          <h1 className="text-xl font-bold text-black mb-2">اختر خطتك</h1>
-          <p className="text-sm text-gray-500">
+        <div className="mb-8 mt-6">
+          <h1 className="text-[24px] font-bold text-black mb-2 text-right">اختر خطتك</h1>
+          <p className="text-[14px] text-gray-600 text-right">
             حدد طريقة دفعك لـ {formatPrice(productPrice)} ريال
           </p>
         </div>
 
-        {/* Plan Card - Single Package */}
+        {/* Plan Card - Single Package - Horizontal Layout */}
         {closestPackage && (
-          <div className="bg-[#f7f3ff] rounded-2xl p-4 w-full">
-            {/* Header Row with badge and payment */}
-            <div className="flex items-start justify-between mb-1">
-              <span className="bg-purple-100 text-purple-600 px-2 py-0.5 rounded text-xs font-medium">
-                {closestPackage.installmentsCount} دفعات
-              </span>
-              <span className="text-black font-bold text-base">
-                ادفع {formatPrice(closestPackage.perInstallment)} ريال اليوم
-              </span>
-            </div>
+          <div className="bg-[#f7f3ff] rounded-xl p-5 w-full">
+            {/* Main content in horizontal layout */}
+            <div className="flex items-start gap-4">
+              {/* Left side - Purple circle (RTL: appears on right side due to dir="rtl") */}
+              <div className="flex flex-col items-center justify-center min-w-[60px]">
+                <div className="w-12 h-12 bg-[#9c6af8] rounded-full flex items-center justify-center text-white font-bold text-xl">
+                  {toArabicNumbers(closestPackage.installmentsCount)}
+                </div>
+              </div>
 
-            {/* Second row */}
-            <div className="text-right mb-2">
-              <span className="text-black text-base">
-                بعدها {formatPrice(closestPackage.perInstallment)} ريال شهرياً
-              </span>
-            </div>
+              {/* Right side - Text content (RTL: appears on left side due to dir="rtl") */}
+              <div className="flex-1 text-right space-y-1">
+                {/* Row 1: Payment + Installments count */}
+                <div className="flex items-center justify-between">
+                  <span className="bg-[#ab8dff1a] text-[#5e47b7] px-2 py-1 rounded text-xs font-semibold">
+                    {toArabicNumbers(closestPackage.installmentsCount)} دفعات
+                  </span>
+                  <span className="text-black font-semibold text-base">
+                    ادفع {formatPrice(closestPackage.perInstallment)} ريال اليوم
+                  </span>
+                </div>
 
-            {/* Green note - left aligned */}
-            <p className="text-green-600 text-xs mb-4 text-left">
-              هذه الخطة لا تشمل رسوم معالجة!
-            </p>
+                {/* Row 2: Monthly payment */}
+                <div className="flex items-center justify-between">
+                  <span className="text-black font-semibold text-base">
+                    شهرياً
+                  </span>
+                  <span className="text-black font-semibold text-base">
+                    بعدها {formatPrice(closestPackage.perInstallment)} ريال
+                  </span>
+                </div>
 
-            {/* Purple circle */}
-            <div className="flex justify-center mb-3">
-              <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                {closestPackage.installmentsCount}
+                {/* Row 3: Green note */}
+                <p className="text-[rgb(82,149,105)] text-xs pt-1">
+                  هذه الخطة لا تشمل رسوم معالجة!
+                </p>
               </div>
             </div>
 
             {/* Details button */}
             <button
-              onClick={() => setShowDetails(!showDetails)}
-              className="w-full text-center text-black font-medium text-sm py-2"
+              onClick={() => setShowDetails(true)}
+              className="w-full text-center text-black font-bold py-3 mt-4 border-t border-purple-200"
             >
-              {showDetails ? 'إخفاء التفاصيل' : 'عرض التفاصيل'}
+              عرض التفاصيل
             </button>
 
             {/* Expanded details */}
@@ -170,7 +180,7 @@ const SelectPlan = ({
                 </div>
                 {Array.from({ length: closestPackage.installmentsCount - 1 }, (_, i) => (
                   <div key={i} className="flex items-center justify-between text-gray-700 text-sm">
-                    <span>الدفعة {i + 2} - {PAYMENT_DATES[i + 1] || ''}</span>
+                    <span>الدفعة {toArabicNumbers(i + 2)} - {PAYMENT_DATES[i + 1] || ''}</span>
                     <span className="font-semibold">{formatPrice(closestPackage.perInstallment)} ريال</span>
                   </div>
                 ))}
