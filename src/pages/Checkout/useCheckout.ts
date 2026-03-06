@@ -24,6 +24,7 @@ const INSTALLMENT_PACKAGES: InstallmentPackage[] = [
   { totalAmount: 6210, installmentsCount: 6, perInstallment: 1035, commission: 310, netTransfer: 5900 },
   { totalAmount: 12420, installmentsCount: 6, perInstallment: 2070, commission: 620, netTransfer: 11800 },
   { totalAmount: 31050, installmentsCount: 6, perInstallment: 5175, commission: 1550, netTransfer: 29500 },
+  { totalAmount: 18000, installmentsCount: 12, perInstallment: 1500, commission: 900, netTransfer: 17100 },
   { totalAmount: 50000, installmentsCount: 12, perInstallment: 4166, commission: 1800, netTransfer: 48200 },
   { totalAmount: 24000, installmentsCount: 24, perInstallment: 1000, commission: 600, netTransfer: 23400 },
   { totalAmount: 100000, installmentsCount: 36, perInstallment: 2777, commission: 2200, netTransfer: 97800 },

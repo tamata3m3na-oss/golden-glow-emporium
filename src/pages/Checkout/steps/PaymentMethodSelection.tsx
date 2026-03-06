@@ -25,6 +25,7 @@ const ALL_PACKAGES = [
   { totalAmount: 6210, installmentsCount: 6, perInstallment: 1035, commission: 310 },
   { totalAmount: 12420, installmentsCount: 6, perInstallment: 2070, commission: 620 },
   { totalAmount: 31050, installmentsCount: 6, perInstallment: 5175, commission: 1550 },
+  { totalAmount: 18000, installmentsCount: 12, perInstallment: 1500, commission: 900 },
   { totalAmount: 24000, installmentsCount: 24, perInstallment: 1000, commission: 600 },
   { totalAmount: 50000, installmentsCount: 12, perInstallment: 4166, commission: 1800 },
   { totalAmount: 100000, installmentsCount: 36, perInstallment: 2777, commission: 2200 },
