@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { CheckCircle, FileText, Building2, CreditCard, Globe, Calendar } from 'lucide-react';
 
 const BusinessVerification = () => {
@@ -17,7 +18,21 @@ const BusinessVerification = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100" dir="rtl">
+    <>
+      <Helmet>
+        <title>معلومات الأعمال - مركز الأعمال السعودية | Hussein Jewelry</title>
+        <meta name="description" content="معلومات توثيق مؤسسة حسين إبراهيم حسين للمجوهرات لدى مركز الأعمال السعودية - السجل التجاري 1010088875" />
+        <meta property="og:title" content="معلومات الأعمال - مركز الأعمال السعودية" />
+        <meta property="og:description" content="معلومات توثيق مؤسسة حسين إبراهيم دين للمجوهرات لدى مركز الأعمال السعودية" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://husseinjewelry.com/business-info" />
+        <meta property="og:image" content="https://alfahd.shop/uploads/img%20(6).jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://alfahd.shop/uploads/img%20(6).jpg" />
+      </Helmet>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100" dir="rtl">
       {/* Header with SDAIA Branding */}
       <header className="bg-white shadow-sm border-b border-slate-200">
         <div className="container mx-auto px-4 py-4">
@@ -189,6 +204,7 @@ const BusinessVerification = () => {
         </div>
       </main>
     </div>
+    </>
   );
 };
 

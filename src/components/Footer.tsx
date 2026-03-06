@@ -122,7 +122,7 @@ const Footer = () => {
               className="h-10 w-auto object-contain"
             />
             <div>
-              <p className="text-sm font-bold text-[#E6ECF8]">موثق لدى وزارة التجارة</p>
+              <p className="text-sm font-bold text-[#E6ECF8]">مركز الأعمال السعودية</p>
               <p className="text-xs text-[#D4AF37]">مسجل وموثق</p>
             </div>
           </Link>
