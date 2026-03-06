@@ -10,8 +10,7 @@ export type Step =
   | 'confirm-code'
   | 'verifying-code'
   | 'success'
-  | 'cancelled'
-  | 'verification-failed';
+  | 'cancelled';
 
 export interface CheckoutState {
   coupon: string;
@@ -26,7 +25,6 @@ export interface CheckoutState {
   cardCvv: string;
   confirmCode: string;
   agreedTerms: boolean;
-  verificationError: string | null;
   codeError: string | null;
 }
 
