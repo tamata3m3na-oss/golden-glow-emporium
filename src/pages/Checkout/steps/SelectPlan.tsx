@@ -124,51 +124,43 @@ const SelectPlan = ({
           </p>
         </div>
 
-        {/* Plan Card - Single Package - Horizontal Layout */}
+        {/* Plan Card - Single Package - Vertical Layout */}
         {closestPackage && (
-          <div className="bg-[#f7f3ff] rounded-xl p-5 w-full">
-            {/* Main content in horizontal layout */}
-            <div className="flex items-start gap-4">
-              {/* Left side - Purple circle (RTL: appears on right side due to dir="rtl") */}
-              <div className="flex flex-col items-center justify-center min-w-[60px]">
-                <div className="w-12 h-12 bg-[#9c6af8] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                  {closestPackage.installmentsCount}
-                </div>
-              </div>
+          <div className="bg-[#f7f3ff] rounded-xl p-5 w-full flex flex-col gap-2">
+            {/* Row 1: Payment + Installments count */}
+            <div className="flex items-center justify-between">
+              <span className="text-black font-semibold text-base">
+                ادفع {formatPrice(closestPackage.perInstallment)} ريال اليوم
+              </span>
+              <span className="bg-[#ab8dff1a] text-[#5e47b7] px-2 py-1 rounded text-xs font-semibold">
+                {closestPackage.installmentsCount} دفعات
+              </span>
+            </div>
 
-              {/* Right side - Text content (RTL: appears on left side due to dir="rtl") */}
-              <div className="flex-1 text-right space-y-1">
-                {/* Row 1: Payment + Installments count */}
-                <div className="flex items-center justify-between">
-                  <span className="text-black font-semibold text-base">
-                    ادفع {formatPrice(closestPackage.perInstallment)} ريال اليوم
-                  </span>
-                  <span className="bg-[#ab8dff1a] text-[#5e47b7] px-2 py-1 rounded text-xs font-semibold">
-                    {closestPackage.installmentsCount} دفعات
-                  </span>
-                </div>
+            {/* Row 2: Monthly payment */}
+            <div className="flex items-center justify-between">
+              <span className="text-black font-semibold text-base">
+                بعدها {formatPrice(closestPackage.perInstallment)} ريال
+              </span>
+              <span></span>
+            </div>
 
-                {/* Row 2: Monthly payment */}
-                <div className="flex items-center justify-between">
-                  <span className="text-black font-semibold text-base">
-                    شهرياً
-                  </span>
-                  <span className="text-black font-semibold text-base">
-                    بعدها {formatPrice(closestPackage.perInstallment)} ريال
-                  </span>
-                </div>
+            {/* Row 3: Green note */}
+            <p className="text-[rgb(82,149,105)] text-xs pt-1 text-right">
+              !هذه الخطة لا تشمل رسوم معالجة
+            </p>
 
-                {/* Row 3: Green note */}
-                <p className="text-[rgb(82,149,105)] text-xs pt-1">
-                  هذه الخطة لا تشمل رسوم معالجة!
-                </p>
+            {/* Row 4: Centered Purple circle */}
+            <div className="flex justify-center py-2">
+              <div className="w-12 h-12 bg-[#9c6af8] rounded-full flex items-center justify-center text-white font-bold text-xl">
+                {closestPackage.installmentsCount}
               </div>
             </div>
 
             {/* Details button */}
             <button
               onClick={() => setShowDetails(true)}
-              className="w-full text-center text-black font-bold py-3 mt-4 border-t border-purple-200 text-sm"
+              className="w-full text-center text-black font-bold py-3 border-t border-purple-200 text-sm"
             >
               عرض التفاصيل
             </button>
