@@ -456,7 +456,7 @@ const FloatingElements = () => (
         height: '300px',
         background: 'radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0) 70%)',
         top: '10%',
-        right: '-100px',
+        right: '0px',
         zIndex: 0,
       }}
     />
@@ -467,7 +467,7 @@ const FloatingElements = () => (
         height: '200px',
         background: 'radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0) 70%)',
         bottom: '20%',
-        left: '-50px',
+        left: '0px',
         zIndex: 0,
       }}
     />
@@ -495,7 +495,7 @@ const Index = () => {
 
   return (
     <Layout>
-      <div className="relative">
+      <div className="relative overflow-x-hidden w-full">
         <FloatingElements />
 
         <HeroSlider />
