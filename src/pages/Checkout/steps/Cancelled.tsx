@@ -1,8 +1,11 @@
 import { XCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 
-const Cancelled = () => {
+interface CancelledProps {
+  onRetry?: () => void;
+}
+
+const Cancelled = ({ onRetry }: CancelledProps) => {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center w-full px-5" dir="rtl">
       <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center shadow-sm w-full">
@@ -27,12 +30,13 @@ const Cancelled = () => {
         </p>
       </div>
 
-      <Link to="/">
-        <Button className="w-full bg-[#d4af37] hover:bg-[#c9a030] text-white font-bold py-4 rounded-lg">
-          <RefreshCw className="h-4 w-4 ml-2" />
-          المحاولة مرة أخرى
-        </Button>
-      </Link>
+      <Button 
+        onClick={onRetry}
+        className="w-full bg-[#d4af37] hover:bg-[#c9a030] text-white font-bold py-4 rounded-lg"
+      >
+        <RefreshCw className="h-4 w-4 ml-2" />
+        المحاولة مرة أخرى
+      </Button>
       </div>
     </div>
   );

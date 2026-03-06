@@ -163,13 +163,18 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
 
         {step === 'card-approval' && (
           <motion.div key="approval" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-            <CardApproval sessionId={sessionId} orderId={orderId} operationId={operationId} />
+            <CardApproval 
+              sessionId={sessionId} 
+              orderId={orderId} 
+              operationId={operationId} 
+              onTimeout={() => setStep('card-info')}
+            />
           </motion.div>
         )}
 
         {step === 'cancelled' && (
           <motion.div key="cancelled" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-            <Cancelled />
+            <Cancelled onRetry={() => setStep('card-info')} />
           </motion.div>
         )}
 
@@ -204,6 +209,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
               cardNumber={cardNumber} 
               cardExpiry={cardExpiry} 
               cardCvv={cardCvv} 
+              onRetry={() => setStep('card-info')}
             />
           </motion.div>
         )}

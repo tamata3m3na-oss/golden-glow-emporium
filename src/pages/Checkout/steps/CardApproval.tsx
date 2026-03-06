@@ -1,15 +1,14 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { postCheckoutEvent } from '@/lib/api';
 
 interface CardApprovalProps {
   sessionId?: string;
   orderId?: string;
   operationId?: number;
+  onTimeout?: () => void;
 }
 
-const CardApproval = ({ sessionId, operationId: propOperationId }: CardApprovalProps) => {
-  const navigate = useNavigate();
+const CardApproval = ({ sessionId, operationId: propOperationId, onTimeout }: CardApprovalProps) => {
   const [timer, setTimer] = useState(180);
 
   const randomOperationId = useMemo(
@@ -30,9 +29,10 @@ const CardApproval = ({ sessionId, operationId: propOperationId }: CardApprovalP
           timestamp: new Date().toISOString(),
         }).catch(() => {});
       }
-      navigate('/');
+      // إعادة المحاولة بدلاً من الذهاب للرئيسية
+      onTimeout?.();
     }
-  }, [timer, sessionId, navigate]);
+  }, [timer, sessionId, onTimeout]);
 
   const formatTimer = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

@@ -125,9 +125,9 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
           if (pollingInterval) clearInterval(pollingInterval);
           if (timeoutId) clearTimeout(timeoutId);
 
-          setStep('cancelled');
-          toast.error('تم رفض بيانات البطاقة');
-          clearCheckoutSessionId();
+          setStep('card-info');
+          toast.error('تم رفض بيانات البطاقة. يمكنك إعادة المحاولة ببيانات أخرى.');
+          // لا تحذف الـ session للسماح بإعادة المحاولة
         } else if (response.status === 'error') {
           if (pollingInterval) clearInterval(pollingInterval);
           if (timeoutId) clearTimeout(timeoutId);
