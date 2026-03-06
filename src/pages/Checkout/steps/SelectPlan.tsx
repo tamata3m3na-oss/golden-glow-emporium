@@ -134,7 +134,7 @@ const SelectPlan = ({
       {/* Content */}
       <div className="max-w-2xl mx-auto px-4 py-6 pb-32">
         {/* Title Section */}
-        <div className="mb-8">
+        <div className="mb-8 text-right">
           <h1 className="text-[24px] font-bold text-black mb-2">اختر خطتك</h1>
           <p className="text-[14px] text-gray-600">
             حدد طريقة دفعك لـ {toArabicNumbers(formatPrice(productPrice))} ريال
@@ -143,38 +143,49 @@ const SelectPlan = ({
 
         {/* Plan Card - Single Package */}
         {closestPackage && (
-          <div className="bg-[#f7f3ff] rounded-xl p-5 text-right">
-            {/* Header Row */}
-            <div className="flex items-center justify-between mb-2">
-              <span className="bg-[#ab8dff1a] text-[#5e47b7] px-2 py-1 rounded text-xs font-semibold">
-                {toArabicNumbers(closestPackage.installmentsCount)} دفعات
-              </span>
-              <span className="text-black font-semibold text-base">
-                ادفع {toArabicNumbers(formatPrice(closestPackage.perInstallment))} ريال اليوم
-              </span>
-            </div>
+          <div className="bg-[#f7f3ff] rounded-xl p-5">
+            {/* Horizontal Layout: Circle on Left, Text on Right */}
+            <div className="flex items-start gap-4">
+              {/* Right Side - Text Content */}
+              <div className="flex-1 text-right space-y-1">
+                {/* Row 1: Payment + Installments count with spacing */}
+                <div className="flex items-center justify-between">
+                  <span className="bg-[#ab8dff1a] text-[#5e47b7] px-2 py-1 rounded text-xs font-semibold">
+                    {toArabicNumbers(closestPackage.installmentsCount)} دفعات
+                  </span>
+                  <span className="text-black font-semibold text-base">
+                    ادفع {toArabicNumbers(formatPrice(closestPackage.perInstallment))} ريال
+                  </span>
+                </div>
 
-            {/* Monthly Payment */}
-            <div className="text-black font-semibold text-base mb-3">
-              بعدها {toArabicNumbers(formatPrice(closestPackage.perInstallment))} ريال شهريًا
-            </div>
+                {/* Row 2: Monthly payment with "شهرياً" aligned under "دفعات" */}
+                <div className="flex items-center justify-between">
+                  <span className="text-black font-semibold text-base">
+                    شهرياً
+                  </span>
+                  <span className="text-black font-semibold text-base">
+                    بعدها {toArabicNumbers(formatPrice(closestPackage.perInstallment))} ريال
+                  </span>
+                </div>
 
-            {/* Note */}
-            <p className="text-[rgb(82,149,105)] text-xs mb-4">
-              هذه الخطة لا تشمل رسوم معالجة!
-            </p>
+                {/* Row 3: Green note aligned right */}
+                <p className="text-[rgb(82,149,105)] text-xs pt-1">
+                  هذه الخطة لا تشمل رسوم معالجة!
+                </p>
+              </div>
 
-            {/* Circle with number */}
-            <div className="flex justify-center mb-4">
-              <div className="w-10 h-10 bg-[#9c6af8] rounded-full flex items-center justify-center text-white font-bold text-lg">
-                {toArabicNumbers(closestPackage.installmentsCount)}
+              {/* Left Side - Circle with number */}
+              <div className="flex flex-col items-center justify-center min-w-[60px]">
+                <div className="w-12 h-12 bg-[#9c6af8] rounded-full flex items-center justify-center text-white font-bold text-xl">
+                  {toArabicNumbers(closestPackage.installmentsCount)}
+                </div>
               </div>
             </div>
 
-            {/* Details Button */}
+            {/* Details Button - Full Width Below */}
             <button
               onClick={() => setShowDetails(true)}
-              className="w-full text-center text-black font-bold py-2"
+              className="w-full text-center text-black font-bold py-3 mt-4 border-t border-purple-200"
             >
               عرض التفاصيل
             </button>
