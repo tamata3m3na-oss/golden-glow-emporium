@@ -38,7 +38,8 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
+            <div className="flex justify-center min-h-screen w-full">
+              <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
               <Route path="/ring-size" element={<RingSize />} />
@@ -63,6 +64,7 @@ const App = () => (
               <Route path="/business-info" element={<BusinessVerification />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </div>
           </BrowserRouter>
         </TooltipProvider>
       </AdminAuthProvider>
