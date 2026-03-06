@@ -75,7 +75,7 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
   } = useCheckout(product, user);
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4 overflow-x-hidden">
+    <div className="min-h-screen bg-white w-full max-w-[430px] mx-auto overflow-x-hidden">
       <AnimatePresence mode="wait">
         {step === 'payment-method-selection' && (
           <motion.div key="payment-method-selection" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>

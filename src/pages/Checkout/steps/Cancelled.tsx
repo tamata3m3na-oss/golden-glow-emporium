@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 
 const Cancelled = () => {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-10 text-center shadow-sm">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center w-full px-5" dir="rtl">
+      <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center shadow-sm w-full">
       <div className="mb-6">
         <img
           src="/tamara-logo.webp"
@@ -32,6 +33,7 @@ const Cancelled = () => {
           المحاولة مرة أخرى
         </Button>
       </Link>
+      </div>
     </div>
   );
 };

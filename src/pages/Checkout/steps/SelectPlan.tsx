@@ -106,7 +106,7 @@ const SelectPlan = ({
   ];
 
   return (
-    <div className="min-h-screen bg-white" dir="rtl">
+    <div className="min-h-screen bg-white w-full" dir="rtl">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4">
         <TamaraLogo className="h-6" />
@@ -117,7 +117,7 @@ const SelectPlan = ({
       </div>
 
       {/* Content */}
-      <div className="max-w-[430px] mx-auto px-4 pb-32">
+      <div className="w-full px-4 pb-32">
         {/* Title Section */}
         <div className="mb-8 mt-6">
           <h1 className="text-[24px] font-bold text-black mb-2 text-right">اختر خطتك</h1>
