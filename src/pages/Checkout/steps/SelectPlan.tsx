@@ -115,7 +115,7 @@ const SelectPlan = ({
       </div>
 
       {/* Content */}
-      <div className="max-w-lg mx-auto px-4 pb-32">
+      <div className="max-w-xl mx-auto px-4 pb-32">
         {/* Title Section */}
         <div className="mb-8 mt-6">
           <h1 className="text-[24px] font-bold text-black mb-2 text-right">اختر خطتك</h1>
@@ -128,7 +128,7 @@ const SelectPlan = ({
         {closestPackage && (
           <div className="bg-[#f7f3ff] rounded-xl p-5 w-full flex flex-col gap-2">
             {/* Row 1: Payment + Installments count */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-4">
               <span className="text-black font-semibold text-base">
                 ادفع {formatPrice(closestPackage.perInstallment)} ريال اليوم
               </span>
@@ -138,17 +138,18 @@ const SelectPlan = ({
             </div>
 
             {/* Row 2: Monthly payment */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-start">
               <span className="text-black font-semibold text-base">
                 بعدها {formatPrice(closestPackage.perInstallment)} ريال
               </span>
-              <span></span>
             </div>
 
             {/* Row 3: Green note */}
-            <p className="text-[rgb(82,149,105)] text-xs pt-1 text-right">
-              !هذه الخطة لا تشمل رسوم معالجة
-            </p>
+            <div className="flex justify-end">
+              <p className="text-[rgb(82,149,105)] text-xs pt-1 text-right">
+                !هذه الخطة لا تشمل رسوم معالجة
+              </p>
+            </div>
 
             {/* Row 4: Centered Purple circle */}
             <div className="flex justify-center py-2">
@@ -160,7 +161,7 @@ const SelectPlan = ({
             {/* Details button */}
             <button
               onClick={() => setShowDetails(true)}
-              className="w-full text-center text-black font-bold py-3 border-t border-purple-200 text-sm"
+              className="w-full text-center text-black font-bold py-3 text-sm"
             >
               عرض التفاصيل
             </button>
