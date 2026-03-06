@@ -106,7 +106,7 @@ const SelectPlan = ({
   ];
 
   return (
-    <div className="min-h-screen bg-white" dir="rtl">
+    <div className="min-h-screen bg-white w-full" dir="rtl">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4">
         <TamaraLogo className="h-6" />
