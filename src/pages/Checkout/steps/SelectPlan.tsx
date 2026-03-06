@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { postCheckoutEvent } from '@/lib/api';
 import type { InstallmentPackage } from '../types';
 import TamaraLogo from '@/components/TamaraLogo';
-import { toArabicNumbers } from '@/lib/utils';
 
 interface SelectPlanProps {
   productPrice: number;
@@ -91,12 +90,6 @@ const SelectPlan = ({
     }
   };
 
-  const installmentsText = closestPackage
-    ? closestPackage.installmentsCount === 1
-      ? 'دفعة'
-      : 'دفعات'
-    : 'دفعات';
-
   // تواريخ الدفع الثابتة
   const PAYMENT_DATES = [
     '٤ أبريل ٢٠٢٦',
@@ -110,94 +103,80 @@ const SelectPlan = ({
   return (
     <div className="min-h-screen bg-white" dir="rtl">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4">
-        <TamaraLogo />
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {}}
-            className="text-[14px] text-[#333] font-medium"
-          >
-            English
-          </button>
-          <span className="text-[#ccc]">|</span>
-          <button
-            onClick={onBack}
-            aria-label="إغلاق"
-            className="w-8 h-8 flex items-center justify-center rounded-full border border-[#ddd] hover:bg-gray-50 transition-colors"
-          >
-            <span className="text-[#333] text-lg leading-none">✕</span>
-          </button>
+      <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-3">
+          <button onClick={onBack} className="text-gray-500 text-sm">✕</button>
+          <button className="text-gray-500 text-sm">English</button>
         </div>
+        <TamaraLogo className="h-6" />
       </div>
-      <div className="h-px bg-[#eee]" />
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 py-6 pb-32">
+      <div className="max-w-md mx-auto px-4 pb-32">
         {/* Title Section */}
-        <div className="mb-8 text-right">
-          <h1 className="text-[24px] font-bold text-black mb-2">اختر خطتك</h1>
-          <p className="text-[14px] text-gray-600">
-            حدد طريقة دفعك لـ {toArabicNumbers(formatPrice(productPrice))} ريال
+        <div className="mb-6 text-right mt-6">
+          <h1 className="text-xl font-bold text-black mb-2">اختر خطتك</h1>
+          <p className="text-sm text-gray-500">
+            حدد طريقة دفعك لـ {formatPrice(productPrice)} ريال
           </p>
         </div>
 
         {/* Plan Card - Single Package */}
         {closestPackage && (
-          <div className="bg-[#f7f3ff] rounded-xl p-5 text-right" style={{ width: '418px', height: '223px' }}>
-            {/* Text Content */}
-            <div className="space-y-1 mb-3">
-              {/* Row 1: Payment + Installments count (reversed order) */}
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-black font-semibold text-base">
-                  ادفع {toArabicNumbers(formatPrice(closestPackage.perInstallment))} ريال اليوم
-                </span>
-                <span className="bg-[#ab8dff1a] text-[#5e47b7] px-2 py-1 rounded text-xs font-semibold">
-                  {toArabicNumbers(closestPackage.installmentsCount)} دفعات
-                </span>
-              </div>
-
-              {/* Row 2: Monthly payment */}
-              <div className="text-black font-semibold text-base">
-                بعدها {toArabicNumbers(formatPrice(closestPackage.perInstallment))} ريال شهرياً
-              </div>
-
-              {/* Row 3: Green note */}
-              <p className="text-[rgb(82,149,105)] text-xs pt-1">
-                هذه الخطة لا تشمل رسوم معالجة!
-              </p>
+          <div className="bg-[#f7f3ff] rounded-2xl p-4 w-full">
+            {/* Header Row with badge and payment */}
+            <div className="flex items-start justify-between mb-1">
+              <span className="bg-purple-100 text-purple-600 px-2 py-0.5 rounded text-xs font-medium">
+                {closestPackage.installmentsCount} دفعات
+              </span>
+              <span className="text-black font-bold text-base">
+                ادفع {formatPrice(closestPackage.perInstallment)} ريال اليوم
+              </span>
             </div>
 
-            {/* Circle - Centered above button */}
+            {/* Second row */}
+            <div className="text-right mb-2">
+              <span className="text-black text-base">
+                بعدها {formatPrice(closestPackage.perInstallment)} ريال شهرياً
+              </span>
+            </div>
+
+            {/* Green note - left aligned */}
+            <p className="text-green-600 text-xs mb-4 text-left">
+              هذه الخطة لا تشمل رسوم معالجة!
+            </p>
+
+            {/* Purple circle */}
             <div className="flex justify-center mb-3">
-              <div className="w-12 h-12 bg-[#9c6af8] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                {toArabicNumbers(closestPackage.installmentsCount)}
+              <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                {closestPackage.installmentsCount}
               </div>
             </div>
 
-            {/* Details Button - No border */}
+            {/* Details button */}
             <button
-              onClick={() => setShowDetails(true)}
-              className="w-full text-center text-black font-bold py-3"
+              onClick={() => setShowDetails(!showDetails)}
+              className="w-full text-center text-black font-medium text-sm py-2"
             >
-              عرض التفاصيل
+              {showDetails ? 'إخفاء التفاصيل' : 'عرض التفاصيل'}
             </button>
 
-            {/* Expanded details - Bottom Sheet */}
+            {/* Expanded details */}
             {showDetails && (
-              <div className="mt-4 pt-4 border-t border-purple-100 space-y-2">
+              <div className="mt-4 pt-4 border-t border-purple-200 space-y-2">
                 <div className="flex items-center justify-between text-gray-700 text-sm">
                   <span>اليوم - {PAYMENT_DATES[0]}</span>
-                  <span className="font-semibold">{toArabicNumbers(formatPrice(closestPackage.perInstallment))} ريال</span>
+                  <span className="font-semibold">{formatPrice(closestPackage.perInstallment)} ريال</span>
                 </div>
                 {Array.from({ length: closestPackage.installmentsCount - 1 }, (_, i) => (
                   <div key={i} className="flex items-center justify-between text-gray-700 text-sm">
-                    <span>الدفعة {toArabicNumbers(i + 2)} - {PAYMENT_DATES[i + 1] || ''}</span>
-                    <span className="font-semibold">{toArabicNumbers(formatPrice(closestPackage.perInstallment))} ريال</span>
+                    <span>الدفعة {i + 2} - {PAYMENT_DATES[i + 1] || ''}</span>
+                    <span className="font-semibold">{formatPrice(closestPackage.perInstallment)} ريال</span>
                   </div>
                 ))}
-                <div className="flex items-center justify-between text-black font-bold text-base pt-2 border-t border-purple-100 mt-2">
+                <div className="flex items-center justify-between text-black font-bold text-base pt-2 border-t border-purple-200 mt-2">
                   <span>الإجمالي</span>
-                  <span>{toArabicNumbers(formatPrice(closestPackage.totalAmount))} ريال</span>
+                  <span>{formatPrice(closestPackage.totalAmount)} ريال</span>
                 </div>
               </div>
             )}
@@ -207,10 +186,10 @@ const SelectPlan = ({
 
       {/* Fixed Bottom Button */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-md mx-auto">
           <Button
             onClick={handleContinue}
-            className="w-full py-4 font-bold rounded-[10px] transition-all bg-black hover:bg-gray-800 text-white"
+            className="w-full py-3 font-bold rounded-lg bg-black hover:bg-gray-900 text-white"
           >
             متابعة الدفع
           </Button>
