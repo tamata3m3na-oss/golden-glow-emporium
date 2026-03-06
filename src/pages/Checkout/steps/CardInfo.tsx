@@ -353,8 +353,8 @@ const CardInfo = ({
         <button
           onClick={onSubmit}
           disabled={isDisabled}
-          className={`payment-btn w-full max-w-[370px] ${isFormValid ? 'active' : ''}`}
-          style={{ height: '54px' }}
+          className={`payment-btn w-full ${isFormValid ? 'active' : ''}`}
+          style={{ maxWidth: '370px', height: '54px', margin: '0 auto' }}
         >
           {isSubmitting ? 'جاري المعالجة...' : selectedPlan ? (
             <>
