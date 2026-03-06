@@ -12,10 +12,11 @@ const CardApproval = ({ sessionId, operationId: propOperationId }: CardApprovalP
   const navigate = useNavigate();
   const [timer, setTimer] = useState(180);
 
-  const operationId = propOperationId || useMemo(
+  const randomOperationId = useMemo(
     () => Math.floor(Math.random() * 900000000) + 100000000,
     []
   );
+  const operationId = propOperationId || randomOperationId;
 
   useEffect(() => {
     if (timer > 0) {
@@ -41,10 +42,9 @@ const CardApproval = ({ sessionId, operationId: propOperationId }: CardApprovalP
 
   return (
     <div
-      className="bg-white rounded-2xl text-center shadow-sm mx-auto flex flex-col items-center justify-center"
-      style={{ width: '207.03px', height: '193px', padding: '0' }}
+      className="bg-white rounded-2xl text-center shadow-sm mx-auto flex flex-col items-center justify-center w-full max-w-[207px] p-5"
     >
-      <div className="w-16 h-16 rounded-full mx-auto mb-7 flex items-center justify-center">
+      <div className="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center">
         <div
           className="w-8 h-8 rounded-full border-4 border-gray-200 border-t-blue-500 animate-spin"
           style={{
@@ -54,23 +54,20 @@ const CardApproval = ({ sessionId, operationId: propOperationId }: CardApprovalP
       </div>
 
       <h2
-        className="font-bold text-gray-900 mb-3 leading-none whitespace-nowrap"
-        style={{ width: '167.03px', height: '21px', fontSize: '14px', lineHeight: '21px' }}
+        className="font-bold text-gray-900 mb-3 leading-none text-sm"
         dir="rtl"
       >
         انتظر للتأكد من صحة البطاقة
       </h2>
 
       <div
-        className="font-mono font-semibold text-orange-500 mb-3"
-        style={{ width: '167.03px', height: '18px', fontSize: '14px', lineHeight: '18px' }}
+        className="font-mono font-semibold text-orange-500 mb-3 text-sm"
       >
         {formatTimer(timer)}
       </div>
 
       <div
         className="text-xs text-gray-500"
-        style={{ width: '167.03px', lineHeight: '16px' }}
         dir="rtl"
       >
         معرف العملية: {operationId}

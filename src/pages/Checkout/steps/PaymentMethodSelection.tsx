@@ -121,7 +121,7 @@ const PaymentMethodSelection = ({
           </div>
 
           {/* Coupon Section */}
-          <div className="flex rounded-lg overflow-hidden mb-4" style={{ width: '440px', maxWidth: '100%', border: '1px solid #d1d5db' }}>
+          <div className="flex rounded-lg overflow-hidden mb-4 w-full" style={{ border: '1px solid #d1d5db' }}>
             <input
               type="text"
               value={coupon}
