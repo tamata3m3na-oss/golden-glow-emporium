@@ -173,7 +173,7 @@ const CardInfo = ({
           <h1 className="page-title">التأكيد والدفع</h1>
 
           {/* Card Form Section */}
-          <div className="card-form-section" style={{ width: '364px', height: '149px' }}>
+          <div className="card-form-section w-full max-w-[364px]" style={{ height: '149px' }}>
             {/* Card Header */}
             <div className="card-header">
               <div className="add-card-text" style={{ color: '#000' }}>أضف بطاقة جديدة</div>
@@ -181,7 +181,7 @@ const CardInfo = ({
             </div>
 
             {/* Card Number Input with Brand Icons Inside */}
-            <div className="card-number-input-container" style={{ width: '362px', height: '43px' }}>
+            <div className="card-number-input-container w-full" style={{ height: '43px' }}>
               <input
                 id="card_number"
                 value={cardNumber}
@@ -206,8 +206,8 @@ const CardInfo = ({
             </div>
 
             {/* CVV and Expiry Row */}
-            <div className="cvv-expiry-row" style={{ width: '362px', height: '42px' }}>
-              <div className="card-number-input-container" style={{ width: '181px', height: '42px' }}>
+            <div className="cvv-expiry-row w-full" style={{ height: '42px' }}>
+              <div className="card-number-input-container flex-1" style={{ height: '42px' }}>
                 <input
                   value={cardExpiry}
                   onChange={handleExpiryChange}
@@ -230,7 +230,7 @@ const CardInfo = ({
                   <p className="text-xs mt-1 text-right" style={{ color: '#EF4444' }}>تاريخ انتهاء غير صالح</p>
                 )}
               </div>
-              <div className="card-number-input-container" style={{ width: '181px', height: '42px' }}>
+              <div className="card-number-input-container flex-1" style={{ height: '42px' }}>
                 <input
                   value={cardCvv}
                   onChange={e => setCardCvv(toEnglishNumbers(e.target.value))}
@@ -253,15 +253,15 @@ const CardInfo = ({
           {/* Plan Section */}
           {selectedPlan && (
             <>
-              <div className="plan-title" style={{ width: '376px', height: '22px' }}>اختار الخطة</div>
+              <div className="plan-title w-full max-w-[376px]" style={{ height: '22px' }}>اختار الخطة</div>
 
               <div
-                className="plan-box"
-                style={{ width: '370px', height: '87px' }}
+                className="plan-box w-full max-w-[370px]"
+                style={{ height: '87px' }}
                 onClick={() => setShowPlanDetails(!showPlanDetails)}
               >
-                <div className="plan-header" style={{ width: '332px', height: '57px' }}>
-                  <div className="plan-details" style={{ width: '245.17px', height: '57px' }}>
+                <div className="plan-header w-full" style={{ height: '57px' }}>
+                  <div className="plan-details" style={{ height: '57px' }}>
                     <div className="monthly-amount">
                       {formatPrice(selectedPlan.perInstallment)} ريال
                       <span className="usd-badge">${monthlyAmountUSD}</span>
@@ -275,7 +275,7 @@ const CardInfo = ({
                       </span>
                     </div>
                   </div>
-                  <div className="arrow-icon" style={{ width: '15.65px', height: '30px' }}>&gt;</div>
+                  <div className="arrow-icon" style={{ height: '30px' }}>&gt;</div>
                 </div>
               </div>
 
@@ -353,8 +353,8 @@ const CardInfo = ({
         <button
           onClick={onSubmit}
           disabled={isDisabled}
-          className={`payment-btn ${isFormValid ? 'active' : ''}`}
-          style={{ width: '370px', height: '54px' }}
+          className={`payment-btn w-full max-w-[370px] ${isFormValid ? 'active' : ''}`}
+          style={{ height: '54px' }}
         >
           {isSubmitting ? 'جاري المعالجة...' : selectedPlan ? (
             <>
