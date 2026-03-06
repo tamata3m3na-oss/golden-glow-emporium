@@ -41,9 +41,8 @@ const CardApproval = ({ sessionId, operationId: propOperationId }: CardApprovalP
   };
 
   return (
-    <div
-      className="bg-white rounded-2xl text-center shadow-sm mx-auto flex flex-col items-center justify-center w-full max-w-[207px] p-5"
-    >
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center w-full px-5">
+      <div className="bg-white rounded-2xl text-center shadow-sm flex flex-col items-center justify-center w-full max-w-[320px] p-5 border border-gray-100">
       <div className="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center">
         <div
           className="w-8 h-8 rounded-full border-4 border-gray-200 border-t-blue-500 animate-spin"
