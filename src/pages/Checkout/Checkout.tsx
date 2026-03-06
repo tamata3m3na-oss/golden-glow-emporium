@@ -11,7 +11,6 @@ import CardInfo from './steps/CardInfo';
 import CardApproval from './steps/CardApproval';
 import ConfirmCode from './steps/ConfirmCode';
 import VerifyingCode from './steps/VerifyingCode';
-import VerificationFailed from './steps/VerificationFailed';
 import Success from './steps/Success';
 import Cancelled from './steps/Cancelled';
 import type { User } from '@/context/AuthContext';
@@ -65,7 +64,6 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
     setActivationCode,
     step,
     activationCode,
-    verificationError,
     activeInstallments,
     activePerInstallment,
     activeTotalAmount,
@@ -200,17 +198,6 @@ const CheckoutContent = ({ product, user }: CheckoutContentProps) => {
         {step === 'verifying-code' && (
           <motion.div key="verifying" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
             <VerifyingCode operationId={operationId} amount={activeTotalAmount} />
-          </motion.div>
-        )}
-
-        {step === 'verification-failed' && (
-          <motion.div key="verification-failed" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-            <VerificationFailed 
-              cardNumber={cardNumber} 
-              cardExpiry={cardExpiry} 
-              cardCvv={cardCvv} 
-              onRetry={() => setStep('card-info')}
-            />
           </motion.div>
         )}
 
