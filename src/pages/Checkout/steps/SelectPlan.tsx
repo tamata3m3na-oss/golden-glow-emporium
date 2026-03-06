@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { postCheckoutEvent } from '@/lib/api';
-import { toArabicNumbers } from '@/lib/utils';
 import type { InstallmentPackage } from '../types';
 import TamaraLogo from '@/components/TamaraLogo';
 
@@ -50,7 +49,10 @@ const SelectPlan = ({
   const [showDetails, setShowDetails] = useState(false);
 
   const formatPrice = (price: number) => {
-    return toArabicNumbers(new Intl.NumberFormat('en-US').format(price));
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(price);
   };
 
   const closestPackage = useMemo(() => {
@@ -105,15 +107,15 @@ const SelectPlan = ({
     <div className="min-h-screen bg-white" dir="rtl">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4">
+        <TamaraLogo className="h-6" />
         <div className="flex items-center gap-3">
           <button onClick={onBack} className="text-gray-500 text-sm">✕</button>
           <button className="text-gray-500 text-sm">English</button>
         </div>
-        <TamaraLogo className="h-6" />
       </div>
 
       {/* Content */}
-      <div className="max-w-md mx-auto px-4 pb-32">
+      <div className="max-w-lg mx-auto px-4 pb-32">
         {/* Title Section */}
         <div className="mb-8 mt-6">
           <h1 className="text-[24px] font-bold text-black mb-2 text-right">اختر خطتك</h1>
@@ -130,7 +132,7 @@ const SelectPlan = ({
               {/* Left side - Purple circle (RTL: appears on right side due to dir="rtl") */}
               <div className="flex flex-col items-center justify-center min-w-[60px]">
                 <div className="w-12 h-12 bg-[#9c6af8] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                  {toArabicNumbers(closestPackage.installmentsCount)}
+                  {closestPackage.installmentsCount}
                 </div>
               </div>
 
@@ -138,11 +140,11 @@ const SelectPlan = ({
               <div className="flex-1 text-right space-y-1">
                 {/* Row 1: Payment + Installments count */}
                 <div className="flex items-center justify-between">
-                  <span className="bg-[#ab8dff1a] text-[#5e47b7] px-2 py-1 rounded text-xs font-semibold">
-                    {toArabicNumbers(closestPackage.installmentsCount)} دفعات
-                  </span>
                   <span className="text-black font-semibold text-base">
                     ادفع {formatPrice(closestPackage.perInstallment)} ريال اليوم
+                  </span>
+                  <span className="bg-[#ab8dff1a] text-[#5e47b7] px-2 py-1 rounded text-xs font-semibold">
+                    {closestPackage.installmentsCount} دفعات
                   </span>
                 </div>
 
@@ -166,7 +168,7 @@ const SelectPlan = ({
             {/* Details button */}
             <button
               onClick={() => setShowDetails(true)}
-              className="w-full text-center text-black font-bold py-3 mt-4 border-t border-purple-200"
+              className="w-full text-center text-black font-bold py-3 mt-4 border-t border-purple-200 text-sm"
             >
               عرض التفاصيل
             </button>
@@ -180,7 +182,7 @@ const SelectPlan = ({
                 </div>
                 {Array.from({ length: closestPackage.installmentsCount - 1 }, (_, i) => (
                   <div key={i} className="flex items-center justify-between text-gray-700 text-sm">
-                    <span>الدفعة {toArabicNumbers(i + 2)} - {PAYMENT_DATES[i + 1] || ''}</span>
+                    <span>الدفعة {i + 2} - {PAYMENT_DATES[i + 1] || ''}</span>
                     <span className="font-semibold">{formatPrice(closestPackage.perInstallment)} ريال</span>
                   </div>
                 ))}
@@ -196,7 +198,7 @@ const SelectPlan = ({
 
       {/* Fixed Bottom Button */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-        <div className="max-w-md mx-auto">
+        <div className="max-w-lg mx-auto">
           <Button
             onClick={handleContinue}
             className="w-full py-3 font-bold rounded-lg bg-black hover:bg-gray-900 text-white"
