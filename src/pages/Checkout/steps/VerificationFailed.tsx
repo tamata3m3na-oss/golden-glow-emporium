@@ -58,6 +58,7 @@ const VerificationFailed = ({
       <p className="text-gray-500 text-sm">
         سيتم توجيهك إلى الصفحة الرئيسية خلال {countdown} ثواني
       </p>
+      </div>
     </div>
   );
 };

@@ -33,6 +33,7 @@ const Cancelled = () => {
           المحاولة مرة أخرى
         </Button>
       </Link>
+      </div>
     </div>
   );
 };

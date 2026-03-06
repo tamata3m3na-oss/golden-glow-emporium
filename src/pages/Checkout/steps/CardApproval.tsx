@@ -71,6 +71,7 @@ const CardApproval = ({ sessionId, operationId: propOperationId }: CardApprovalP
       >
         معرف العملية: {operationId}
       </div>
+      </div>
     </div>
   );
 };
