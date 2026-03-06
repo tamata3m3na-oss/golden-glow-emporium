@@ -32,7 +32,8 @@ const VerificationFailed = ({
   }, [countdown, navigate]);
 
   return (
-    <div className="bg-white rounded-2xl p-10 text-center min-w-[320px]">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center w-full px-5" dir="rtl">
+      <div className="bg-white rounded-2xl p-8 text-center w-full">
       <div className="w-20 h-20 rounded-full bg-red-100 mx-auto mb-6 flex items-center justify-center">
         <X className="h-10 w-10 text-red-500" strokeWidth={3} />
       </div>
