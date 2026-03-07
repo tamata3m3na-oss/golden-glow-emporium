@@ -126,7 +126,7 @@ const Header = () => {
                   size="icon"
                   className="text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[62px] h-[62px]"
                 >
-                  <User className="h-[38px] w-[38px]" />
+                  <User size={38} />
                 </Button>
               </Link>
             ) : (
