@@ -134,9 +134,9 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[48px] h-[48px]"
+                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[62px] h-[62px]"
                 >
-                  <User className="h-[29px] w-[29px]" />
+                  <User className="h-[38px] w-[38px]" />
                 </Button>
               </Link>
             )}
