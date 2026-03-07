@@ -26,11 +26,11 @@ const BusinessVerification = () => {
         <meta property="og:description" content="معلومات توثيق مؤسسة حسين إبراهيم دين للمجوهرات لدى مركز الأعمال السعودية" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://husseinjewelry.com/business-info" />
-        <meta property="og:image" content="/external/images/saudi_business_platform.png" />
+        <meta property="og:image" content="https://husseinjewelry.com/external/images/saudi_business_platform.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content="/external/images/saudi_business_platform.png" />
+        <meta name="twitter:image" content="https://husseinjewelry.com/external/images/saudi_business_platform.png" />
       </Helmet>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100" dir="rtl">
       {/* Header with SDAIA Branding */}
