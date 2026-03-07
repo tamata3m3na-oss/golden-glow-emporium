@@ -42,9 +42,9 @@ const Header = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[48px] h-[48px]"
+                  className="text-[#E6ECF8] hover:text-[#D4AF37] hover:bg-[#D4AF37]/10 w-[62px] h-[62px]"
                 >
-                  {open ? <X className="h-[37px] w-[37px]" /> : <Menu className="h-[37px] w-[37px]" />}
+                  {open ? <X className="h-[48px] w-[48px]" /> : <Menu className="h-[48px] w-[48px]" />}
                 </Button>
               </SheetTrigger>
               <SheetContent 
