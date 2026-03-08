@@ -31,9 +31,6 @@ const ALL_PACKAGES = [
   { totalAmount: 100000, installmentsCount: 36, perInstallment: 2777, commission: 2200 },
 ];
 
-const TAMARA_ONLY_PRICES = [24000, 50000, 100000, 31050, 12420, 4140, 20700, 8280];
-const TABBY_ONLY_PRICES = [6000, 18000];
-
 const WalletIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000000" strokeWidth="1.5">
     <path d="M14.4998 12.001C14.4998 13.3817 13.3805 14.501 11.9998 14.501C10.6191 14.501 9.49982 13.3817 9.49982 12.001C9.49982 10.6203 10.6191 9.50098 11.9998 9.50098C13.3805 9.50098 14.4998 10.6203 14.4998 12.001Z"/>
@@ -68,8 +65,8 @@ const PaymentMethodSelection = ({
     return sorted[0];
   }, [finalPrice]);
 
-  const isTamaraOnly = TAMARA_ONLY_PRICES.includes(product.price);
-  const isTabbyOnly = TABBY_ONLY_PRICES.includes(product.price);
+  const isTamaraOnly = product.id >= 1 && product.id <= 9;
+  const isTabbyOnly = product.id === 10 || product.id === 11;
 
   const isTamaraDisabled = isTabbyOnly;
   const isTabbyDisabled = isTamaraOnly;
