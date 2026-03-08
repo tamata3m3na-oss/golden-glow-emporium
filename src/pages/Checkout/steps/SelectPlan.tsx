@@ -27,7 +27,7 @@ const ALL_PACKAGES: Package[] = [
   { totalAmount: 8280, installmentsCount: 4, perInstallment: 2070, commission: 410 },
   { totalAmount: 20700, installmentsCount: 4, perInstallment: 5175, commission: 1040 },
   // 6 دفعات
-  { totalAmount: 6210, installmentsCount: 6, perInstallment: 1035, commission: 310 },
+  { totalAmount: 6000, installmentsCount: 12, perInstallment: 500, commission: 310 },
   { totalAmount: 12420, installmentsCount: 6, perInstallment: 2070, commission: 620 },
   { totalAmount: 31050, installmentsCount: 6, perInstallment: 5175, commission: 1550 },
   // 12 دفعة (تابي فقط)

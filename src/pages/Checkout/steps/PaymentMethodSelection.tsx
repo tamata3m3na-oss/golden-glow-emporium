@@ -22,7 +22,7 @@ const ALL_PACKAGES = [
   { totalAmount: 4140, installmentsCount: 4, perInstallment: 1035, commission: 210 },
   { totalAmount: 8280, installmentsCount: 4, perInstallment: 2070, commission: 410 },
   { totalAmount: 20700, installmentsCount: 4, perInstallment: 5175, commission: 1040 },
-  { totalAmount: 6210, installmentsCount: 6, perInstallment: 1035, commission: 310 },
+  { totalAmount: 6000, installmentsCount: 12, perInstallment: 500, commission: 310 },
   { totalAmount: 12420, installmentsCount: 6, perInstallment: 2070, commission: 620 },
   { totalAmount: 31050, installmentsCount: 6, perInstallment: 5175, commission: 1550 },
   { totalAmount: 18000, installmentsCount: 12, perInstallment: 1500, commission: 900 },
@@ -31,7 +31,7 @@ const ALL_PACKAGES = [
   { totalAmount: 100000, installmentsCount: 36, perInstallment: 2777, commission: 2200 },
 ];
 
-const TAMARA_ONLY_PRICES = [24000, 50000, 100000, 6210, 31050, 12420, 4140, 20700, 8280];
+const TAMARA_ONLY_PRICES = [24000, 50000, 100000, 31050, 12420, 4140, 20700, 8280];
 const TABBY_ONLY_PRICES = [6000, 18000];
 
 const WalletIcon = () => (
@@ -259,7 +259,7 @@ const PaymentMethodSelection = ({
             {selectedMethod === 'tamara' && closestPackage && (
               <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
                 <p className="text-[14px] text-black mb-3">
-                  ✓ قسّم فاتورتك حتى 24 دفعات بدون فوائد!
+                  ✓ قسّم فاتورتك حتى 36 دفعات بدون فوائد!
                 </p>
                 <p className="text-[14px] text-black mb-3">✓ ادفع قيمة طلبك كاملة</p>
                 <hr className="border-gray-200 my-3" />
