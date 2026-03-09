@@ -256,7 +256,7 @@ const PaymentMethodSelection = ({
             {selectedMethod === 'tamara' && closestPackage && (
               <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
                 <p className="text-[14px] text-black mb-3">
-                  ✓ قسّم فاتورتك حتى 36 دفعات بدون فوائد!
+                  ✓ قسّم فاتورتك حتى {closestPackage.installmentsCount} دفعات بدون فوائد!
                 </p>
                 <p className="text-[14px] text-black mb-3">✓ ادفع قيمة طلبك كاملة</p>
                 <hr className="border-gray-200 my-3" />
